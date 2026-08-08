@@ -1,0 +1,17 @@
+flask==2.2.5
+python-dotenv==1.0.1
+Flask-Login==0.6.3
+Flask-SQLAlchemy==3.1.1
+Flask-WTF==1.2.1
+psycopg[binary]==3.2.3
+tensorflow==2.15.0
+keras==2.15.0
+numpy==1.26.4
+pandas==2.2.2
+opencv-python==4.8.1.78
+pillow==10.2.0
+requests==2.31.0
+wikipedia==1.4.0
+h5py==3.10.0
+scikit-learn==1.4.1.post1
+matplotlib==3.8.3

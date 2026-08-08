@@ -1,0 +1,47 @@
+# ===========================
+# Python
+# ===========================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual Environment
+.venv/
+venv/
+env/
+
+# VS Code
+.vscode/
+
+# macOS
+.DS_Store
+
+# Logs
+*.log
+
+# Environment Variables
+.env
+
+# Application runtime data
+instance/
+flask-server.*.log
+
+# History
+history.json
+
+# Uploaded Images
+static/uploads/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Dataset
+Dataset/
+
+# Temporary Files
+*.tmp
+*.temp
+
+# Duplicate source clone kept locally for reference
+ai-plant-disease-detection/
