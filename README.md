@@ -1,4 +1,4 @@
-# Phasal AI — Plant Disease Detection
+# AgriDiagnose AI — Plant Disease Detection
 
 Flask application for AI-assisted plant leaf analysis. It uses the included MobileNetV2-based TensorFlow model to provide decision-support predictions, a secure account area, scan history, and a REST endpoint for future mobile clients.
 
@@ -47,7 +47,7 @@ Set values in `.env`; never commit it.
 | Variable | Purpose |
 | --- | --- |
 | `SECRET_KEY` | Required long random value in production |
-| `DATABASE_URL` | PostgreSQL SQLAlchemy URL, e.g. `postgresql+psycopg://user:password@host:5432/phasal` |
+| `DATABASE_URL` | PostgreSQL SQLAlchemy URL, e.g. `postgresql+psycopg://user:password@host:5432/agridiagnose` |
 | `MODEL_PATH` | Path to `plant_disease_model.h5` |
 | `WEATHER_API_KEY` | Reserved for a configured weather provider |
 | `PREDICTION_CONFIDENCE_THRESHOLD` | Default: `60` |
