@@ -60,9 +60,9 @@ curl -X POST http://127.0.0.1:5000/api/v1/predict -F "image=@leaf.jpg"
 
 The response contains `prediction`, `top_predictions`, and cautious `disease_info` guidance.
 
-## Model limitation
+## Model class mapping
 
-The checked-in model has 39 output units, while this repository supplies only 38 class labels. The unmapped output is deliberately reported as `Unmapped model class`; it is not guessed. Obtain the original `train_generator.class_indices` mapping before deploying predictions as a reliable classification feature.
+The model has 39 outputs. The complete class order includes `Background_without_leaves` at index 4; this mapping was recovered from the companion PlantVillage project’s documented `idx_to_classes` dictionary and matches the 39-output shape. A background prediction is presented as “No leaf detected” and does not receive disease guidance.
 
 ## Future improvements
 

@@ -14,6 +14,6 @@ def predict_api():
     with NamedTemporaryFile(suffix=suffix,delete=False,dir=current_app.config["UPLOAD_FOLDER"]) as tmp: file.save(tmp.name); path=Path(tmp.name)
     try:
         result=predict(path)
-        return jsonify(success=True, prediction=result["prediction"], top_predictions=result["top_predictions"], disease_info=get_disease_info(result["prediction"]["disease"]))
+        return jsonify(success=True, prediction=result["prediction"], top_predictions=result["top_predictions"], disease_info=get_disease_info(result["prediction"]["disease"], result["prediction"]["class_index"]))
     except PredictionError as exc: return jsonify(success=False,error=str(exc)),400
     finally: path.unlink(missing_ok=True)
