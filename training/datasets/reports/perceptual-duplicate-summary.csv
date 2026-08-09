@@ -1,0 +1,94 @@
+first_dataset,first_role,first_label,first_target_class,second_dataset,second_role,second_label,second_target_class,hamming_distance,same_target_class,candidate_pair_count
+PLDD-UP,training_candidate,EB,Potato Early blight,PLDD-UP,training_candidate,EB,Potato Early blight,0,True,82392
+PLDD-UP,training_candidate,EB,Potato Early blight,PLDD-UP,training_candidate,EB,Potato Early blight,1,True,59661
+PLDD-UP,training_candidate,EB,Potato Early blight,PLDD-UP,training_candidate,EB,Potato Early blight,2,True,55776
+PLDD-UP,training_candidate,EB,Potato Early blight,PLDD-UP,training_candidate,EB,Potato Early blight,3,True,52663
+PLDD-UP,training_candidate,EB,Potato Early blight,PLDD-UP,training_candidate,EB,Potato Early blight,4,True,39866
+PLDD-UP,training_candidate,EB,Potato Early blight,PLDD-UP,training_candidate,Healthy,Potato healthy,0,False,19145
+PLDD-UP,training_candidate,EB,Potato Early blight,PLDD-UP,training_candidate,Healthy,Potato healthy,1,False,30809
+PLDD-UP,training_candidate,EB,Potato Early blight,PLDD-UP,training_candidate,Healthy,Potato healthy,2,False,42508
+PLDD-UP,training_candidate,EB,Potato Early blight,PLDD-UP,training_candidate,Healthy,Potato healthy,3,False,51783
+PLDD-UP,training_candidate,EB,Potato Early blight,PLDD-UP,training_candidate,Healthy,Potato healthy,4,False,56350
+PLDD-UP,training_candidate,EB,Potato Early blight,PLDD-UP,training_candidate,LB,Potato Late blight,0,False,135194
+PLDD-UP,training_candidate,EB,Potato Early blight,PLDD-UP,training_candidate,LB,Potato Late blight,1,False,100060
+PLDD-UP,training_candidate,EB,Potato Early blight,PLDD-UP,training_candidate,LB,Potato Late blight,2,False,96890
+PLDD-UP,training_candidate,EB,Potato Early blight,PLDD-UP,training_candidate,LB,Potato Late blight,3,False,95299
+PLDD-UP,training_candidate,EB,Potato Early blight,PLDD-UP,training_candidate,LB,Potato Late blight,4,False,85693
+PLDD-UP,training_candidate,Healthy,Potato healthy,PLDD-UP,training_candidate,Healthy,Potato healthy,0,True,3277
+PLDD-UP,training_candidate,Healthy,Potato healthy,PLDD-UP,training_candidate,Healthy,Potato healthy,1,True,4971
+PLDD-UP,training_candidate,Healthy,Potato healthy,PLDD-UP,training_candidate,Healthy,Potato healthy,2,True,8492
+PLDD-UP,training_candidate,Healthy,Potato healthy,PLDD-UP,training_candidate,Healthy,Potato healthy,3,True,12527
+PLDD-UP,training_candidate,Healthy,Potato healthy,PLDD-UP,training_candidate,Healthy,Potato healthy,4,True,14689
+PLDD-UP,training_candidate,Healthy,Potato healthy,PLDD-UP,training_candidate,LB,Potato Late blight,0,False,15174
+PLDD-UP,training_candidate,Healthy,Potato healthy,PLDD-UP,training_candidate,LB,Potato Late blight,1,False,24867
+PLDD-UP,training_candidate,Healthy,Potato healthy,PLDD-UP,training_candidate,LB,Potato Late blight,2,False,34800
+PLDD-UP,training_candidate,Healthy,Potato healthy,PLDD-UP,training_candidate,LB,Potato Late blight,3,False,43093
+PLDD-UP,training_candidate,Healthy,Potato healthy,PLDD-UP,training_candidate,LB,Potato Late blight,4,False,52004
+PLDD-UP,training_candidate,LB,Potato Late blight,PLDD-UP,training_candidate,LB,Potato Late blight,0,True,55437
+PLDD-UP,training_candidate,LB,Potato Late blight,PLDD-UP,training_candidate,LB,Potato Late blight,1,True,42217
+PLDD-UP,training_candidate,LB,Potato Late blight,PLDD-UP,training_candidate,LB,Potato Late blight,2,True,42445
+PLDD-UP,training_candidate,LB,Potato Late blight,PLDD-UP,training_candidate,LB,Potato Late blight,3,True,43008
+PLDD-UP,training_candidate,LB,Potato Late blight,PLDD-UP,training_candidate,LB,Potato Late blight,4,True,43643
+PlantDoc,locked_test,Peach leaf,,PlantDoc,locked_test,Peach leaf,,4,True,1
+PlantDoc,training_candidate,Apple Scab Leaf,Apple Apple scab,PlantDoc,training_candidate,Apple Scab Leaf,Apple Apple scab,0,True,1
+PlantDoc,training_candidate,Bell_pepper leaf spot,,PlantDoc,training_candidate,Bell_pepper leaf spot,,0,True,3
+PlantDoc,training_candidate,Bell_pepper leaf spot,,PlantDoc,training_candidate,Tomato Septoria leaf spot,Tomato Septoria leaf spot,2,False,1
+PlantDoc,training_candidate,Cherry leaf,,PlantDoc,training_candidate,Cherry leaf,,1,True,1
+PlantDoc,training_candidate,Corn Gray leaf spot,Corn Cercospora leaf spot,PlantDoc,training_candidate,Corn leaf blight,,1,False,1
+PlantDoc,training_candidate,Corn leaf blight,,PlantDoc,training_candidate,Corn leaf blight,,0,True,2
+PlantDoc,training_candidate,Corn leaf blight,,PlantDoc,training_candidate,Corn leaf blight,,1,True,3
+PlantDoc,training_candidate,Corn leaf blight,,PlantDoc,training_candidate,Corn leaf blight,,2,True,1
+PlantDoc,training_candidate,Corn rust leaf,,PlantDoc,training_candidate,Corn rust leaf,,0,True,1
+PlantDoc,training_candidate,Peach leaf,,PlantDoc,training_candidate,Peach leaf,,3,True,1
+PlantDoc,training_candidate,Peach leaf,,PlantDoc,training_candidate,Peach leaf,,4,True,1
+PlantDoc,training_candidate,Potato leaf early blight,Potato Early blight,PlantDoc,training_candidate,Potato leaf late blight,Potato Late blight,0,False,1
+PlantDoc,training_candidate,Potato leaf early blight,Potato Early blight,PlantDoc,training_candidate,Potato leaf late blight,Potato Late blight,2,False,1
+PlantDoc,training_candidate,Potato leaf early blight,Potato Early blight,PlantDoc,training_candidate,Tomato Early blight leaf,Tomato Early blight,0,False,3
+PlantDoc,training_candidate,Potato leaf early blight,Potato Early blight,PlantDoc,training_candidate,Tomato Early blight leaf,Tomato Early blight,1,False,1
+PlantDoc,training_candidate,Potato leaf early blight,Potato Early blight,PlantDoc,training_candidate,Tomato Early blight leaf,Tomato Early blight,3,False,1
+PlantDoc,training_candidate,Potato leaf early blight,Potato Early blight,PlantDoc,training_candidate,Tomato Septoria leaf spot,Tomato Septoria leaf spot,0,False,1
+PlantDoc,training_candidate,Potato leaf early blight,Potato Early blight,PlantDoc,training_candidate,Tomato leaf late blight,Tomato Late blight,0,False,4
+PlantDoc,training_candidate,Potato leaf late blight,Potato Late blight,PlantDoc,training_candidate,Potato leaf late blight,Potato Late blight,0,True,2
+PlantDoc,training_candidate,Potato leaf late blight,Potato Late blight,PlantDoc,training_candidate,Tomato Early blight leaf,Tomato Early blight,0,False,1
+PlantDoc,training_candidate,Potato leaf late blight,Potato Late blight,PlantDoc,training_candidate,Tomato leaf late blight,Tomato Late blight,0,False,1
+PlantDoc,training_candidate,Potato leaf late blight,Potato Late blight,PlantDoc,training_candidate,Tomato leaf late blight,Tomato Late blight,1,False,1
+PlantDoc,training_candidate,Raspberry leaf,,PlantDoc,training_candidate,Raspberry leaf,,0,True,1
+PlantDoc,training_candidate,Soyabean leaf,,PlantDoc,training_candidate,Soyabean leaf,,4,True,1
+PlantDoc,training_candidate,Squash Powdery mildew leaf,Squash Powdery mildew,PlantDoc,training_candidate,Squash Powdery mildew leaf,Squash Powdery mildew,0,True,2
+PlantDoc,training_candidate,Tomato Early blight leaf,Tomato Early blight,PlantDoc,locked_test,Potato leaf early blight,Potato Early blight,0,False,1
+PlantDoc,training_candidate,Tomato Early blight leaf,Tomato Early blight,PlantDoc,training_candidate,Tomato Early blight leaf,Tomato Early blight,0,True,1
+PlantDoc,training_candidate,Tomato Early blight leaf,Tomato Early blight,PlantDoc,training_candidate,Tomato Early blight leaf,Tomato Early blight,1,True,2
+PlantDoc,training_candidate,Tomato Early blight leaf,Tomato Early blight,PlantDoc,training_candidate,Tomato Early blight leaf,Tomato Early blight,3,True,1
+PlantDoc,training_candidate,Tomato Early blight leaf,Tomato Early blight,PlantDoc,training_candidate,Tomato Septoria leaf spot,Tomato Septoria leaf spot,0,False,2
+PlantDoc,training_candidate,Tomato Early blight leaf,Tomato Early blight,PlantDoc,training_candidate,Tomato leaf late blight,Tomato Late blight,0,False,1
+PlantDoc,training_candidate,Tomato Septoria leaf spot,Tomato Septoria leaf spot,PlantDoc,training_candidate,Tomato Septoria leaf spot,Tomato Septoria leaf spot,0,True,3
+PlantDoc,training_candidate,Tomato Septoria leaf spot,Tomato Septoria leaf spot,PlantDoc,training_candidate,Tomato Septoria leaf spot,Tomato Septoria leaf spot,2,True,2
+PlantDoc,training_candidate,Tomato Septoria leaf spot,Tomato Septoria leaf spot,PlantDoc,training_candidate,Tomato leaf bacterial spot,Tomato Bacterial spot,0,False,1
+PlantDoc,training_candidate,Tomato Septoria leaf spot,Tomato Septoria leaf spot,PlantDoc,training_candidate,Tomato leaf bacterial spot,Tomato Bacterial spot,1,False,1
+PlantDoc,training_candidate,Tomato leaf bacterial spot,Tomato Bacterial spot,PlantDoc,locked_test,Tomato leaf bacterial spot,Tomato Bacterial spot,0,True,1
+PlantDoc,training_candidate,Tomato leaf bacterial spot,Tomato Bacterial spot,PlantDoc,training_candidate,Tomato leaf bacterial spot,Tomato Bacterial spot,1,True,1
+PlantDoc,training_candidate,Tomato leaf bacterial spot,Tomato Bacterial spot,PlantDoc,training_candidate,Tomato leaf bacterial spot,Tomato Bacterial spot,3,True,1
+PlantDoc,training_candidate,Tomato leaf late blight,Tomato Late blight,PlantDoc,locked_test,Potato leaf late blight,Potato Late blight,0,False,1
+PlantDoc,training_candidate,Tomato leaf late blight,Tomato Late blight,PlantDoc,locked_test,Tomato leaf late blight,Tomato Late blight,0,True,1
+PlantDoc,training_candidate,Tomato leaf late blight,Tomato Late blight,PlantDoc,training_candidate,Tomato leaf late blight,Tomato Late blight,0,True,3
+PlantDoc,training_candidate,Tomato leaf mosaic virus,Tomato mosaic virus,PlantDoc,training_candidate,Tomato leaf yellow virus,,0,False,1
+PlantDoc,training_candidate,Tomato leaf yellow virus,,PlantDoc,training_candidate,Tomato leaf yellow virus,,2,True,1
+PlantDoc,training_candidate,Tomato leaf yellow virus,,PlantDoc,training_candidate,Tomato mold leaf,Tomato Leaf Mold,0,False,1
+PlantDoc,training_candidate,grape leaf black rot,Grape Black rot,PlantDoc,training_candidate,grape leaf black rot,Grape Black rot,2,True,1
+Potato Leaf Disease Dataset,training_candidate,Fungal Late Blight,Potato Late blight,Potato Leaf Disease Dataset,training_candidate,Fungal Late Blight,Potato Late blight,4,True,1
+Potato Leaf Disease Dataset,training_candidate,Viral PVX,,Potato Leaf Disease Dataset,training_candidate,Viral PVX,,4,True,1
+Seasonal Corn Leaf Disease Dataset,training_candidate,Bacterial Leaf Streak,,Seasonal Corn Leaf Disease Dataset,training_candidate,Healthy,Corn healthy,4,False,1
+Seasonal Corn Leaf Disease Dataset,training_candidate,Common_rust,Corn Common rust,Seasonal Corn Leaf Disease Dataset,training_candidate,Common_rust,Corn Common rust,0,True,1
+Seasonal Corn Leaf Disease Dataset,training_candidate,Common_rust,Corn Common rust,Seasonal Corn Leaf Disease Dataset,training_candidate,Common_rust,Corn Common rust,4,True,1
+Seasonal Corn Leaf Disease Dataset,training_candidate,Gray_leaf_spot,Corn Cercospora leaf spot,Seasonal Corn Leaf Disease Dataset,training_candidate,Gray_leaf_spot,Corn Cercospora leaf spot,0,True,54
+Seasonal Corn Leaf Disease Dataset,training_candidate,Gray_leaf_spot,Corn Cercospora leaf spot,Seasonal Corn Leaf Disease Dataset,training_candidate,Gray_leaf_spot,Corn Cercospora leaf spot,1,True,8
+Seasonal Corn Leaf Disease Dataset,training_candidate,Gray_leaf_spot,Corn Cercospora leaf spot,Seasonal Corn Leaf Disease Dataset,training_candidate,Gray_leaf_spot,Corn Cercospora leaf spot,2,True,6
+Seasonal Corn Leaf Disease Dataset,training_candidate,Gray_leaf_spot,Corn Cercospora leaf spot,Seasonal Corn Leaf Disease Dataset,training_candidate,Healthy,Corn healthy,0,False,9
+Seasonal Corn Leaf Disease Dataset,training_candidate,Gray_leaf_spot,Corn Cercospora leaf spot,Seasonal Corn Leaf Disease Dataset,training_candidate,Healthy,Corn healthy,1,False,2
+Seasonal Corn Leaf Disease Dataset,training_candidate,Gray_leaf_spot,Corn Cercospora leaf spot,Seasonal Corn Leaf Disease Dataset,training_candidate,Healthy,Corn healthy,2,False,1
+Seasonal Corn Leaf Disease Dataset,training_candidate,Healthy,Corn healthy,PLDD-UP,training_candidate,LB,Potato Late blight,4,False,1
+Seasonal Corn Leaf Disease Dataset,training_candidate,Healthy,Corn healthy,Seasonal Corn Leaf Disease Dataset,training_candidate,Healthy,Corn healthy,0,True,230
+Seasonal Corn Leaf Disease Dataset,training_candidate,Healthy,Corn healthy,Seasonal Corn Leaf Disease Dataset,training_candidate,Healthy,Corn healthy,1,True,157
+Seasonal Corn Leaf Disease Dataset,training_candidate,Healthy,Corn healthy,Seasonal Corn Leaf Disease Dataset,training_candidate,Healthy,Corn healthy,2,True,34
+Seasonal Corn Leaf Disease Dataset,training_candidate,Healthy,Corn healthy,Seasonal Corn Leaf Disease Dataset,training_candidate,Healthy,Corn healthy,3,True,10
+Seasonal Corn Leaf Disease Dataset,training_candidate,Healthy,Corn healthy,Seasonal Corn Leaf Disease Dataset,training_candidate,Healthy,Corn healthy,4,True,3

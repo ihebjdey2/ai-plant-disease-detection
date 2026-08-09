@@ -1,0 +1,32 @@
+{
+  "dataset": "Seasonal Corn Leaf Disease Dataset",
+  "source": "https://doi.org/10.17632/vy629dngm8.1",
+  "version": 1,
+  "classes": {
+    "Bacterial Leaf Streak": {
+      "status": "NOT_SUPPORTED",
+      "target_class": null,
+      "reason": "The deployed taxonomy has no Corn Bacterial Leaf Streak class."
+    },
+    "Common_rust": {
+      "status": "MATCHED",
+      "target_class": "Corn Common rust",
+      "reason": "The official source explicitly identifies the corn disease as Common rust."
+    },
+    "Gray_leaf_spot": {
+      "status": "MATCHED",
+      "target_class": "Corn Cercospora leaf spot",
+      "reason": "The official corn Gray leaf spot class matches the deployed Cercospora leaf spot class."
+    },
+    "Healthy": {
+      "status": "MATCHED",
+      "target_class": "Corn healthy",
+      "reason": "The official source explicitly labels these corn leaves as healthy."
+    },
+    "Maize Chlorotic Mottle Virus": {
+      "status": "NOT_SUPPORTED",
+      "target_class": null,
+      "reason": "The deployed taxonomy has no Maize Chlorotic Mottle Virus class."
+    }
+  }
+}

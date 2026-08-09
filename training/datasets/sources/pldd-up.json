@@ -1,0 +1,116 @@
+{
+  "dataset": "PLDD-UP: Potato Leaf Disease Dataset from Uttar Pradesh, India",
+  "canonical_source": "Mendeley Data",
+  "doi": "10.17632/3j4nfkvp2n.1",
+  "url": "https://doi.org/10.17632/3j4nfkvp2n.1",
+  "version": 1,
+  "authors": [
+    "Prakash Kumar Singh",
+    "Arun Yadav",
+    "Divakar Yadav",
+    "Sarthak Tiwari",
+    "Aseem Chandel"
+  ],
+  "publisher": "Mendeley Data",
+  "license": "CC BY 4.0",
+  "attribution_required": true,
+  "retrieval_date": "2026-08-09",
+  "reported": {
+    "images": 15519,
+    "classes": {
+      "EB": 4803,
+      "Healthy": 4600,
+      "LB": 6116
+    },
+    "capture": "Operational fields in Mainpuri, Etawah, and Jaswantnagar, Uttar Pradesh, during the October 2025-March 2026 Rabi season; Nikon D5300 and smartphones of at least 12 MP under natural daylight."
+  },
+  "semantic_verification": {
+    "EB": "Official EB archive filenames explicitly use early-blight; mapped to Potato Early blight.",
+    "LB": "Official LB archive filenames explicitly use late-blight; mapped to Potato Late blight.",
+    "Healthy": "The official class and archive are explicitly named Healthy; mapped to Potato healthy."
+  },
+  "verified": {
+    "dataset_id": "pldd_up",
+    "source": "https://doi.org/10.17632/3j4nfkvp2n.1",
+    "source_version": "1",
+    "archive_sha256": {
+      "pldd-up-v1-eb.zip": "cffd37bbb79e75c0e23c1486f88f0a7c873b3fe67f643c41db3abd794bdc01e5",
+      "pldd-up-v1-healthy.zip": "2b7e4107d7ba03c0ef9636831aa4de7d333435df238f667f562e27b1e46e59e2",
+      "pldd-up-v1-lb.zip": "f4d31182b5d2f147c256e1c73838eac9b17592b89ed2b1ae394f58863e74a447"
+    },
+    "archives": [
+      {
+        "filename": "pldd-up-v1-eb.zip",
+        "file_id": "5717ac85-cf61-461d-bf70-e1e5af2f2c53",
+        "sha256": "cffd37bbb79e75c0e23c1486f88f0a7c873b3fe67f643c41db3abd794bdc01e5",
+        "compressed_bytes": 2766326616,
+        "uncompressed_bytes": 3022485846,
+        "file_count": 4803
+      },
+      {
+        "filename": "pldd-up-v1-healthy.zip",
+        "file_id": "d4ce2acf-3af8-416e-90bc-bb834ba9da66",
+        "sha256": "2b7e4107d7ba03c0ef9636831aa4de7d333435df238f667f562e27b1e46e59e2",
+        "compressed_bytes": 3683027938,
+        "uncompressed_bytes": 3864297822,
+        "file_count": 4600
+      },
+      {
+        "filename": "pldd-up-v1-lb.zip",
+        "file_id": "35ff7712-865c-41bf-96b1-d25d84af7b95",
+        "sha256": "f4d31182b5d2f147c256e1c73838eac9b17592b89ed2b1ae394f58863e74a447",
+        "compressed_bytes": 2323338293,
+        "uncompressed_bytes": 2520656359,
+        "file_count": 6116
+      }
+    ],
+    "source_file_count": 15519,
+    "supported_image_candidate_count": 15519,
+    "valid_image_count": 15519,
+    "materialized_image_count": 15519,
+    "original_image_count": 15519,
+    "augmented_image_count": 0,
+    "class_counts": {
+      "EB": 4803,
+      "Healthy": 4600,
+      "LB": 6116
+    },
+    "unsupported_files": [],
+    "corrupted": [],
+    "image_audit": {
+      "valid_image_count": 15519,
+      "exact_match_image_count": 15519,
+      "excluded_image_count": 0,
+      "class_counts": {
+        "EB": 4803,
+        "Healthy": 4600,
+        "LB": 6116
+      },
+      "mapping_status_counts": {
+        "MATCHED": 15519
+      },
+      "format_counts": {
+        "JPEG": 15374,
+        "MPO": 145
+      },
+      "mode_counts": {
+        "RGB": 15519
+      },
+      "minimum_dimensions": {
+        "width": 116,
+        "height": 198
+      },
+      "maximum_dimensions": {
+        "width": 8160,
+        "height": 4624
+      },
+      "candidate_status_counts": {
+        "APPROVED_CANDIDATE": 8151,
+        "EXCLUDE_FROM_TRAINING": 10,
+        "NEEDS_MANUAL_REVIEW": 7358
+      }
+    }
+  },
+  "original_augmented_distinction": "The official description states that original-resolution real-world captures are preserved; no augmented split or augmented filename convention is present in the three V1 archives.",
+  "training_eligibility": "All three classes are semantic matches, subject to global duplicate and manual-review decisions."
+}

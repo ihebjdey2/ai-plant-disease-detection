@@ -1,0 +1,22 @@
+{
+  "dataset": "PLDD-UP",
+  "source": "https://doi.org/10.17632/3j4nfkvp2n.1",
+  "version": 1,
+  "classes": {
+    "EB": {
+      "status": "MATCHED",
+      "target_class": "Potato Early blight",
+      "reason": "The official EB archive filenames explicitly identify early blight."
+    },
+    "Healthy": {
+      "status": "MATCHED",
+      "target_class": "Potato healthy",
+      "reason": "The official source explicitly names this potato class Healthy."
+    },
+    "LB": {
+      "status": "MATCHED",
+      "target_class": "Potato Late blight",
+      "reason": "The official LB archive filenames explicitly identify late blight."
+    }
+  }
+}

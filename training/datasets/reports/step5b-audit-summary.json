@@ -1,10 +1,12 @@
 {
-  "audit_name": "Dataset V2 Step 5B acquisition audit",
-  "generated_at": "2026-08-09T18:55:10.092093+00:00",
+  "audit_name": "Dataset V2 Step 5B.1 global acquisition audit",
+  "generated_at": "2026-08-09T21:01:56.114010+00:00",
   "scope": {
     "training_candidates": [
       "PlantDoc TRAIN",
-      "Potato originals"
+      "Banu/Deb Potato originals",
+      "Seasonal Corn originals",
+      "PLDD-UP"
     ],
     "locked_benchmark": "PlantDoc TEST",
     "training_performed": false,
@@ -56,6 +58,88 @@
       "materialized_image_count": 84,
       "unsafe_entries": [],
       "corrupted": []
+    },
+    "seasonal_corn": {
+      "dataset_id": "seasonal_corn_originals",
+      "source": "https://doi.org/10.17632/vy629dngm8.1",
+      "source_version": "1",
+      "archive_sha256": {
+        "seasonal-corn-v1.zip": "575628df92e69c169fa82c8506253d7d5886a8931605bf765f0e2577022dc479"
+      },
+      "archives": [
+        {
+          "filename": "seasonal-corn-v1.zip",
+          "file_id": "e086f779-470a-4c7c-ba81-97734e9f8dd6",
+          "sha256": "575628df92e69c169fa82c8506253d7d5886a8931605bf765f0e2577022dc479",
+          "compressed_bytes": 4599036050,
+          "uncompressed_bytes": 4813231041,
+          "file_count": 2943
+        }
+      ],
+      "source_file_count": 2943,
+      "supported_image_candidate_count": 2943,
+      "valid_image_count": 2943,
+      "materialized_image_count": 2943,
+      "original_image_count": 2943,
+      "augmented_image_count": 0,
+      "class_counts": {
+        "Bacterial Leaf Streak": 190,
+        "Common_rust": 129,
+        "Gray_leaf_spot": 1497,
+        "Healthy": 1038,
+        "Maize Chlorotic Mottle Virus": 89
+      },
+      "unsupported_files": [],
+      "corrupted": []
+    },
+    "pldd_up": {
+      "dataset_id": "pldd_up",
+      "source": "https://doi.org/10.17632/3j4nfkvp2n.1",
+      "source_version": "1",
+      "archive_sha256": {
+        "pldd-up-v1-eb.zip": "cffd37bbb79e75c0e23c1486f88f0a7c873b3fe67f643c41db3abd794bdc01e5",
+        "pldd-up-v1-healthy.zip": "2b7e4107d7ba03c0ef9636831aa4de7d333435df238f667f562e27b1e46e59e2",
+        "pldd-up-v1-lb.zip": "f4d31182b5d2f147c256e1c73838eac9b17592b89ed2b1ae394f58863e74a447"
+      },
+      "archives": [
+        {
+          "filename": "pldd-up-v1-eb.zip",
+          "file_id": "5717ac85-cf61-461d-bf70-e1e5af2f2c53",
+          "sha256": "cffd37bbb79e75c0e23c1486f88f0a7c873b3fe67f643c41db3abd794bdc01e5",
+          "compressed_bytes": 2766326616,
+          "uncompressed_bytes": 3022485846,
+          "file_count": 4803
+        },
+        {
+          "filename": "pldd-up-v1-healthy.zip",
+          "file_id": "d4ce2acf-3af8-416e-90bc-bb834ba9da66",
+          "sha256": "2b7e4107d7ba03c0ef9636831aa4de7d333435df238f667f562e27b1e46e59e2",
+          "compressed_bytes": 3683027938,
+          "uncompressed_bytes": 3864297822,
+          "file_count": 4600
+        },
+        {
+          "filename": "pldd-up-v1-lb.zip",
+          "file_id": "35ff7712-865c-41bf-96b1-d25d84af7b95",
+          "sha256": "f4d31182b5d2f147c256e1c73838eac9b17592b89ed2b1ae394f58863e74a447",
+          "compressed_bytes": 2323338293,
+          "uncompressed_bytes": 2520656359,
+          "file_count": 6116
+        }
+      ],
+      "source_file_count": 15519,
+      "supported_image_candidate_count": 15519,
+      "valid_image_count": 15519,
+      "materialized_image_count": 15519,
+      "original_image_count": 15519,
+      "augmented_image_count": 0,
+      "class_counts": {
+        "EB": 4803,
+        "Healthy": 4600,
+        "LB": 6116
+      },
+      "unsupported_files": [],
+      "corrupted": []
     }
   },
   "sources": {
@@ -101,6 +185,26 @@
         "JPEG": 2335,
         "MPO": 2,
         "PNG": 5
+      },
+      "mode_counts": {
+        "CMYK": 5,
+        "L": 1,
+        "RGB": 2331,
+        "RGBA": 5
+      },
+      "minimum_dimensions": {
+        "width": 115,
+        "height": 85
+      },
+      "maximum_dimensions": {
+        "width": 6000,
+        "height": 6000
+      },
+      "candidate_status_counts": {
+        "AMBIGUOUS": 1257,
+        "APPROVED_CANDIDATE": 992,
+        "EXCLUDE_FROM_TRAINING": 10,
+        "NEEDS_MANUAL_REVIEW": 83
       }
     },
     "potato_originals": {
@@ -121,6 +225,92 @@
       },
       "format_counts": {
         "JPEG": 84
+      },
+      "mode_counts": {
+        "RGB": 84
+      },
+      "minimum_dimensions": {
+        "width": 224,
+        "height": 224
+      },
+      "maximum_dimensions": {
+        "width": 224,
+        "height": 224
+      },
+      "candidate_status_counts": {
+        "APPROVED_CANDIDATE": 18,
+        "NEEDS_MANUAL_REVIEW": 18,
+        "NOT_SUPPORTED": 48
+      }
+    },
+    "seasonal_corn_originals": {
+      "valid_image_count": 2943,
+      "exact_match_image_count": 2664,
+      "excluded_image_count": 279,
+      "class_counts": {
+        "Bacterial Leaf Streak": 190,
+        "Common_rust": 129,
+        "Gray_leaf_spot": 1497,
+        "Healthy": 1038,
+        "Maize Chlorotic Mottle Virus": 89
+      },
+      "mapping_status_counts": {
+        "MATCHED": 2664,
+        "NOT_SUPPORTED": 279
+      },
+      "format_counts": {
+        "JPEG": 2225,
+        "PNG": 718
+      },
+      "mode_counts": {
+        "RGB": 2943
+      },
+      "minimum_dimensions": {
+        "width": 200,
+        "height": 200
+      },
+      "maximum_dimensions": {
+        "width": 4160,
+        "height": 4160
+      },
+      "candidate_status_counts": {
+        "APPROVED_CANDIDATE": 464,
+        "EXCLUDE_FROM_TRAINING": 4,
+        "NEEDS_MANUAL_REVIEW": 2196,
+        "NOT_SUPPORTED": 279
+      }
+    },
+    "pldd_up": {
+      "valid_image_count": 15519,
+      "exact_match_image_count": 15519,
+      "excluded_image_count": 0,
+      "class_counts": {
+        "EB": 4803,
+        "Healthy": 4600,
+        "LB": 6116
+      },
+      "mapping_status_counts": {
+        "MATCHED": 15519
+      },
+      "format_counts": {
+        "JPEG": 15374,
+        "MPO": 145
+      },
+      "mode_counts": {
+        "RGB": 15519
+      },
+      "minimum_dimensions": {
+        "width": 116,
+        "height": 198
+      },
+      "maximum_dimensions": {
+        "width": 8160,
+        "height": 4624
+      },
+      "candidate_status_counts": {
+        "APPROVED_CANDIDATE": 8151,
+        "EXCLUDE_FROM_TRAINING": 10,
+        "NEEDS_MANUAL_REVIEW": 7358
       }
     },
     "plantdoc_test_locked": {
@@ -162,23 +352,134 @@
       },
       "format_counts": {
         "JPEG": 236
+      },
+      "mode_counts": {
+        "RGB": 236
+      },
+      "minimum_dimensions": {
+        "width": 115,
+        "height": 69
+      },
+      "maximum_dimensions": {
+        "width": 6000,
+        "height": 5312
+      },
+      "candidate_status_counts": {
+        "LOCKED_BENCHMARK": 236
+      }
+    }
+  },
+  "candidate_counts": {
+    "before_deduplication_total": 19304,
+    "by_dataset": {
+      "PLDD-UP": 15519,
+      "PlantDoc": 1085,
+      "Potato Leaf Disease Dataset": 36,
+      "Seasonal Corn Leaf Disease Dataset": 2664
+    },
+    "by_target_class": {
+      "Apple Apple scab": 83,
+      "Corn Cercospora leaf spot": 1561,
+      "Corn Common rust": 129,
+      "Corn healthy": 1038,
+      "Grape Black rot": 56,
+      "Potato Early blight": 4912,
+      "Potato Late blight": 6233,
+      "Potato healthy": 4616,
+      "Squash Powdery mildew": 124,
+      "Tomato Bacterial spot": 101,
+      "Tomato Early blight": 79,
+      "Tomato Late blight": 101,
+      "Tomato Leaf Mold": 85,
+      "Tomato Septoria leaf spot": 140,
+      "Tomato Spider mites": 2,
+      "Tomato mosaic virus": 44
+    },
+    "by_target_class_and_dataset": {
+      "Apple Apple scab": {
+        "PlantDoc": 83
+      },
+      "Corn Cercospora leaf spot": {
+        "PlantDoc": 64,
+        "Seasonal Corn Leaf Disease Dataset": 1497
+      },
+      "Corn Common rust": {
+        "Seasonal Corn Leaf Disease Dataset": 129
+      },
+      "Corn healthy": {
+        "Seasonal Corn Leaf Disease Dataset": 1038
+      },
+      "Grape Black rot": {
+        "PlantDoc": 56
+      },
+      "Potato Early blight": {
+        "PLDD-UP": 4803,
+        "PlantDoc": 109
+      },
+      "Potato Late blight": {
+        "PLDD-UP": 6116,
+        "PlantDoc": 97,
+        "Potato Leaf Disease Dataset": 20
+      },
+      "Potato healthy": {
+        "PLDD-UP": 4600,
+        "Potato Leaf Disease Dataset": 16
+      },
+      "Squash Powdery mildew": {
+        "PlantDoc": 124
+      },
+      "Tomato Bacterial spot": {
+        "PlantDoc": 101
+      },
+      "Tomato Early blight": {
+        "PlantDoc": 79
+      },
+      "Tomato Late blight": {
+        "PlantDoc": 101
+      },
+      "Tomato Leaf Mold": {
+        "PlantDoc": 85
+      },
+      "Tomato Septoria leaf spot": {
+        "PlantDoc": 140
+      },
+      "Tomato Spider mites": {
+        "PlantDoc": 2
+      },
+      "Tomato mosaic virus": {
+        "PlantDoc": 44
       }
     }
   },
   "duplicates": {
-    "sha256_exact_group_count": 16,
-    "sha256_exact_duplicate_image_count": 24,
+    "sha256_exact_group_count": 835,
+    "sha256_exact_duplicate_image_count": 882,
     "sha256_cross_role_group_count": 11,
     "sha256_groups_touching_locked_test": 11,
+    "sha256_training_images_matching_locked_test": 11,
+    "sha256_label_conflict_group_count": 16,
+    "sha256_cross_training_source_group_count": 0,
     "perceptual_maximum_hamming_distance": 4,
-    "perceptual_candidate_pair_count": 67,
+    "perceptual_candidate_pair_count": 1445318,
     "perceptual_cross_role_pair_count": 4,
-    "perceptual_pairs_touching_locked_test": 5
+    "perceptual_pairs_touching_locked_test": 5,
+    "perceptual_reporting": {
+      "full_local_report": "training/datasets/local-audits/perceptual-duplicate-candidates-full.csv",
+      "full_local_report_sha256": "ab800ce548e6bb5bad9a2fd2d79b96b2d775dce97846284c7667a38f96a85b32",
+      "full_candidate_pair_count": 1445318,
+      "aggregate_group_count": 93,
+      "tracked_review_row_count": 960,
+      "tracked_review_policy": "All locked-test and cross-dataset pairs, plus the first 25 deterministic rows per aggregate group."
+    }
   },
   "artifacts": {
     "plantdoc_manifest": "training/datasets/manifests/plantdoc-train.csv",
     "potato_manifest": "training/datasets/manifests/potato-banu-deb-originals.csv",
+    "seasonal_corn_manifest": "training/datasets/manifests/seasonal-corn-originals.csv",
+    "pldd_up_manifest": "training/datasets/manifests/pldd-up.csv",
+    "global_manifest": "training/datasets/manifests/dataset-v2-global-audit.csv",
     "exact_duplicates": "training/datasets/reports/exact-duplicate-groups.json",
-    "perceptual_candidates": "training/datasets/reports/perceptual-duplicate-candidates.csv"
+    "perceptual_candidates": "training/datasets/reports/perceptual-duplicate-candidates.csv",
+    "perceptual_summary": "training/datasets/reports/perceptual-duplicate-summary.csv"
   }
 }
