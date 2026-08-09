@@ -1,5 +1,7 @@
 # AgriDiagnose AI — Plant Disease Detection
 
+[![CI](https://github.com/ihebjdey2/ai-plant-disease-detection/actions/workflows/ci.yml/badge.svg)](https://github.com/ihebjdey2/ai-plant-disease-detection/actions/workflows/ci.yml)
+
 Flask application for AI-assisted plant leaf analysis. It uses the included MobileNetV2-based TensorFlow model to provide decision-support predictions, a secure account area, scan history, and a REST endpoint for future mobile clients.
 
 > Predictions are not confirmed agricultural diagnoses. Validate results with local agronomy guidance before treatment decisions.
