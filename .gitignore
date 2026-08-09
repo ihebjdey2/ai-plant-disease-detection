@@ -40,6 +40,9 @@ static/uploads/
 Dataset/
 evaluation/dataset/
 evaluation/datasets/
+training/datasets/downloads/
+training/datasets/raw/
+training/datasets/local-audits/
 
 # Local evaluation outputs
 evaluation/results/*

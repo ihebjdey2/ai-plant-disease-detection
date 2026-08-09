@@ -132,8 +132,13 @@
       "source": "https://doi.org/10.17632/d5b3fzpw3g.1",
       "authors": ["Ayesha Banu", "Kaushik Deb"],
       "publication_year": 2026,
-      "approx_images": 804,
-      "generated_augmented_images": 2400,
+      "published_original_images": 804,
+      "published_augmented_total_images": 2400,
+      "observed_archive_images": 2351,
+      "observed_original_named_images": 84,
+      "observed_augmented_named_images": 2267,
+      "archive_sha256": "549c7f3343422fa2b77b6fb2c5009a52215aa00626b2646435ba19f4826f8192",
+      "integrity_note": "The official v1 archive contains 2,351 JPG files: 84 named orig_* and 2,267 named aug_*. This does not match the landing-page claim of 804 originals augmented to 2,400 images, so only the 84 verifiable orig_* files are candidates.",
       "classes": 6,
       "domain": "smartphone_field",
       "visual_provenance_category": "C",
@@ -148,14 +153,14 @@
       "suggested_role": "training_candidate_original_images_only",
       "priority": "A",
       "class_overlap": [
-        {"source_label": "Healthy", "target": "Potato healthy", "status": "EXACT_MATCH", "images": null},
-        {"source_label": "Fungal Late Blight", "target": "Potato Late blight", "status": "EXACT_MATCH", "images": null},
-        {"source_label": "Bacterial Soft Rot", "target": null, "status": "NOT_SUPPORTED"},
-        {"source_label": "Viral Leaf Roll", "target": null, "status": "NOT_SUPPORTED"},
-        {"source_label": "Viral PVX", "target": null, "status": "NOT_SUPPORTED"},
-        {"source_label": "Viral PVY", "target": null, "status": "NOT_SUPPORTED"}
+        {"source_label": "Healthy", "target": "Potato healthy", "status": "EXACT_MATCH", "observed_original_images": 16},
+        {"source_label": "Fungal Late Blight", "target": "Potato Late blight", "status": "EXACT_MATCH", "observed_original_images": 20},
+        {"source_label": "Bacterial Soft Rot", "target": null, "status": "NOT_SUPPORTED", "observed_original_images": 7},
+        {"source_label": "Viral Leaf Roll", "target": null, "status": "NOT_SUPPORTED", "observed_original_images": 33},
+        {"source_label": "Viral PVX", "target": null, "status": "NOT_SUPPORTED", "observed_original_images": 6},
+        {"source_label": "Viral PVY", "target": null, "status": "NOT_SUPPORTED", "observed_original_images": 2}
       ],
-      "exclusions": ["All generated augmented copies"]
+      "exclusions": ["All 2,267 observed aug_* files", "All four unsupported disease classes"]
     },
     {
       "id": "plant_pathology_2020_fgvc7",

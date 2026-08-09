@@ -1,0 +1,429 @@
+[
+  {
+    "sha256": "07b9b0a3395d6643e0033f5327c188305479c20a67b9e0081efec85139d63306",
+    "member_count": 2,
+    "roles": [
+      "locked_test",
+      "training_candidate"
+    ],
+    "cross_role": true,
+    "touches_locked_test": true,
+    "members": [
+      {
+        "dataset": "PlantDoc",
+        "role": "training_candidate",
+        "source_label": "Blueberry leaf",
+        "source_path": "train/Blueberry leaf/blueberry-leaves-normal-above-and-iron-deficient-below-bgahf8.jpg"
+      },
+      {
+        "dataset": "PlantDoc",
+        "role": "locked_test",
+        "source_label": "Blueberry leaf",
+        "source_path": "test/Blueberry leaf/blueberry-leaves-normal-above-and-iron-deficient-below-bgahf8.jpg"
+      }
+    ]
+  },
+  {
+    "sha256": "2fed258c8002dbd1bde479892593806f6afeaa1d222c5e93e8fc306f45447d5c",
+    "member_count": 4,
+    "roles": [
+      "training_candidate"
+    ],
+    "cross_role": false,
+    "touches_locked_test": false,
+    "members": [
+      {
+        "dataset": "Potato Leaf Disease Dataset",
+        "role": "training_candidate",
+        "source_label": "Healthy",
+        "source_path": "Potato Leaf Disease Dataset/Healthy/orig_9.jpg"
+      },
+      {
+        "dataset": "Potato Leaf Disease Dataset",
+        "role": "training_candidate",
+        "source_label": "Healthy",
+        "source_path": "Potato Leaf Disease Dataset/Healthy/orig_7.jpg"
+      },
+      {
+        "dataset": "Potato Leaf Disease Dataset",
+        "role": "training_candidate",
+        "source_label": "Healthy",
+        "source_path": "Potato Leaf Disease Dataset/Healthy/orig_8.jpg"
+      },
+      {
+        "dataset": "Potato Leaf Disease Dataset",
+        "role": "training_candidate",
+        "source_label": "Healthy",
+        "source_path": "Potato Leaf Disease Dataset/Healthy/orig_1.jpg"
+      }
+    ]
+  },
+  {
+    "sha256": "3c52144e19e95cc3d4170407eaf729d0981b934615eaa183f7f5aa29d8ef265a",
+    "member_count": 2,
+    "roles": [
+      "locked_test",
+      "training_candidate"
+    ],
+    "cross_role": true,
+    "touches_locked_test": true,
+    "members": [
+      {
+        "dataset": "PlantDoc",
+        "role": "training_candidate",
+        "source_label": "Tomato leaf yellow virus",
+        "source_path": "train/Tomato leaf yellow virus/tylcv-seminar-1-638.jpg"
+      },
+      {
+        "dataset": "PlantDoc",
+        "role": "locked_test",
+        "source_label": "Tomato leaf yellow virus",
+        "source_path": "test/Tomato leaf yellow virus/tylcv-seminar-1-638.jpg"
+      }
+    ]
+  },
+  {
+    "sha256": "5432c89137b654f7d34f19071485a178bf4c3dd06f20a44e70ab8778d55c588d",
+    "member_count": 4,
+    "roles": [
+      "training_candidate"
+    ],
+    "cross_role": false,
+    "touches_locked_test": false,
+    "members": [
+      {
+        "dataset": "Potato Leaf Disease Dataset",
+        "role": "training_candidate",
+        "source_label": "Healthy",
+        "source_path": "Potato Leaf Disease Dataset/Healthy/orig_13.jpg"
+      },
+      {
+        "dataset": "Potato Leaf Disease Dataset",
+        "role": "training_candidate",
+        "source_label": "Healthy",
+        "source_path": "Potato Leaf Disease Dataset/Healthy/orig_6.jpg"
+      },
+      {
+        "dataset": "Potato Leaf Disease Dataset",
+        "role": "training_candidate",
+        "source_label": "Healthy",
+        "source_path": "Potato Leaf Disease Dataset/Healthy/orig_5.jpg"
+      },
+      {
+        "dataset": "Potato Leaf Disease Dataset",
+        "role": "training_candidate",
+        "source_label": "Healthy",
+        "source_path": "Potato Leaf Disease Dataset/Healthy/orig_12.jpg"
+      }
+    ]
+  },
+  {
+    "sha256": "64c0f7b5701e815769bad881c0834ffb3b58018233fc3af42c3a1b7968f86973",
+    "member_count": 2,
+    "roles": [
+      "locked_test",
+      "training_candidate"
+    ],
+    "cross_role": true,
+    "touches_locked_test": true,
+    "members": [
+      {
+        "dataset": "PlantDoc",
+        "role": "training_candidate",
+        "source_label": "Potato leaf late blight",
+        "source_path": "train/Potato leaf late blight/backus-056-potato-blight.jpg"
+      },
+      {
+        "dataset": "PlantDoc",
+        "role": "locked_test",
+        "source_label": "Potato leaf early blight",
+        "source_path": "test/Potato leaf early blight/backus-056-potato-blight.jpg"
+      }
+    ]
+  },
+  {
+    "sha256": "6e777d1b6829140e66573f918c0f1681ca4cd2979859c37435c84977153ec223",
+    "member_count": 2,
+    "roles": [
+      "locked_test",
+      "training_candidate"
+    ],
+    "cross_role": true,
+    "touches_locked_test": true,
+    "members": [
+      {
+        "dataset": "PlantDoc",
+        "role": "training_candidate",
+        "source_label": "Corn Gray leaf spot",
+        "source_path": "train/Corn Gray leaf spot/2015070295153021.jpg"
+      },
+      {
+        "dataset": "PlantDoc",
+        "role": "locked_test",
+        "source_label": "Corn leaf blight",
+        "source_path": "test/Corn leaf blight/2015070295153021.jpg"
+      }
+    ]
+  },
+  {
+    "sha256": "9120578a76fd8539da220def6e0609ebb2435decc7a9c34b949e46e86e794c8d",
+    "member_count": 2,
+    "roles": [
+      "locked_test",
+      "training_candidate"
+    ],
+    "cross_role": true,
+    "touches_locked_test": true,
+    "members": [
+      {
+        "dataset": "PlantDoc",
+        "role": "training_candidate",
+        "source_label": "Corn Gray leaf spot",
+        "source_path": "train/Corn Gray leaf spot/corn-gray-leaf-spot-f4.jpg"
+      },
+      {
+        "dataset": "PlantDoc",
+        "role": "locked_test",
+        "source_label": "Corn leaf blight",
+        "source_path": "test/Corn leaf blight/corn-gray-leaf-spot-f4.jpg"
+      }
+    ]
+  },
+  {
+    "sha256": "93c989d8551209bf34d4002ee9fae48ddbf6ab66fc3c27466c0473bcc7c0a2b7",
+    "member_count": 2,
+    "roles": [
+      "locked_test",
+      "training_candidate"
+    ],
+    "cross_role": true,
+    "touches_locked_test": true,
+    "members": [
+      {
+        "dataset": "PlantDoc",
+        "role": "training_candidate",
+        "source_label": "Tomato Septoria leaf spot",
+        "source_path": "train/Tomato Septoria leaf spot/early-blight-septoria-ls-fig-3.jpg"
+      },
+      {
+        "dataset": "PlantDoc",
+        "role": "locked_test",
+        "source_label": "Tomato Septoria leaf spot",
+        "source_path": "test/Tomato Septoria leaf spot/early-blight-septoria-ls-fig-3.jpg"
+      }
+    ]
+  },
+  {
+    "sha256": "9dd93b4217495fbb725cfdded86d3dc5f98955c9616fff5323be1a00df17be8b",
+    "member_count": 2,
+    "roles": [
+      "locked_test",
+      "training_candidate"
+    ],
+    "cross_role": true,
+    "touches_locked_test": true,
+    "members": [
+      {
+        "dataset": "PlantDoc",
+        "role": "training_candidate",
+        "source_label": "Potato leaf early blight",
+        "source_path": "train/Potato leaf early blight/irish-blight-symptoms-on-potato-leaves-atmf8b.jpg"
+      },
+      {
+        "dataset": "PlantDoc",
+        "role": "locked_test",
+        "source_label": "Potato leaf late blight",
+        "source_path": "test/Potato leaf late blight/irish-blight-symptoms-on-potato-leaves-atmf8b.jpg"
+      }
+    ]
+  },
+  {
+    "sha256": "a981ee59e5e1dcafd0d225f74369a05969200352c17743318c31987083ab6f4c",
+    "member_count": 2,
+    "roles": [
+      "locked_test",
+      "training_candidate"
+    ],
+    "cross_role": true,
+    "touches_locked_test": true,
+    "members": [
+      {
+        "dataset": "PlantDoc",
+        "role": "training_candidate",
+        "source_label": "Potato leaf early blight",
+        "source_path": "train/Potato leaf early blight/5816740026_d42ef24413_Phytophthora-Infestans.jpg"
+      },
+      {
+        "dataset": "PlantDoc",
+        "role": "locked_test",
+        "source_label": "Potato leaf late blight",
+        "source_path": "test/Potato leaf late blight/5816740026_d42ef24413_Phytophthora-Infestans.jpg"
+      }
+    ]
+  },
+  {
+    "sha256": "b275bbad5e39cf87852625c87080cd71ebe7b550bc15f18dc7caac210f87e447",
+    "member_count": 4,
+    "roles": [
+      "training_candidate"
+    ],
+    "cross_role": false,
+    "touches_locked_test": false,
+    "members": [
+      {
+        "dataset": "Potato Leaf Disease Dataset",
+        "role": "training_candidate",
+        "source_label": "Healthy",
+        "source_path": "Potato Leaf Disease Dataset/Healthy/orig_3.jpg"
+      },
+      {
+        "dataset": "Potato Leaf Disease Dataset",
+        "role": "training_candidate",
+        "source_label": "Healthy",
+        "source_path": "Potato Leaf Disease Dataset/Healthy/orig_4.jpg"
+      },
+      {
+        "dataset": "Potato Leaf Disease Dataset",
+        "role": "training_candidate",
+        "source_label": "Healthy",
+        "source_path": "Potato Leaf Disease Dataset/Healthy/orig_2.jpg"
+      },
+      {
+        "dataset": "Potato Leaf Disease Dataset",
+        "role": "training_candidate",
+        "source_label": "Healthy",
+        "source_path": "Potato Leaf Disease Dataset/Healthy/orig_0.jpg"
+      }
+    ]
+  },
+  {
+    "sha256": "b4b774205b5bd072efc2b0eed3e54f7dd9211ef52532e70e10f243dc1573bd80",
+    "member_count": 4,
+    "roles": [
+      "training_candidate"
+    ],
+    "cross_role": false,
+    "touches_locked_test": false,
+    "members": [
+      {
+        "dataset": "Potato Leaf Disease Dataset",
+        "role": "training_candidate",
+        "source_label": "Healthy",
+        "source_path": "Potato Leaf Disease Dataset/Healthy/orig_10.jpg"
+      },
+      {
+        "dataset": "Potato Leaf Disease Dataset",
+        "role": "training_candidate",
+        "source_label": "Healthy",
+        "source_path": "Potato Leaf Disease Dataset/Healthy/orig_14.jpg"
+      },
+      {
+        "dataset": "Potato Leaf Disease Dataset",
+        "role": "training_candidate",
+        "source_label": "Healthy",
+        "source_path": "Potato Leaf Disease Dataset/Healthy/orig_11.jpg"
+      },
+      {
+        "dataset": "Potato Leaf Disease Dataset",
+        "role": "training_candidate",
+        "source_label": "Healthy",
+        "source_path": "Potato Leaf Disease Dataset/Healthy/orig_15.jpg"
+      }
+    ]
+  },
+  {
+    "sha256": "c53ad8d40c38debfbc0b79a87d0f3649c20b933a65f5b78a6931f59d06aad498",
+    "member_count": 2,
+    "roles": [
+      "locked_test",
+      "training_candidate"
+    ],
+    "cross_role": true,
+    "touches_locked_test": true,
+    "members": [
+      {
+        "dataset": "PlantDoc",
+        "role": "training_candidate",
+        "source_label": "Potato leaf early blight",
+        "source_path": "train/Potato leaf early blight/1421_0.jpeg?itok=FMtmgePj.jpg"
+      },
+      {
+        "dataset": "PlantDoc",
+        "role": "locked_test",
+        "source_label": "Potato leaf late blight",
+        "source_path": "test/Potato leaf late blight/1421_0.jpeg?itok=FMtmgePj.jpg"
+      }
+    ]
+  },
+  {
+    "sha256": "e23a29c94b58aac28e92f57f95eb6f53e99c874323cb2b90ebd327085721574e",
+    "member_count": 2,
+    "roles": [
+      "locked_test",
+      "training_candidate"
+    ],
+    "cross_role": true,
+    "touches_locked_test": true,
+    "members": [
+      {
+        "dataset": "PlantDoc",
+        "role": "training_candidate",
+        "source_label": "Tomato Septoria leaf spot",
+        "source_path": "train/Tomato Septoria leaf spot/tomato_V8.jpg"
+      },
+      {
+        "dataset": "PlantDoc",
+        "role": "locked_test",
+        "source_label": "Tomato leaf bacterial spot",
+        "source_path": "test/Tomato leaf bacterial spot/tomato_V8.jpg"
+      }
+    ]
+  },
+  {
+    "sha256": "e5f14a70fc7a687a5846749d5499872c7c3320e81aea1358e481f7100b7ba242",
+    "member_count": 2,
+    "roles": [
+      "training_candidate"
+    ],
+    "cross_role": false,
+    "touches_locked_test": false,
+    "members": [
+      {
+        "dataset": "PlantDoc",
+        "role": "training_candidate",
+        "source_label": "Potato leaf early blight",
+        "source_path": "train/Potato leaf early blight/18028_1.jpg"
+      },
+      {
+        "dataset": "PlantDoc",
+        "role": "training_candidate",
+        "source_label": "Potato leaf late blight",
+        "source_path": "train/Potato leaf late blight/24064_1.jpg"
+      }
+    ]
+  },
+  {
+    "sha256": "ee3838e2249e671b7b4510b0d3831f30882e2bcbf20c9c8c42ee8f4e1b95fcce",
+    "member_count": 2,
+    "roles": [
+      "locked_test",
+      "training_candidate"
+    ],
+    "cross_role": true,
+    "touches_locked_test": true,
+    "members": [
+      {
+        "dataset": "PlantDoc",
+        "role": "training_candidate",
+        "source_label": "Corn leaf blight",
+        "source_path": "train/Corn leaf blight/IMG_42231.jpg"
+      },
+      {
+        "dataset": "PlantDoc",
+        "role": "locked_test",
+        "source_label": "Corn Gray leaf spot",
+        "source_path": "test/Corn Gray leaf spot/IMG_42231.jpg"
+      }
+    ]
+  }
+]

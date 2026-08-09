@@ -1,0 +1,184 @@
+{
+  "audit_name": "Dataset V2 Step 5B acquisition audit",
+  "generated_at": "2026-08-09T18:55:10.092093+00:00",
+  "scope": {
+    "training_candidates": [
+      "PlantDoc TRAIN",
+      "Potato originals"
+    ],
+    "locked_benchmark": "PlantDoc TEST",
+    "training_performed": false,
+    "split_created": false,
+    "images_removed": false
+  },
+  "acquisition": {
+    "plantdoc": {
+      "dataset_id": "plantdoc_train",
+      "source": "https://github.com/pratikkayal/PlantDoc-Dataset",
+      "source_revision": "5467f6012d78d1c446145d5f582da6096f852ae8",
+      "source_image_count": 2342,
+      "materialized_image_count": 2342,
+      "corrupted": []
+    },
+    "potato": {
+      "dataset_id": "potato_banu_deb_originals",
+      "source": "https://doi.org/10.17632/d5b3fzpw3g.1",
+      "archive_sha256": "549c7f3343422fa2b77b6fb2c5009a52215aa00626b2646435ba19f4826f8192",
+      "archive_file_count": 2351,
+      "archive_class_counts": {
+        "Bacterial Soft Rot": 397,
+        "Fungal Late Blight": 392,
+        "Healthy": 392,
+        "Viral Leaf Roll": 394,
+        "Viral PVX": 387,
+        "Viral PVY": 389
+      },
+      "original_named_count": 84,
+      "original_class_counts": {
+        "Bacterial Soft Rot": 7,
+        "Fungal Late Blight": 20,
+        "Healthy": 16,
+        "Viral Leaf Roll": 33,
+        "Viral PVX": 6,
+        "Viral PVY": 2
+      },
+      "augmented_named_count": 2267,
+      "augmented_class_counts": {
+        "Bacterial Soft Rot": 390,
+        "Fungal Late Blight": 372,
+        "Healthy": 376,
+        "Viral Leaf Roll": 361,
+        "Viral PVX": 381,
+        "Viral PVY": 387
+      },
+      "other_named_count": 0,
+      "other_class_counts": {},
+      "materialized_image_count": 84,
+      "unsafe_entries": [],
+      "corrupted": []
+    }
+  },
+  "sources": {
+    "plantdoc_train": {
+      "valid_image_count": 2342,
+      "exact_match_image_count": 1085,
+      "excluded_image_count": 1257,
+      "class_counts": {
+        "Apple Scab Leaf": 83,
+        "Apple leaf": 82,
+        "Apple rust leaf": 79,
+        "Bell_pepper leaf": 53,
+        "Bell_pepper leaf spot": 62,
+        "Blueberry leaf": 106,
+        "Cherry leaf": 47,
+        "Corn Gray leaf spot": 64,
+        "Corn leaf blight": 180,
+        "Corn rust leaf": 106,
+        "Peach leaf": 103,
+        "Potato leaf early blight": 109,
+        "Potato leaf late blight": 97,
+        "Raspberry leaf": 112,
+        "Soyabean leaf": 57,
+        "Squash Powdery mildew leaf": 124,
+        "Strawberry leaf": 88,
+        "Tomato Early blight leaf": 79,
+        "Tomato Septoria leaf spot": 140,
+        "Tomato leaf": 55,
+        "Tomato leaf bacterial spot": 101,
+        "Tomato leaf late blight": 101,
+        "Tomato leaf mosaic virus": 44,
+        "Tomato leaf yellow virus": 70,
+        "Tomato mold leaf": 85,
+        "Tomato two spotted spider mites leaf": 2,
+        "grape leaf": 57,
+        "grape leaf black rot": 56
+      },
+      "mapping_status_counts": {
+        "AMBIGUOUS": 1257,
+        "MATCHED": 1085
+      },
+      "format_counts": {
+        "JPEG": 2335,
+        "MPO": 2,
+        "PNG": 5
+      }
+    },
+    "potato_originals": {
+      "valid_image_count": 84,
+      "exact_match_image_count": 36,
+      "excluded_image_count": 48,
+      "class_counts": {
+        "Bacterial Soft Rot": 7,
+        "Fungal Late Blight": 20,
+        "Healthy": 16,
+        "Viral Leaf Roll": 33,
+        "Viral PVX": 6,
+        "Viral PVY": 2
+      },
+      "mapping_status_counts": {
+        "MATCHED": 36,
+        "NOT_SUPPORTED": 48
+      },
+      "format_counts": {
+        "JPEG": 84
+      }
+    },
+    "plantdoc_test_locked": {
+      "valid_image_count": 236,
+      "exact_match_image_count": 99,
+      "excluded_image_count": 137,
+      "class_counts": {
+        "Apple Scab Leaf": 10,
+        "Apple leaf": 9,
+        "Apple rust leaf": 10,
+        "Bell_pepper leaf": 8,
+        "Bell_pepper leaf spot": 9,
+        "Blueberry leaf": 11,
+        "Cherry leaf": 10,
+        "Corn Gray leaf spot": 4,
+        "Corn leaf blight": 12,
+        "Corn rust leaf": 10,
+        "Peach leaf": 9,
+        "Potato leaf early blight": 8,
+        "Potato leaf late blight": 8,
+        "Raspberry leaf": 7,
+        "Soyabean leaf": 8,
+        "Squash Powdery mildew leaf": 6,
+        "Strawberry leaf": 8,
+        "Tomato Early blight leaf": 9,
+        "Tomato Septoria leaf spot": 11,
+        "Tomato leaf": 8,
+        "Tomato leaf bacterial spot": 9,
+        "Tomato leaf late blight": 10,
+        "Tomato leaf mosaic virus": 10,
+        "Tomato leaf yellow virus": 6,
+        "Tomato mold leaf": 6,
+        "grape leaf": 12,
+        "grape leaf black rot": 8
+      },
+      "mapping_status_counts": {
+        "AMBIGUOUS": 137,
+        "MATCHED": 99
+      },
+      "format_counts": {
+        "JPEG": 236
+      }
+    }
+  },
+  "duplicates": {
+    "sha256_exact_group_count": 16,
+    "sha256_exact_duplicate_image_count": 24,
+    "sha256_cross_role_group_count": 11,
+    "sha256_groups_touching_locked_test": 11,
+    "perceptual_maximum_hamming_distance": 4,
+    "perceptual_candidate_pair_count": 67,
+    "perceptual_cross_role_pair_count": 4,
+    "perceptual_pairs_touching_locked_test": 5
+  },
+  "artifacts": {
+    "plantdoc_manifest": "training/datasets/manifests/plantdoc-train.csv",
+    "potato_manifest": "training/datasets/manifests/potato-banu-deb-originals.csv",
+    "exact_duplicates": "training/datasets/reports/exact-duplicate-groups.json",
+    "perceptual_candidates": "training/datasets/reports/perceptual-duplicate-candidates.csv"
+  }
+}
