@@ -1,0 +1,213 @@
+{
+  "by_source": {
+    "PLDD-UP": {
+      "excluded": 259,
+      "included": 12342,
+      "review": 2918,
+      "semantic_candidates": 15519,
+      "unique_contents": 15265
+    },
+    "PlantDoc": {
+      "excluded": 10,
+      "included": 1034,
+      "review": 41,
+      "semantic_candidates": 1085,
+      "unique_contents": 1084
+    },
+    "Potato Leaf Disease Dataset": {
+      "excluded": 12,
+      "included": 24,
+      "review": 0,
+      "semantic_candidates": 36,
+      "unique_contents": 24
+    },
+    "Seasonal Corn Leaf Disease Dataset": {
+      "excluded": 606,
+      "included": 2046,
+      "review": 12,
+      "semantic_candidates": 2664,
+      "unique_contents": 2060
+    }
+  },
+  "by_target_class": {
+    "Apple Apple scab": {
+      "excluded": 0,
+      "included": 83,
+      "near_duplicate_group_count": 1,
+      "raw_candidates": 83,
+      "review": 0,
+      "source_count": 1
+    },
+    "Corn Cercospora leaf spot": {
+      "excluded": 606,
+      "included": 950,
+      "near_duplicate_group_count": 63,
+      "raw_candidates": 1561,
+      "review": 5,
+      "source_count": 2
+    },
+    "Corn Common rust": {
+      "excluded": 0,
+      "included": 129,
+      "near_duplicate_group_count": 2,
+      "raw_candidates": 129,
+      "review": 0,
+      "source_count": 1
+    },
+    "Corn healthy": {
+      "excluded": 2,
+      "included": 1029,
+      "near_duplicate_group_count": 433,
+      "raw_candidates": 1038,
+      "review": 7,
+      "source_count": 1
+    },
+    "Grape Black rot": {
+      "excluded": 0,
+      "included": 56,
+      "near_duplicate_group_count": 1,
+      "raw_candidates": 56,
+      "review": 0,
+      "source_count": 1
+    },
+    "Potato Early blight": {
+      "excluded": 64,
+      "included": 3694,
+      "near_duplicate_group_count": 319,
+      "raw_candidates": 4912,
+      "review": 1154,
+      "source_count": 2
+    },
+    "Potato Late blight": {
+      "excluded": 49,
+      "included": 5055,
+      "near_duplicate_group_count": 351,
+      "raw_candidates": 6233,
+      "review": 1129,
+      "source_count": 3
+    },
+    "Potato healthy": {
+      "excluded": 164,
+      "included": 3802,
+      "near_duplicate_group_count": 1196,
+      "raw_candidates": 4616,
+      "review": 650,
+      "source_count": 2
+    },
+    "Squash Powdery mildew": {
+      "excluded": 0,
+      "included": 124,
+      "near_duplicate_group_count": 2,
+      "raw_candidates": 124,
+      "review": 0,
+      "source_count": 1
+    },
+    "Tomato Bacterial spot": {
+      "excluded": 0,
+      "included": 98,
+      "near_duplicate_group_count": 5,
+      "raw_candidates": 101,
+      "review": 3,
+      "source_count": 1
+    },
+    "Tomato Early blight": {
+      "excluded": 0,
+      "included": 69,
+      "near_duplicate_group_count": 12,
+      "raw_candidates": 79,
+      "review": 10,
+      "source_count": 1
+    },
+    "Tomato Late blight": {
+      "excluded": 0,
+      "included": 93,
+      "near_duplicate_group_count": 11,
+      "raw_candidates": 101,
+      "review": 8,
+      "source_count": 1
+    },
+    "Tomato Leaf Mold": {
+      "excluded": 0,
+      "included": 85,
+      "near_duplicate_group_count": 1,
+      "raw_candidates": 85,
+      "review": 0,
+      "source_count": 1
+    },
+    "Tomato Septoria leaf spot": {
+      "excluded": 2,
+      "included": 133,
+      "near_duplicate_group_count": 11,
+      "raw_candidates": 140,
+      "review": 5,
+      "source_count": 1
+    },
+    "Tomato Spider mites": {
+      "excluded": 0,
+      "included": 2,
+      "near_duplicate_group_count": 0,
+      "raw_candidates": 2,
+      "review": 0,
+      "source_count": 1
+    },
+    "Tomato mosaic virus": {
+      "excluded": 0,
+      "included": 44,
+      "near_duplicate_group_count": 1,
+      "raw_candidates": 44,
+      "review": 0,
+      "source_count": 1
+    }
+  },
+  "exact_duplicate_audit": {
+    "benchmark_groups": 11,
+    "benchmark_training_exclusions": 11,
+    "copies_beyond_canonical": 882,
+    "exact_copy_exclusions": 863,
+    "groups": 835,
+    "label_conflict_groups": 16,
+    "label_conflict_record_exclusions": 16
+  },
+  "exclusions_by_reason": {
+    "EXACT_BENCHMARK_LEAKAGE": 11,
+    "EXACT_DUPLICATE_COPY": 863,
+    "EXACT_LABEL_CONFLICT": 16,
+    "LOCKED_BENCHMARK": 236,
+    "UNRESOLVED_MAPPING": 1254,
+    "UNSUPPORTED_CLASS": 327
+  },
+  "full_master_decisions": {
+    "exclude": 2707,
+    "include": 15446,
+    "review": 2971
+  },
+  "invariants": {
+    "clean_manifest_contains_only_include": true,
+    "clean_manifest_has_unique_sha256": true,
+    "raw_data_modified": false,
+    "split_created": false,
+    "training_performed": false
+  },
+  "inventory_record_count": 21124,
+  "perceptual_audit": {
+    "benchmark_group_count": 4,
+    "benchmark_pair_count": 4,
+    "different_target_group_count": 75,
+    "different_target_pair_count": 883702,
+    "group_count": 2351,
+    "grouped_record_count": 8066,
+    "pair_count": 1445318,
+    "review_queue_rows": 79
+  },
+  "raw_semantic_candidate_count": 19304,
+  "reviews_by_reason": {
+    "PERCEPTUAL_BENCHMARK_MATCH": 4,
+    "PERCEPTUAL_LABEL_CONFLICT": 2967
+  },
+  "schema_version": 1,
+  "semantic_candidate_decisions": {
+    "exclude": 887,
+    "include": 15446,
+    "review": 2971
+  }
+}

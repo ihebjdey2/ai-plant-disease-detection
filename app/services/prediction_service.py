@@ -9,13 +9,8 @@ from PIL import Image, UnidentifiedImageError
 from tensorflow.keras.models import load_model
 
 from config import Config
+from app.taxonomy import CLASS_NAMES
 
-# Recovered from the companion PlantVillage project in the local workspace.
-# Its 39-class `idx_to_classes` mapping matches this model's output count and the
-# alphabetical training-generator ordering. Index 4 is the non-leaf background class.
-CLASS_NAMES = [
- "Apple Apple scab","Apple Black rot","Apple Cedar apple rust","Apple healthy","Background without leaves","Blueberry healthy","Cherry Powdery mildew","Cherry healthy","Corn Cercospora leaf spot","Corn Common rust","Corn Northern Leaf Blight","Corn healthy","Grape Black rot","Grape Esca","Grape Leaf blight","Grape healthy","Orange Huanglongbing","Peach Bacterial spot","Peach healthy","Bell pepper Bacterial spot","Bell pepper healthy","Potato Early blight","Potato Late blight","Potato healthy","Raspberry healthy","Soybean healthy","Squash Powdery mildew","Strawberry Leaf scorch","Strawberry healthy","Tomato Bacterial spot","Tomato Early blight","Tomato Late blight","Tomato Leaf Mold","Tomato Septoria leaf spot","Tomato Spider mites","Tomato Target Spot","Tomato Yellow Leaf Curl Virus","Tomato mosaic virus","Tomato healthy"
-]
 logger = logging.getLogger(__name__)
 
 class PredictionError(Exception): pass
