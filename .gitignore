@@ -38,6 +38,12 @@ static/uploads/
 
 # Dataset
 Dataset/
+evaluation/dataset/
+evaluation/datasets/
+
+# Local evaluation outputs
+evaluation/results/*
+!evaluation/results/.gitkeep
 
 # Temporary Files
 *.tmp
