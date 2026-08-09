@@ -1,0 +1,98 @@
+{
+  "dataset": "Seasonal Corn Leaf Disease Dataset: A Multi-Year Collection for Robust Analysis",
+  "canonical_source": "Mendeley Data",
+  "doi": "10.17632/vy629dngm8.1",
+  "url": "https://doi.org/10.17632/vy629dngm8.1",
+  "version": 1,
+  "authors": [
+    "MD Hasan Ahmad"
+  ],
+  "publisher": "Mendeley Data",
+  "license": "CC BY 4.0",
+  "attribution_required": true,
+  "retrieval_date": "2026-08-09",
+  "reported": {
+    "original_images": 2943,
+    "augmented_images": 7500,
+    "classes": {
+      "Bacterial Leaf Streak": 190,
+      "Common_rust": 129,
+      "Gray_leaf_spot": 1497,
+      "Healthy": 1038,
+      "Maize Chlorotic Mottle Virus": 89
+    },
+    "capture": "Several corn farms in Gurudaspur, Natore, Rajshahi, Bangladesh; high-resolution field images with environmental metadata."
+  },
+  "verified": {
+    "dataset_id": "seasonal_corn_originals",
+    "source": "https://doi.org/10.17632/vy629dngm8.1",
+    "source_version": "1",
+    "archive_sha256": {
+      "seasonal-corn-v1.zip": "575628df92e69c169fa82c8506253d7d5886a8931605bf765f0e2577022dc479"
+    },
+    "archives": [
+      {
+        "filename": "seasonal-corn-v1.zip",
+        "file_id": "e086f779-470a-4c7c-ba81-97734e9f8dd6",
+        "sha256": "575628df92e69c169fa82c8506253d7d5886a8931605bf765f0e2577022dc479",
+        "compressed_bytes": 4599036050,
+        "uncompressed_bytes": 4813231041,
+        "file_count": 2943
+      }
+    ],
+    "source_file_count": 2943,
+    "supported_image_candidate_count": 2943,
+    "valid_image_count": 2943,
+    "materialized_image_count": 2943,
+    "original_image_count": 2943,
+    "augmented_image_count": 0,
+    "class_counts": {
+      "Bacterial Leaf Streak": 190,
+      "Common_rust": 129,
+      "Gray_leaf_spot": 1497,
+      "Healthy": 1038,
+      "Maize Chlorotic Mottle Virus": 89
+    },
+    "unsupported_files": [],
+    "corrupted": [],
+    "image_audit": {
+      "valid_image_count": 2943,
+      "exact_match_image_count": 2664,
+      "excluded_image_count": 279,
+      "class_counts": {
+        "Bacterial Leaf Streak": 190,
+        "Common_rust": 129,
+        "Gray_leaf_spot": 1497,
+        "Healthy": 1038,
+        "Maize Chlorotic Mottle Virus": 89
+      },
+      "mapping_status_counts": {
+        "MATCHED": 2664,
+        "NOT_SUPPORTED": 279
+      },
+      "format_counts": {
+        "JPEG": 2225,
+        "PNG": 718
+      },
+      "mode_counts": {
+        "RGB": 2943
+      },
+      "minimum_dimensions": {
+        "width": 200,
+        "height": 200
+      },
+      "maximum_dimensions": {
+        "width": 4160,
+        "height": 4160
+      },
+      "candidate_status_counts": {
+        "APPROVED_CANDIDATE": 464,
+        "EXCLUDE_FROM_TRAINING": 4,
+        "NEEDS_MANUAL_REVIEW": 2196,
+        "NOT_SUPPORTED": 279
+      }
+    }
+  },
+  "original_augmented_distinction": "The official V1 archive contains exactly the 2,943 reported originals and class counts; no augmented files or augmentation directory are present in the archive.",
+  "training_eligibility": "Only MATCHED original images are candidates; unsupported classes are excluded and duplicate findings still apply."
+}
