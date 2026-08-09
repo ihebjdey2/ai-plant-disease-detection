@@ -87,6 +87,41 @@ Full evaluation requires all 39 classes. `--allow-subset` exists only for an
 explicitly labeled partial analysis; missing classes remain visible and the
 39-class confusion matrix is preserved.
 
+For a subset, macro and weighted metrics are calculated over the classes that
+actually have ground-truth support. The raw confusion matrix still preserves
+all 39 deployed outputs, including predictions outside the evaluated subset.
+A missing background class is reported as not evaluated rather than as an
+artificial all-zero result.
+
+## External PlantDoc subset benchmark
+
+The conservative PlantDoc mapping is stored in
+`evaluation/mappings/plantdoc.json`. It documents a review decision and reason
+for every official PlantDoc TEST label. Generic or broader labels are excluded
+instead of being silently treated as deployed healthy or disease classes.
+
+PlantDoc includes file names that are invalid on Windows. The preparation
+adapter can read the official Git tree directly, so the source repository is
+not renamed or modified:
+
+```powershell
+python scripts/prepare_plantdoc_evaluation.py `
+  --source evaluation/datasets/plantdoc `
+  --output evaluation/datasets/plantdoc_prepared `
+  --report evaluation/results/plantdoc/preparation.json `
+  --deduplicate-exact
+
+python scripts/evaluate_model.py `
+  --dataset evaluation/datasets/plantdoc_prepared `
+  --allow-subset `
+  --output-dir evaluation/results/plantdoc
+```
+
+The preparation report records the original class counts, image integrity,
+mapping exclusions, SHA-256 exact duplicates, perceptual near-duplicates, and
+any explicit exact-deduplication. PlantDoc data, prepared images, and raw
+benchmark results remain ignored by Git.
+
 ## Preprocessing and audit
 
 Evaluation matches deployed inference exactly:

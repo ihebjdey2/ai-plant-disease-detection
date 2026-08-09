@@ -286,6 +286,7 @@ def calculate_metrics(
     )
 
     labels = np.arange(len(CLASS_NAMES))
+    evaluated_labels = np.unique(y_true)
     y_pred = np.argmax(scores, axis=1)
     confidences = np.max(scores, axis=1) * 100.0
     accuracy = float(accuracy_score(y_true, y_pred))
@@ -293,16 +294,16 @@ def calculate_metrics(
         y_true, y_pred, labels=labels, zero_division=0
     )
     macro = precision_recall_fscore_support(
-        y_true, y_pred, labels=labels, average="macro", zero_division=0
+        y_true, y_pred, labels=evaluated_labels, average="macro", zero_division=0
     )
     weighted = precision_recall_fscore_support(
-        y_true, y_pred, labels=labels, average="weighted", zero_division=0
+        y_true, y_pred, labels=evaluated_labels, average="weighted", zero_division=0
     )
     report = classification_report(
         y_true,
         y_pred,
-        labels=labels,
-        target_names=CLASS_NAMES,
+        labels=evaluated_labels,
+        target_names=[CLASS_NAMES[index] for index in evaluated_labels],
         output_dict=True,
         zero_division=0,
     )
@@ -317,6 +318,9 @@ def calculate_metrics(
         for index, class_name in enumerate(CLASS_NAMES)
     }
     confident_mask = confidences >= confidence_threshold
+    background_prediction_mask = y_pred == BACKGROUND_CLASS_INDEX
+    below_threshold_mask = ~confident_mask
+    application_uncertain_mask = below_threshold_mask & ~background_prediction_mask
     confident_accuracy = (
         float(accuracy_score(y_true[confident_mask], y_pred[confident_mask]))
         if confident_mask.any()
@@ -328,11 +332,24 @@ def calculate_metrics(
         "median_top1_percent": float(np.median(confidences)),
         "samples_at_or_above_threshold": int(confident_mask.sum()),
         "accuracy_at_or_above_threshold": confident_accuracy,
-        "uncertain_prediction_count": int((~confident_mask).sum()),
-        "below_threshold_percent": float(np.mean(~confident_mask) * 100.0),
+        "below_threshold_count": int(below_threshold_mask.sum()),
+        "below_threshold_percent": float(np.mean(below_threshold_mask) * 100.0),
+        "uncertain_prediction_count": int(application_uncertain_mask.sum()),
+        "uncertain_prediction_percent": float(
+            np.mean(application_uncertain_mask) * 100.0
+        ),
+        "no_leaf_prediction_count": int(background_prediction_mask.sum()),
+        "no_leaf_below_threshold_count": int(
+            (background_prediction_mask & below_threshold_mask).sum()
+        ),
     }
     return {
         "accuracy": accuracy,
+        "metric_scope": {
+            "type": "evaluated_ground_truth_classes",
+            "class_count": int(len(evaluated_labels)),
+            "classes": [CLASS_NAMES[index] for index in evaluated_labels],
+        },
         "macro": {
             "precision": float(macro[0]),
             "recall": float(macro[1]),
@@ -346,7 +363,12 @@ def calculate_metrics(
         "per_class": per_class,
         "classification_report": report,
         "confidence_analysis": confidence,
-        "background_class": per_class[CLASS_NAMES[BACKGROUND_CLASS_INDEX]],
+        "background_class_evaluated": bool(BACKGROUND_CLASS_INDEX in evaluated_labels),
+        "background_class": (
+            per_class[CLASS_NAMES[BACKGROUND_CLASS_INDEX]]
+            if BACKGROUND_CLASS_INDEX in evaluated_labels
+            else None
+        ),
     }, matrix
 
 

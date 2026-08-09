@@ -99,9 +99,43 @@ def test_metrics_keep_confidence_analysis_separate_from_model_classes():
     metrics, matrix = calculate_metrics(y_true, scores, confidence_threshold=60.0)
 
     assert metrics["accuracy"] == 1.0
+    assert metrics["macro"]["f1"] == 1.0
+    assert metrics["metric_scope"]["class_count"] == 3
     assert len(metrics["per_class"]) == 39
     assert metrics["confidence_analysis"]["uncertain_prediction_count"] == 1
     assert metrics["confidence_analysis"]["accuracy_at_or_above_threshold"] == 1.0
     assert metrics["background_class"]["precision"] == 1.0
     assert metrics["background_class"]["recall"] == 1.0
     assert matrix.shape == (39, 39)
+
+
+def test_subset_metrics_do_not_fabricate_missing_background_results():
+    y_true = np.asarray([0, 0, 21], dtype=np.int64)
+    scores = np.zeros((3, 39), dtype=np.float32)
+    scores[0, 0] = 0.9
+    scores[1, 0] = 0.8
+    scores[2, 21] = 0.7
+
+    metrics, _ = calculate_metrics(y_true, scores, confidence_threshold=60.0)
+
+    assert metrics["macro"]["f1"] == 1.0
+    assert metrics["metric_scope"]["classes"] == [
+        "Apple Apple scab",
+        "Potato Early blight",
+    ]
+    assert metrics["background_class_evaluated"] is False
+    assert metrics["background_class"] is None
+
+
+def test_low_confidence_background_prediction_is_no_leaf_not_uncertain():
+    y_true = np.asarray([0], dtype=np.int64)
+    scores = np.zeros((1, 39), dtype=np.float32)
+    scores[0, 4] = 0.5
+
+    metrics, _ = calculate_metrics(y_true, scores, confidence_threshold=60.0)
+
+    confidence = metrics["confidence_analysis"]
+    assert confidence["below_threshold_count"] == 1
+    assert confidence["no_leaf_prediction_count"] == 1
+    assert confidence["no_leaf_below_threshold_count"] == 1
+    assert confidence["uncertain_prediction_count"] == 0
