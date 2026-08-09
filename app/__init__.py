@@ -24,11 +24,12 @@ def create_app(config_object: type[Config] = Config) -> Flask:
         ProductionConfig.validate()
 
     Path(app.config["UPLOAD_FOLDER"]).mkdir(parents=True, exist_ok=True)
-    _configure_logging(app, project_root / "instance")
+    if not app.config["TESTING"]:
+        _configure_logging(app, project_root / "instance")
 
     if not app.config.get("SECRET_KEY"):
         raise RuntimeError("SECRET_KEY must be configured.")
-    if not __import__("os").getenv("SECRET_KEY"):
+    if not app.config["TESTING"] and not __import__("os").getenv("SECRET_KEY"):
         app.logger.warning(
             "SECRET_KEY is not configured; a temporary development key was generated."
         )

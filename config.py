@@ -43,3 +43,15 @@ class ProductionConfig(Config):
         missing = [name for name in ("SECRET_KEY", "DATABASE_URL") if not os.getenv(name)]
         if missing:
             raise RuntimeError(f"Missing required production environment variables: {', '.join(missing)}")
+
+
+class TestingConfig(Config):
+    """Safe defaults for automated tests; fixtures may override temporary paths."""
+
+    ENV = "testing"
+    TESTING = True
+    DEBUG = False
+    SECRET_KEY = "agridiagnose-test-secret"
+    SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"
+    WTF_CSRF_ENABLED = False
+    WEATHER_API_KEY = None

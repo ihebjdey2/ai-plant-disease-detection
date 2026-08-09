@@ -31,6 +31,8 @@ class ModelMappingTests(unittest.TestCase):
         self.assertEqual("uncertain", determine_status(20, "Bell pepper healthy", 38, 60))
         self.assertEqual("no_leaf", determine_status(4, "Background without leaves", 20, 60))
         self.assertEqual("no_leaf", determine_status(4, "Background without leaves", 98, 60))
+        self.assertEqual("healthy", determine_status(20, "Bell pepper healthy", 60, 60))
+        self.assertEqual("diseased", determine_status(31, "Tomato Late blight", 60, 60))
 
 
 if __name__ == "__main__":
