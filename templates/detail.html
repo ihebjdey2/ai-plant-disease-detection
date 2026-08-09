@@ -1,1 +1,34 @@
-<!doctype html><html><head><meta charset="utf-8"><title>Scan detail · AgriDiagnose AI</title><link rel="stylesheet" href="{{url_for('static',filename='css/style.css')}}"></head><body><nav class="navbar"><a href="{{url_for('dashboard.index')}}">AgriDiagnose AI</a><a href="{{url_for('history.index')}}">Back to history</a></nav><main class="container"><article class="detail-card"><img src="{{url_for('static',filename='uploads/'+item.image_path)}}"><div><p class="eyebrow">AGRI DIAGNOSE AI · SCAN RESULT</p><h1>{{item.disease}}</h1><p class="confidence">{{item.confidence}}% confidence</p><p>Analyzed {{item.created_at.strftime('%d %B %Y, %H:%M')}}</p><p class="notice">This AI result is decision support only. Confirm crop-care actions with local expertise.</p></div></article></main></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Scan detail · AgriDiagnose AI</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <nav class="navbar">
+    <a href="{{ url_for('dashboard.index') }}">AgriDiagnose AI</a>
+    <a href="{{ url_for('history.index') }}">Back to history</a>
+  </nav>
+  <main class="container">
+    <article class="detail-card">
+      <img src="{{ url_for('static', filename='uploads/' + item.image_path) }}" alt="Analyzed plant leaf">
+      <div>
+        <p class="eyebrow">AGRI DIAGNOSE AI · SCAN RESULT</p>
+        <span class="status-badge status-{{ item.status }}">{{ item.status|replace('_', ' ')|title }}</span>
+        <h1>{{ item.disease }}</h1>
+        <p class="confidence">{{ item.confidence }}% confidence</p>
+        <p>Analyzed {{ item.created_at.strftime('%d %B %Y, %H:%M') }}</p>
+        {% if item.status == 'no_leaf' %}
+          <p class="notice notice-warning">No leaf detected. Please upload a clear, well-lit image of a single leaf. No disease assessment or treatment recommendation was made.</p>
+        {% elif item.status == 'uncertain' %}
+          <p class="notice notice-warning">Prediction uncertain. Please upload a clearer leaf image before making crop-care decisions.</p>
+        {% else %}
+          <p class="notice">This AI result is decision support only. Confirm crop-care actions with local expertise.</p>
+        {% endif %}
+      </div>
+    </article>
+  </main>
+</body>
+</html>

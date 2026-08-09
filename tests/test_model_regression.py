@@ -9,7 +9,7 @@ import os
 import unittest
 from pathlib import Path
 
-from app.services.prediction_service import CLASS_NAMES
+from app.services.prediction_service import CLASS_NAMES, determine_status
 
 
 class ModelMappingTests(unittest.TestCase):
@@ -24,6 +24,13 @@ class ModelMappingTests(unittest.TestCase):
             self.skipTest("Set PLANT_TEST_IMAGES_DIR to validate the external test-image fixtures.")
         images = [path for path in Path(directory).iterdir() if path.suffix.lower() in {".jpg", ".jpeg", ".png"}]
         self.assertGreaterEqual(len(images), 39)
+
+    def test_prediction_status_precedence(self):
+        self.assertEqual("healthy", determine_status(20, "Bell pepper healthy", 92, 60))
+        self.assertEqual("diseased", determine_status(31, "Tomato Late blight", 95, 60))
+        self.assertEqual("uncertain", determine_status(20, "Bell pepper healthy", 38, 60))
+        self.assertEqual("no_leaf", determine_status(4, "Background without leaves", 20, 60))
+        self.assertEqual("no_leaf", determine_status(4, "Background without leaves", 98, 60))
 
 
 if __name__ == "__main__":

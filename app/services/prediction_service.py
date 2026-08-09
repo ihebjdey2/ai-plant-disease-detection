@@ -20,6 +20,25 @@ logger = logging.getLogger(__name__)
 
 class PredictionError(Exception): pass
 
+
+def determine_status(
+    class_index: int,
+    disease: str,
+    confidence: float,
+    threshold: float | None = None,
+) -> str:
+    """Classify a model result using one shared, explicit precedence order."""
+    confidence_threshold = (
+        Config.PREDICTION_CONFIDENCE_THRESHOLD if threshold is None else threshold
+    )
+    if class_index == 4:
+        return "no_leaf"
+    if confidence < confidence_threshold:
+        return "uncertain"
+    if "healthy" in disease.lower():
+        return "healthy"
+    return "diseased"
+
 @lru_cache(maxsize=1)
 def get_model():
     model = load_model(Config.MODEL_PATH, compile=False)
@@ -43,6 +62,9 @@ def predict(path: Path) -> dict:
     top = [{"class_index": int(i), "disease": CLASS_NAMES[i], "confidence": round(float(scores[i]) * 100, 2)} for i in top_indices]
     primary = top[0]
     primary["is_background"] = primary["class_index"] == 4
-    primary["uncertain"] = primary["confidence"] < Config.PREDICTION_CONFIDENCE_THRESHOLD or primary["is_background"]
+    primary["status"] = determine_status(
+        primary["class_index"], primary["disease"], primary["confidence"]
+    )
+    primary["uncertain"] = primary["status"] == "uncertain"
     if primary["is_background"]: logger.info("Background/no-leaf class predicted with confidence=%s", primary["confidence"])
     return {"prediction": primary, "top_predictions": top}

@@ -23,8 +23,8 @@ def get_disease_info(label: str, class_index: int | None = None) -> dict:
             "disease_name": "No leaf detected",
             "description": "The model detected a background or non-leaf image rather than a plant leaf.",
             "symptoms": [], "causes": [],
-            "treatment": ["Upload a clear, well-lit photo of a single plant leaf."],
-            "prevention": ["Keep the leaf centered and avoid busy backgrounds."],
+            "treatment": [],
+            "prevention": ["Upload a clear, well-lit photo of a single plant leaf.", "Keep the leaf centered and avoid busy backgrounds."],
             "disclaimer": "No disease assessment was made for this image.",
         }
     if class_index is not None and class_index in _metadata():
