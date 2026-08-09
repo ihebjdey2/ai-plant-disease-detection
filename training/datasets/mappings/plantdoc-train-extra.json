@@ -1,0 +1,14 @@
+{
+  "dataset": "PlantDoc",
+  "split": "train",
+  "base_mapping": "evaluation/mappings/plantdoc.json",
+  "source_revision": "5467f6012d78d1c446145d5f582da6096f852ae8",
+  "additional_classes": {
+    "Tomato two spotted spider mites leaf": {
+      "status": "MATCHED",
+      "target_class": "Tomato Spider mites",
+      "target_directory": "Tomato___Spider_mites",
+      "reason": "The crop and two-spotted spider-mite disease semantics match the deployed Tomato Spider mites class."
+    }
+  }
+}

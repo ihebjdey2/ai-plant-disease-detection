@@ -1,0 +1,37 @@
+{
+  "dataset": "Potato Leaf Disease Dataset",
+  "source": "https://doi.org/10.17632/d5b3fzpw3g.1",
+  "version": 1,
+  "classes": {
+    "Bacterial Soft Rot": {
+      "status": "NOT_SUPPORTED",
+      "target_class": null,
+      "reason": "The deployed taxonomy has no Potato Bacterial Soft Rot class."
+    },
+    "Fungal Late Blight": {
+      "status": "MATCHED",
+      "target_class": "Potato Late blight",
+      "reason": "The crop and fungal late-blight semantics match the deployed Potato Late blight class."
+    },
+    "Healthy": {
+      "status": "MATCHED",
+      "target_class": "Potato healthy",
+      "reason": "The source explicitly labels these potato leaves as healthy."
+    },
+    "Viral Leaf Roll": {
+      "status": "NOT_SUPPORTED",
+      "target_class": null,
+      "reason": "The deployed taxonomy has no Potato Leaf Roll Virus class."
+    },
+    "Viral PVX": {
+      "status": "NOT_SUPPORTED",
+      "target_class": null,
+      "reason": "The deployed taxonomy has no Potato Virus X class."
+    },
+    "Viral PVY": {
+      "status": "NOT_SUPPORTED",
+      "target_class": null,
+      "reason": "The deployed taxonomy has no Potato Virus Y class."
+    }
+  }
+}
