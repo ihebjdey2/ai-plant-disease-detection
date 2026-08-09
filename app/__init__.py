@@ -7,10 +7,8 @@ from logging.handlers import RotatingFileHandler
 from pathlib import Path
 
 from flask import Flask
-from sqlalchemy import inspect, text
-
 from config import Config
-from app.extensions import csrf, db, login_manager
+from app.extensions import csrf, db, login_manager, migrate
 
 
 def create_app(config_object: type[Config] = Config) -> Flask:
@@ -36,6 +34,7 @@ def create_app(config_object: type[Config] = Config) -> Flask:
         )
 
     db.init_app(app)
+    migrate.init_app(app, db)
     login_manager.init_app(app)
     csrf.init_app(app)
 
@@ -57,15 +56,6 @@ def create_app(config_object: type[Config] = Config) -> Flask:
     app.register_blueprint(history_bp)
     app.register_blueprint(api_bp)
 
-    with app.app_context():
-        db.create_all()
-        # Small, backward-compatible development migration. Production databases
-        # should use a proper migration tool before deployment.
-        if app.config["SQLALCHEMY_DATABASE_URI"].startswith("sqlite"):
-            columns = {column["name"] for column in inspect(db.engine).get_columns("prediction")}
-            if "top_predictions" not in columns:
-                db.session.execute(text("ALTER TABLE prediction ADD COLUMN top_predictions JSON"))
-                db.session.commit()
     @app.errorhandler(403)
     def forbidden(_error): return __import__("flask").render_template("error.html", code=403, message="You do not have access to this resource."), 403
     @app.errorhandler(404)
