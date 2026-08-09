@@ -1,0 +1,172 @@
+{
+  "benchmark_name": "External PlantDoc subset benchmark",
+  "source": {
+    "repository": "pratikkayal/PlantDoc-Dataset",
+    "url": "https://github.com/pratikkayal/PlantDoc-Dataset",
+    "split": "test"
+  },
+  "classes": {
+    "Apple Scab Leaf": {
+      "status": "MATCHED",
+      "target_class": "Apple Apple scab",
+      "target_directory": "Apple___Apple_scab",
+      "reason": "The crop and apple scab disease semantics match exactly."
+    },
+    "Apple leaf": {
+      "status": "AMBIGUOUS",
+      "target_class": null,
+      "target_directory": null,
+      "reason": "The generic label does not explicitly establish healthy status, so it cannot be mapped safely to Apple healthy."
+    },
+    "Apple rust leaf": {
+      "status": "AMBIGUOUS",
+      "target_class": null,
+      "target_directory": null,
+      "reason": "PlantDoc says apple rust, while the deployed class is specifically Cedar apple rust."
+    },
+    "Bell_pepper leaf": {
+      "status": "AMBIGUOUS",
+      "target_class": null,
+      "target_directory": null,
+      "reason": "The generic label does not explicitly establish healthy status, so it cannot be mapped safely to Bell pepper healthy."
+    },
+    "Bell_pepper leaf spot": {
+      "status": "AMBIGUOUS",
+      "target_class": null,
+      "target_directory": null,
+      "reason": "Generic leaf spot is not sufficiently specific to map to Bell pepper Bacterial spot."
+    },
+    "Blueberry leaf": {
+      "status": "AMBIGUOUS",
+      "target_class": null,
+      "target_directory": null,
+      "reason": "The generic label does not explicitly establish healthy status, so it cannot be mapped safely to Blueberry healthy."
+    },
+    "Cherry leaf": {
+      "status": "AMBIGUOUS",
+      "target_class": null,
+      "target_directory": null,
+      "reason": "The generic label does not explicitly establish healthy status, so it cannot be mapped safely to Cherry healthy."
+    },
+    "Corn Gray leaf spot": {
+      "status": "MATCHED",
+      "target_class": "Corn Cercospora leaf spot",
+      "target_directory": "Corn___Cercospora_leaf_spot",
+      "reason": "Gray leaf spot of corn is the same disease taxonomy represented by the deployed Cercospora leaf spot class."
+    },
+    "Corn leaf blight": {
+      "status": "AMBIGUOUS",
+      "target_class": null,
+      "target_directory": null,
+      "reason": "The PlantDoc label does not distinguish northern from other corn leaf blights."
+    },
+    "Corn rust leaf": {
+      "status": "AMBIGUOUS",
+      "target_class": null,
+      "target_directory": null,
+      "reason": "The PlantDoc label does not distinguish common rust from other corn rust diseases."
+    },
+    "Peach leaf": {
+      "status": "AMBIGUOUS",
+      "target_class": null,
+      "target_directory": null,
+      "reason": "The generic label does not explicitly establish healthy status, so it cannot be mapped safely to Peach healthy."
+    },
+    "Potato leaf early blight": {
+      "status": "MATCHED",
+      "target_class": "Potato Early blight",
+      "target_directory": "Potato___Early_blight",
+      "reason": "The crop and early blight disease semantics match exactly."
+    },
+    "Potato leaf late blight": {
+      "status": "MATCHED",
+      "target_class": "Potato Late blight",
+      "target_directory": "Potato___Late_blight",
+      "reason": "The crop and late blight disease semantics match exactly."
+    },
+    "Raspberry leaf": {
+      "status": "AMBIGUOUS",
+      "target_class": null,
+      "target_directory": null,
+      "reason": "The generic label does not explicitly establish healthy status, so it cannot be mapped safely to Raspberry healthy."
+    },
+    "Soyabean leaf": {
+      "status": "AMBIGUOUS",
+      "target_class": null,
+      "target_directory": null,
+      "reason": "Despite the spelling variant, the generic label does not explicitly establish healthy status for the deployed Soybean healthy class."
+    },
+    "Squash Powdery mildew leaf": {
+      "status": "MATCHED",
+      "target_class": "Squash Powdery mildew",
+      "target_directory": "Squash___Powdery_mildew",
+      "reason": "The crop and powdery mildew disease semantics match exactly."
+    },
+    "Strawberry leaf": {
+      "status": "AMBIGUOUS",
+      "target_class": null,
+      "target_directory": null,
+      "reason": "The generic label does not explicitly establish healthy status and does not identify leaf scorch."
+    },
+    "Tomato Early blight leaf": {
+      "status": "MATCHED",
+      "target_class": "Tomato Early blight",
+      "target_directory": "Tomato___Early_blight",
+      "reason": "The crop and early blight disease semantics match exactly."
+    },
+    "Tomato Septoria leaf spot": {
+      "status": "MATCHED",
+      "target_class": "Tomato Septoria leaf spot",
+      "target_directory": "Tomato___Septoria_leaf_spot",
+      "reason": "The crop and Septoria leaf spot disease semantics match exactly."
+    },
+    "Tomato leaf": {
+      "status": "AMBIGUOUS",
+      "target_class": null,
+      "target_directory": null,
+      "reason": "The generic label does not explicitly establish healthy status, so it cannot be mapped safely to Tomato healthy."
+    },
+    "Tomato leaf bacterial spot": {
+      "status": "MATCHED",
+      "target_class": "Tomato Bacterial spot",
+      "target_directory": "Tomato___Bacterial_spot",
+      "reason": "The crop and bacterial spot disease semantics match exactly."
+    },
+    "Tomato leaf late blight": {
+      "status": "MATCHED",
+      "target_class": "Tomato Late blight",
+      "target_directory": "Tomato___Late_blight",
+      "reason": "The crop and late blight disease semantics match exactly."
+    },
+    "Tomato leaf mosaic virus": {
+      "status": "MATCHED",
+      "target_class": "Tomato mosaic virus",
+      "target_directory": "Tomato___mosaic_virus",
+      "reason": "The crop and mosaic virus disease semantics match exactly."
+    },
+    "Tomato leaf yellow virus": {
+      "status": "AMBIGUOUS",
+      "target_class": null,
+      "target_directory": null,
+      "reason": "The source label does not explicitly identify Tomato Yellow Leaf Curl Virus."
+    },
+    "Tomato mold leaf": {
+      "status": "MATCHED",
+      "target_class": "Tomato Leaf Mold",
+      "target_directory": "Tomato___Leaf_Mold",
+      "reason": "The crop and leaf mold disease semantics match."
+    },
+    "grape leaf": {
+      "status": "AMBIGUOUS",
+      "target_class": null,
+      "target_directory": null,
+      "reason": "The generic label does not explicitly establish healthy status, so it cannot be mapped safely to Grape healthy."
+    },
+    "grape leaf black rot": {
+      "status": "MATCHED",
+      "target_class": "Grape Black rot",
+      "target_directory": "Grape___Black_rot",
+      "reason": "The crop and black rot disease semantics match exactly."
+    }
+  }
+}
