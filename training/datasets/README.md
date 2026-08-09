@@ -67,3 +67,25 @@ The command validates all images, materializes PlantDoc TRAIN, only Banu/Deb Pot
 The exhaustive dHash pair report is intentionally local because field-image bursts produce more than one million candidate pairs. Its SHA-256 and complete count are versioned in `step5b-audit-summary.json`. Git contains all locked-test and cross-dataset pairs, deterministic review samples, and the full aggregate counts.
 
 See `docs/dataset-v2-acquisition-audit.md` for the reviewed Step 5B and Step 5B.1 findings.
+
+## Build the logically cleaned manifests
+
+Step 5C applies deterministic cleaning decisions without changing any source image:
+
+```powershell
+python scripts/build_dataset_v2_manifest.py
+```
+
+The command generates:
+
+- `manifests/dataset-v2-master.csv`, containing all audited records and cleaning decisions;
+- `manifests/dataset-v2-clean-candidates.csv`, containing only current `INCLUDE` records;
+- `reports/exact-label-conflicts.csv`;
+- `reports/perceptual-group-members.csv`;
+- `reports/perceptual-groups-summary.csv`;
+- `reports/perceptual-review-queue.csv`;
+- `reports/dataset-v2-cleaning-summary.json`.
+
+The ignored 288 MB pairwise dHash report is only needed to regenerate perceptual groups from scratch. Once compact group membership is generated, normal rebuilds and CI require no raw images, network access, or TensorFlow.
+
+No train/validation split exists yet. Records sharing an `exact_duplicate_group_id` or `near_duplicate_group_id` must remain together when the future split is designed. See `docs/dataset-v2-cleaning-policy.md` for the complete policy and current counts.
