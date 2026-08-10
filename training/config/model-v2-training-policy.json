@@ -1,0 +1,152 @@
+{
+  "architecture": {
+    "backbone": "MobileNetV2",
+    "backbone_include_top": false,
+    "backbone_weights": "imagenet",
+    "classifier_head": [
+      "GlobalAveragePooling2D",
+      "Dropout(0.25)",
+      "Dense(39, softmax)"
+    ],
+    "dropout": 0.25,
+    "initialize_from_model_v1": false,
+    "output_activation": "softmax",
+    "output_classes": 39
+  },
+  "augmentation": {
+    "brightness_factor": 0.1,
+    "contrast_factor": 0.1,
+    "enabled_for": [
+      "TRAIN"
+    ],
+    "horizontal_flip": true,
+    "rejected_baseline_methods": [
+      "MixUp",
+      "CutMix",
+      "synthetic image generation",
+      "aggressive hue or saturation changes",
+      "shear transformations",
+      "strong perspective distortion",
+      "large morphology-removing crops",
+      "background replacement"
+    ],
+    "rotation_degrees": 15.0,
+    "translation_fraction": 0.1,
+    "vertical_flip": true,
+    "zoom_range": [
+      0.9,
+      1.1
+    ]
+  },
+  "batch_size": {
+    "default": 32,
+    "override_supported": true
+  },
+  "callbacks": {
+    "early_stopping": {
+      "monitor": "val_loss",
+      "patience": 5,
+      "restore_best_weights": true
+    },
+    "model_checkpoint": {
+      "mode": "max",
+      "monitor": "val_macro_f1",
+      "save_best_only": true
+    },
+    "reduce_lr_on_plateau": {
+      "factor": 0.2,
+      "min_lr": 1e-07,
+      "monitor": "val_loss",
+      "patience": 2
+    }
+  },
+  "class_weight_policy": {
+    "candidate_methods": [
+      "none",
+      "inverse_sqrt_frequency",
+      "median_frequency_sqrt"
+    ],
+    "clipping": {
+      "maximum": 3.0,
+      "minimum": 0.5
+    },
+    "normalization": "sample_weighted_mean_equals_one",
+    "recommended_method": "median_frequency_sqrt_normalized_clipped",
+    "source_partition": "TRAIN_ONLY"
+  },
+  "experiment_plan": {
+    "experiment_a": {
+      "class_weights": "none",
+      "name": "agri-diagnose-v2-exp-a"
+    },
+    "experiment_b": {
+      "class_weights": "recommended_moderate",
+      "name": "agri-diagnose-v2-exp-b"
+    },
+    "selection_partition": "VALIDATION_ONLY"
+  },
+  "experiment_seed": 20260810,
+  "input": {
+    "channels": 3,
+    "color_mode": "RGB",
+    "height": 224,
+    "numeric_range": [
+      0.0,
+      1.0
+    ],
+    "scaling": "pixel / 255.0",
+    "width": 224
+  },
+  "locked_test_policy": {
+    "development_loading_forbidden": true,
+    "internal_test_manifest": "training/datasets/manifests/dataset-v2-test.csv",
+    "internal_test_role": "FINAL_INTERNAL_TEST",
+    "plantdoc_test_locked": true,
+    "threshold_tuning_forbidden": true
+  },
+  "loss": {
+    "label_encoding": "sparse_integer_index",
+    "name": "SparseCategoricalCrossentropy"
+  },
+  "model_versioning": {
+    "candidate_directory": "models/candidates",
+    "experiment_a": "agri-diagnose-v2-exp-a",
+    "experiment_b": "agri-diagnose-v2-exp-b",
+    "overwrite_model_v1": false
+  },
+  "optimizer": {
+    "beta_1": 0.9,
+    "beta_2": 0.999,
+    "epsilon": 1e-07,
+    "name": "Adam"
+  },
+  "phase1": {
+    "backbone_trainable": false,
+    "learning_rate": 0.001,
+    "max_epochs": 10,
+    "name": "feature_extraction"
+  },
+  "phase2": {
+    "batch_normalization_trainable": false,
+    "fine_tune_from_layer_index_tensorflow_2_15": 116,
+    "fine_tune_from_layer_name": "block_13_expand",
+    "frozen_backbone_layers": 129,
+    "learning_rate": 2e-05,
+    "max_epochs": 20,
+    "name": "upper_backbone_fine_tuning",
+    "total_backbone_layers_tensorflow_2_15": 154,
+    "trainable_non_batchnorm_backbone_layers": 25
+  },
+  "policy_version": "agri-diagnose-model-v2-training-policy-v1",
+  "selection_metrics": {
+    "primary": "validation_macro_f1",
+    "real_world_slice": "validation_macro_f1_for_supported_REAL_WORLD_classes",
+    "secondary": [
+      "validation_loss",
+      "validation_accuracy",
+      "validation_weighted_f1",
+      "validation_macro_recall",
+      "validation_per_class_precision_recall_f1"
+    ]
+  }
+}
