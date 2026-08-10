@@ -1,0 +1,32 @@
+{
+  "decision": "Conservative metadata-only exclusion; no relabeling or raw-file deletion.",
+  "historical_clean_count_after": 55423,
+  "historical_clean_count_before": 55423,
+  "records": [
+    {
+      "cleaning_status": "EXCLUDE",
+      "exclusion_reason": "UNRESOLVED_HISTORICAL_PERCEPTUAL_IDENTITY",
+      "review_resolution": "CONSERVATIVE_FINAL_EXCLUSION",
+      "sha256": "da93f61c6f7e9864fd2d38827d838567081222ec4ebb36eeb17ec160b6f9767b",
+      "source_label": "Tomato___Late_blight",
+      "source_path": "Plant_leave_diseases_dataset_without_augmentation/Tomato___Late_blight/image (1605).JPG",
+      "source_record_id": "hist_2f1cf96a8f3be10f4cce",
+      "target_class": "Tomato Late blight",
+      "target_index": 31
+    },
+    {
+      "cleaning_status": "EXCLUDE",
+      "exclusion_reason": "UNRESOLVED_HISTORICAL_PERCEPTUAL_IDENTITY",
+      "review_resolution": "CONSERVATIVE_FINAL_EXCLUSION",
+      "sha256": "25e3044fc977a7b325e4c0107d157ea243d398ca2ef9c87d7826b26149c81433",
+      "source_label": "Tomato___healthy",
+      "source_path": "Plant_leave_diseases_dataset_without_augmentation/Tomato___healthy/image (745).JPG",
+      "source_record_id": "hist_b73d44518f5f009e67fe",
+      "target_class": "Tomato healthy",
+      "target_index": 38
+    }
+  ],
+  "review_count_after": 0,
+  "review_count_before": 2,
+  "schema_version": 1
+}
