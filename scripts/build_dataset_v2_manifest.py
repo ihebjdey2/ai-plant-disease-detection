@@ -32,6 +32,7 @@ MASTER_FIELDS = [
     "target_class",
     "sha256",
     "dhash",
+    "phash",
     "format",
     "mode",
     "width",
@@ -47,6 +48,10 @@ MASTER_FIELDS = [
     "benchmark_leakage",
     "label_conflict",
     "manual_review_required",
+    "review_resolution",
+    "refined_similarity_status",
+    "refined_group_id",
+    "refined_group_representative",
 ]
 
 PERCEPTUAL_MEMBER_FIELDS = [
@@ -171,6 +176,11 @@ def initialize_cleaning(records: Sequence[dict[str, str]]) -> None:
                 "benchmark_leakage": "false",
                 "label_conflict": "false",
                 "manual_review_required": "false",
+                "phash": "",
+                "review_resolution": "NOT_REQUIRED",
+                "refined_similarity_status": "NOT_SCREENED",
+                "refined_group_id": "",
+                "refined_group_representative": "",
             }
         )
         if record["role"] == "locked_test":
@@ -195,6 +205,81 @@ def review(record: dict[str, str], reason: str) -> None:
     record["cleaning_status"] = "REVIEW"
     record["exclusion_reason"] = reason
     record["manual_review_required"] = "true"
+
+
+def include(record: dict[str, str]) -> None:
+    if record["cleaning_status"] == "EXCLUDE":
+        return
+    record["cleaning_status"] = "INCLUDE"
+    record["exclusion_reason"] = ""
+    record["manual_review_required"] = "false"
+
+
+def apply_perceptual_resolution(
+    records: Sequence[dict[str, str]], resolution_path: Path
+) -> dict[str, int]:
+    allowed_resolutions = {
+        "NOT_REQUIRED",
+        "FALSE_POSITIVE_PERCEPTUAL_SCREEN",
+        "VERIFIED_NEAR_DUPLICATE",
+        "VERIFIED_LABEL_CONFLICT",
+        "VERIFIED_BENCHMARK_LEAKAGE",
+        "STILL_UNCERTAIN",
+    }
+    allowed_similarity = {
+        "NOT_SCREENED",
+        "NOT_SIMILAR",
+        "VERIFIED_NEAR_DUPLICATE",
+        "POSSIBLE_NEAR_DUPLICATE",
+        "VERIFIED_LABEL_CONFLICT",
+        "VERIFIED_BENCHMARK_LEAKAGE",
+    }
+    by_id = {record["record_id"]: record for record in records}
+    seen: set[str] = set()
+    counts = Counter()
+    with resolution_path.open("r", encoding="utf-8", newline="") as handle:
+        rows = list(csv.DictReader(handle))
+    for row in rows:
+        record_id = row["record_id"]
+        if record_id not in by_id:
+            raise ManifestBuildError(
+                f"Perceptual resolution references unknown record: {record_id}"
+            )
+        if record_id in seen:
+            raise ManifestBuildError(f"Duplicate refined record ID: {record_id}")
+        seen.add(record_id)
+        resolution = row["review_resolution"]
+        similarity = row["refined_similarity_status"]
+        if resolution not in allowed_resolutions:
+            raise ManifestBuildError(f"Invalid review resolution: {resolution}")
+        if similarity not in allowed_similarity:
+            raise ManifestBuildError(f"Invalid refined similarity status: {similarity}")
+        record = by_id[record_id]
+        record["phash"] = row["phash"]
+        record["review_resolution"] = resolution
+        record["refined_similarity_status"] = similarity
+        record["refined_group_id"] = row["refined_group_id"]
+        record["refined_group_representative"] = row[
+            "refined_group_representative"
+        ]
+        if record["cleaning_status"] == "EXCLUDE":
+            counts["protected_existing_exclusion"] += 1
+            continue
+        resolved_status = row["resolved_cleaning_status"]
+        resolved_reason = row["resolved_exclusion_reason"]
+        if resolved_status == "INCLUDE":
+            include(record)
+        elif resolved_status == "REVIEW":
+            review(record, resolved_reason)
+        elif resolved_status == "EXCLUDE":
+            exclude(record, resolved_reason)
+        else:
+            raise ManifestBuildError(
+                f"Invalid resolved cleaning status: {resolved_status}"
+            )
+        counts[f"resolved_{resolved_status.lower()}"] += 1
+    counts["resolution_rows"] = len(rows)
+    return dict(counts)
 
 
 def apply_exact_policy(
@@ -575,6 +660,8 @@ def validate_manifests(
         "PERCEPTUAL_BENCHMARK_MATCH",
         "UNRESOLVED_MAPPING",
         "UNSUPPORTED_CLASS",
+        "VERIFIED_PERCEPTUAL_LABEL_CONFLICT",
+        "VERIFIED_PERCEPTUAL_BENCHMARK_LEAKAGE",
     }
     for record in master:
         if record["cleaning_status"] not in allowed_statuses:
@@ -590,6 +677,13 @@ def validate_manifests(
                 raise ManifestBuildError("An unresolved semantic mapping was included.")
             if record["label_conflict"] == "true":
                 raise ManifestBuildError("An exact label conflict was included.")
+            if record["refined_similarity_status"] in {
+                "VERIFIED_LABEL_CONFLICT",
+                "VERIFIED_BENCHMARK_LEAKAGE",
+            }:
+                raise ManifestBuildError(
+                    "A verified perceptual conflict or benchmark leak was included."
+                )
     expected_clean = [row for row in master if row["cleaning_status"] == "INCLUDE"]
     if [row["record_id"] for row in clean] != [row["record_id"] for row in expected_clean]:
         raise ManifestBuildError("Clean manifest is not the exact INCLUDE subset.")
@@ -716,6 +810,7 @@ def build_manifests(
     cleaning_summary_path: Path,
     full_perceptual_path: Path | None = None,
     exact_conflicts_path: Path | None = None,
+    perceptual_resolution_path: Path | None = None,
 ) -> dict:
     records = load_inventory(inventory_path)
     initialize_cleaning(records)
@@ -768,6 +863,10 @@ def build_manifests(
 
     member_stats = load_perceptual_members(records, perceptual_members_path)
     perceptual_stats.update(member_stats)
+    if perceptual_resolution_path is not None and perceptual_resolution_path.exists():
+        perceptual_stats["resolution"] = apply_perceptual_resolution(
+            records, perceptual_resolution_path
+        )
     master = sorted(records, key=lambda row: row["record_id"])
     clean = [row for row in master if row["cleaning_status"] == "INCLUDE"]
     validate_manifests(master, clean)
@@ -831,12 +930,17 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--summary-output",
         type=Path,
-        default=datasets / "reports" / "dataset-v2-cleaning-summary.json",
+        default=datasets / "reports" / "dataset-v2-refined-cleaning-summary.json",
     )
     parser.add_argument(
         "--exact-conflicts-report",
         type=Path,
         default=datasets / "reports" / "exact-label-conflicts.csv",
+    )
+    parser.add_argument(
+        "--perceptual-resolution",
+        type=Path,
+        default=datasets / "reports" / "refined-group-members.csv",
     )
     return parser.parse_args()
 
@@ -855,6 +959,7 @@ def main() -> int:
             args.summary_output,
             args.full_perceptual_report,
             args.exact_conflicts_report,
+            args.perceptual_resolution,
         )
     except (ManifestBuildError, OSError, csv.Error, json.JSONDecodeError) as exc:
         print(f"Dataset V2 manifest build failed: {exc}", file=sys.stderr)

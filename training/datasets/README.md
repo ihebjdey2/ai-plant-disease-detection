@@ -89,3 +89,25 @@ The command generates:
 The ignored 288 MB pairwise dHash report is only needed to regenerate perceptual groups from scratch. Once compact group membership is generated, normal rebuilds and CI require no raw images, network access, or TensorFlow.
 
 No train/validation split exists yet. Records sharing an `exact_duplicate_group_id` or `near_duplicate_group_id` must remain together when the future split is designed. See `docs/dataset-v2-cleaning-policy.md` for the complete policy and current counts.
+
+## Refine perceptual screening
+
+Step 5C.1 keeps dHash as candidate generation but verifies identity using a
+64-bit DCT pHash, aspect-ratio geometry, ORB features, and RANSAC consistency:
+
+```powershell
+python scripts/refine_dataset_v2_perceptual_groups.py
+python scripts/build_dataset_v2_manifest.py
+```
+
+The refinement creates compact `refined-near-duplicate-groups.csv`,
+`refined-group-members.csv`, `perceptual-human-review.csv`, and
+`perceptual-resolution-summary.json` reports. The master manifest then includes
+`phash`, `review_resolution`, `refined_similarity_status`, `refined_group_id`,
+and `refined_group_representative`.
+
+The historical Step 5C dHash reports remain unchanged. Step 5D must use
+`refined_group_id`, not the old transitive `near_duplicate_group_id`, as the
+indivisible grouping constraint. See
+`docs/dataset-v2-perceptual-resolution.md` for thresholds, before/after counts,
+benchmark decisions, and remaining human-review cases.
