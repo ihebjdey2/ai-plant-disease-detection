@@ -190,3 +190,34 @@ and no known exact or verified perceptual cross-domain collision is admitted.
 The command does not decode raw images, assign TRAIN/VALIDATION, materialize
 directories, balance classes, augment data, or train a model. See
 `docs/dataset-v2-39class-composition.md`.
+
+## Group-aware TRAIN / VALIDATION / TEST split
+
+Step 5F partitions the authoritative Step 5E composition by indivisible
+`split_group_id` with seed `20260810` and strategy
+`dataset-v2-group-aware-80-10-10-v1`:
+
+```powershell
+python scripts/build_dataset_v2_group_aware_split.py
+```
+
+The metadata-only command generates:
+
+- `manifests/dataset-v2-39class-split.csv` — all 73,563 records with split,
+  seed, strategy, and evaluation role;
+- `manifests/dataset-v2-train.csv` — TRAIN records only;
+- `manifests/dataset-v2-validation.csv` — the only internal holdout permitted
+  to guide model-development decisions;
+- `manifests/dataset-v2-test.csv` — the frozen final internal test;
+- `reports/dataset-v2-39class-split-summary.json` — class, domain, source,
+  group, leakage, and holdout-quality metrics;
+- `reports/dataset-v2-39class-split-quality.csv` — one audit row per deployed
+  class;
+- `reports/dataset-v2-test-lock.json` — the immutable TEST identity and policy.
+
+The achieved split is 58,857 TRAIN, 7,362 VALIDATION, and 7,344 TEST images,
+with 39/39 class coverage in every partition and zero group, SHA-256, or
+PlantDoc TEST leakage. Do not use the TEST manifest for early stopping,
+threshold tuning, augmentation, sampling, fine-tuning, or model selection.
+PlantDoc TEST remains a separate external benchmark. Balancing, augmentation,
+and training are outside Step 5F. See `docs/dataset-v2-group-aware-split.md`.
