@@ -1,0 +1,9 @@
+{
+  "created_from_composition_sha256": "16adad81be044f20b05546d22f95e75eacd9baf922e66b760550ae74125e1a0f",
+  "evaluation_role": "FINAL_INTERNAL_TEST",
+  "policy": "Internal TEST is frozen and may not be used for model-development decisions.",
+  "split_seed": 20260810,
+  "strategy_version": "dataset-v2-group-aware-80-10-10-v1",
+  "test_manifest_sha256": "f0df59c42268163d485feea0e54dd7780aa56fe08a7984ae7869a09c604a9151",
+  "test_record_count": 7344
+}
