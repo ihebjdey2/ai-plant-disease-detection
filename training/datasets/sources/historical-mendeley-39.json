@@ -1,0 +1,37 @@
+{
+  "archive_compressed_bytes": 868032562,
+  "archive_extraction_errors": [],
+  "archive_sha256": "ac3432453984d02a86197987e775a5429d0d59e7cc7c35bcf5a8f50349b90ff0",
+  "archive_uncompressed_bytes": 861528492,
+  "archive_unsafe_zip_paths": [],
+  "authors": [
+    "Arun Pandian J",
+    "Geetharamani Gopal"
+  ],
+  "benchmark_leak_count": {
+    "exact_historical_images": 0,
+    "verified_perceptual_historical_images": 0
+  },
+  "canonical_name": "Data for: Identification of Plant Leaf Diseases Using a 9-layer Deep Convolutional Neural Network",
+  "doi": "10.17632/tywbtsjrjv.1",
+  "license": "CC0 1.0",
+  "mapped_class_count": 39,
+  "notes": [
+    "Only the official non-augmented V1 archive was acquired.",
+    "The verified 55,448-image, 39-class content exactly matches the notebook generator total and class count, but no notebook archive hash or persisted class_indices output proves byte-level identity.",
+    "Raw files remain immutable and ignored by Git; all eligibility decisions are represented in manifests.",
+    "No train/validation split, balancing, augmentation, or training was performed."
+  ],
+  "official_download_url": "https://data.mendeley.com/public-files/datasets/tywbtsjrjv/files/d5652a28-c1d8-4b76-97f3-72fb80f94efc/file_downloaded",
+  "official_file_id": "d5652a28-c1d8-4b76-97f3-72fb80f94efc",
+  "official_file_name": "Plant_leaf_diseases_dataset_without_augmentation.zip",
+  "provenance_confidence": "STRONG_MATCH_BUT_NOT_PROVEN",
+  "publication_date": "2019-04-18",
+  "published_total_count": 61486,
+  "publisher": "Mendeley Data",
+  "retrieval_date": "2026-08-10",
+  "source_class_count": 39,
+  "url": "https://data.mendeley.com/datasets/tywbtsjrjv/1",
+  "verified_original_count": 55448,
+  "version": 1
+}

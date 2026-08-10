@@ -40,6 +40,10 @@ static/uploads/
 Dataset/
 evaluation/dataset/
 evaluation/datasets/
+# Step 5D official archive, immutable extraction, and exhaustive local caches
+training/datasets/downloads/Plant_leaf_diseases_dataset_without_augmentation.zip
+training/datasets/raw/historical-mendeley-39/
+training/datasets/local-audits/historical-39class-*
 training/datasets/downloads/
 training/datasets/raw/
 training/datasets/local-audits/

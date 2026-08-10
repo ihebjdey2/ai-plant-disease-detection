@@ -1,0 +1,377 @@
+[
+  {
+    "copy_count_beyond_first": 1,
+    "group_id": "hist_exact_12852b3616bcf0ba39b0",
+    "label_conflict": false,
+    "member_count": 2,
+    "record_ids": [
+      "hist_3d7893c512344aea18fa",
+      "hist_e54d2086fcee9f207c3f"
+    ],
+    "sha256": "12852b3616bcf0ba39b03b5677e74f50f5f6abf4d38957fe17949e23e2a4b244",
+    "source_labels": [
+      "Tomato___healthy"
+    ],
+    "target_classes": [
+      "Tomato healthy"
+    ]
+  },
+  {
+    "copy_count_beyond_first": 1,
+    "group_id": "hist_exact_262198126fd6d982126b",
+    "label_conflict": false,
+    "member_count": 2,
+    "record_ids": [
+      "hist_44401825db383e090ad3",
+      "hist_509feb636e7803c83f07"
+    ],
+    "sha256": "262198126fd6d982126b69261723e13abb36b3831387972f3aef7ebeedecf0a6",
+    "source_labels": [
+      "Apple___healthy"
+    ],
+    "target_classes": [
+      "Apple healthy"
+    ]
+  },
+  {
+    "copy_count_beyond_first": 1,
+    "group_id": "hist_exact_2a05a74db3a270ac0ec7",
+    "label_conflict": false,
+    "member_count": 2,
+    "record_ids": [
+      "hist_a81718fa26fab1288ff8",
+      "hist_cda521e2fa6d98018f6d"
+    ],
+    "sha256": "2a05a74db3a270ac0ec77c00ebe89a332eed589819435129cc3c29eb6e701eb2",
+    "source_labels": [
+      "Tomato___healthy"
+    ],
+    "target_classes": [
+      "Tomato healthy"
+    ]
+  },
+  {
+    "copy_count_beyond_first": 1,
+    "group_id": "hist_exact_2aeb7479e975df37dfb5",
+    "label_conflict": false,
+    "member_count": 2,
+    "record_ids": [
+      "hist_2bfbb9f00454ef401043",
+      "hist_3fd5815162e6ac4ed1f4"
+    ],
+    "sha256": "2aeb7479e975df37dfb54aa7b403f57f2ad90b018c37809e572a2a932f55d2a7",
+    "source_labels": [
+      "Tomato___Late_blight"
+    ],
+    "target_classes": [
+      "Tomato Late blight"
+    ]
+  },
+  {
+    "copy_count_beyond_first": 2,
+    "group_id": "hist_exact_307f49833f5eb2038d44",
+    "label_conflict": false,
+    "member_count": 3,
+    "record_ids": [
+      "hist_15df5f67bd54b8bb0342",
+      "hist_89c67800fbe63c0907dc",
+      "hist_fcc6966175427790a7c5"
+    ],
+    "sha256": "307f49833f5eb2038d44c3374f475c60346c9bcb98de4fb75d2861a35c676fad",
+    "source_labels": [
+      "Background_without_leaves"
+    ],
+    "target_classes": [
+      "Background without leaves"
+    ]
+  },
+  {
+    "copy_count_beyond_first": 1,
+    "group_id": "hist_exact_32e9ffabaa054c19ae8d",
+    "label_conflict": false,
+    "member_count": 2,
+    "record_ids": [
+      "hist_41a655e79402e866010e",
+      "hist_88904e4ede153245fe8a"
+    ],
+    "sha256": "32e9ffabaa054c19ae8df95e94fbd7a25105defdea1214eb5f8bd804ea9a7428",
+    "source_labels": [
+      "Tomato___healthy"
+    ],
+    "target_classes": [
+      "Tomato healthy"
+    ]
+  },
+  {
+    "copy_count_beyond_first": 1,
+    "group_id": "hist_exact_372bc4a6e18895011eaa",
+    "label_conflict": false,
+    "member_count": 2,
+    "record_ids": [
+      "hist_6b45367a7853e2c26fb6",
+      "hist_c34bf573ce36914949d3"
+    ],
+    "sha256": "372bc4a6e18895011eaa18638acf8cdd83db9c5909af02cd833263d5cfeb0cbe",
+    "source_labels": [
+      "Apple___healthy"
+    ],
+    "target_classes": [
+      "Apple healthy"
+    ]
+  },
+  {
+    "copy_count_beyond_first": 1,
+    "group_id": "hist_exact_375eee7b5da77c7afdd7",
+    "label_conflict": false,
+    "member_count": 2,
+    "record_ids": [
+      "hist_428e913ba35dde37507a",
+      "hist_6655def86f90b0385868"
+    ],
+    "sha256": "375eee7b5da77c7afdd73d089574bee3148d04cbe266ee070ee4774d26aca750",
+    "source_labels": [
+      "Tomato___Late_blight"
+    ],
+    "target_classes": [
+      "Tomato Late blight"
+    ]
+  },
+  {
+    "copy_count_beyond_first": 1,
+    "group_id": "hist_exact_3a60a7b6f3a287981d21",
+    "label_conflict": false,
+    "member_count": 2,
+    "record_ids": [
+      "hist_b009115cff7cba3d0ca4",
+      "hist_d50c68ef7c2e7193e325"
+    ],
+    "sha256": "3a60a7b6f3a287981d21dca37f27e5480cc46d1144688d435e53db7a47b7006f",
+    "source_labels": [
+      "Tomato___Late_blight"
+    ],
+    "target_classes": [
+      "Tomato Late blight"
+    ]
+  },
+  {
+    "copy_count_beyond_first": 1,
+    "group_id": "hist_exact_4913a3835e692530e507",
+    "label_conflict": false,
+    "member_count": 2,
+    "record_ids": [
+      "hist_1e8d19d8c2bbb487503a",
+      "hist_b24e4dae2b956c612a88"
+    ],
+    "sha256": "4913a3835e692530e507d542caccacc0d0a7b2fd708782cdec6236a1a0dbbcd6",
+    "source_labels": [
+      "Tomato___Late_blight"
+    ],
+    "target_classes": [
+      "Tomato Late blight"
+    ]
+  },
+  {
+    "copy_count_beyond_first": 1,
+    "group_id": "hist_exact_5d486b62abe59b8dea5a",
+    "label_conflict": false,
+    "member_count": 2,
+    "record_ids": [
+      "hist_8097a7e850dafc7e1d66",
+      "hist_e0f9ef518fba81477f95"
+    ],
+    "sha256": "5d486b62abe59b8dea5aef6b63f887bacd12bbc3cb2a154eb45a7a522e5d88c9",
+    "source_labels": [
+      "Apple___healthy"
+    ],
+    "target_classes": [
+      "Apple healthy"
+    ]
+  },
+  {
+    "copy_count_beyond_first": 1,
+    "group_id": "hist_exact_61f6fa6195ef5c59c491",
+    "label_conflict": false,
+    "member_count": 2,
+    "record_ids": [
+      "hist_5060808a092e20dcd781",
+      "hist_ce5a47099a12c26dce56"
+    ],
+    "sha256": "61f6fa6195ef5c59c4918a292c641d4cd3d2d31ff051dcd0f36a625daf93f5ef",
+    "source_labels": [
+      "Tomato___healthy"
+    ],
+    "target_classes": [
+      "Tomato healthy"
+    ]
+  },
+  {
+    "copy_count_beyond_first": 1,
+    "group_id": "hist_exact_68cda8c3ceca7626cc67",
+    "label_conflict": false,
+    "member_count": 2,
+    "record_ids": [
+      "hist_2ad38f553c226fbec193",
+      "hist_66137c4eae963d761434"
+    ],
+    "sha256": "68cda8c3ceca7626cc6727e14186d356b10d1e345eb16e425ef82f21a30258ed",
+    "source_labels": [
+      "Tomato___healthy"
+    ],
+    "target_classes": [
+      "Tomato healthy"
+    ]
+  },
+  {
+    "copy_count_beyond_first": 1,
+    "group_id": "hist_exact_6b242d89b134aa87000f",
+    "label_conflict": false,
+    "member_count": 2,
+    "record_ids": [
+      "hist_0407a66825c149424710",
+      "hist_4f52e0626bcdac7bb38d"
+    ],
+    "sha256": "6b242d89b134aa87000f8397d0e85f8448e3b3d607d3b7951cf69a2f3e92b0e2",
+    "source_labels": [
+      "Apple___healthy"
+    ],
+    "target_classes": [
+      "Apple healthy"
+    ]
+  },
+  {
+    "copy_count_beyond_first": 1,
+    "group_id": "hist_exact_6e1610d4e0f6f84108af",
+    "label_conflict": false,
+    "member_count": 2,
+    "record_ids": [
+      "hist_f124fcdd468ae6c2e520",
+      "hist_f85ba7773a4c2701d7ad"
+    ],
+    "sha256": "6e1610d4e0f6f84108af112322d11779254b2b2d41958449c64b0bf938628444",
+    "source_labels": [
+      "Tomato___Late_blight"
+    ],
+    "target_classes": [
+      "Tomato Late blight"
+    ]
+  },
+  {
+    "copy_count_beyond_first": 1,
+    "group_id": "hist_exact_767bbeee0c319d4097d7",
+    "label_conflict": false,
+    "member_count": 2,
+    "record_ids": [
+      "hist_86f21d1b3425b39d38a6",
+      "hist_99ff01cebee59e62124f"
+    ],
+    "sha256": "767bbeee0c319d4097d7a6d949c6d21def97ceb2d16068eb5b94df42619acc8a",
+    "source_labels": [
+      "Apple___healthy"
+    ],
+    "target_classes": [
+      "Apple healthy"
+    ]
+  },
+  {
+    "copy_count_beyond_first": 1,
+    "group_id": "hist_exact_7ff8410db407008bb9ae",
+    "label_conflict": false,
+    "member_count": 2,
+    "record_ids": [
+      "hist_58bb0c13b1b8d8644dd2",
+      "hist_f16a9cfdd6d1c4ce1073"
+    ],
+    "sha256": "7ff8410db407008bb9aecf0cc5505f2b47ffd89e508413a30ea983b4bc169714",
+    "source_labels": [
+      "Tomato___Late_blight"
+    ],
+    "target_classes": [
+      "Tomato Late blight"
+    ]
+  },
+  {
+    "copy_count_beyond_first": 1,
+    "group_id": "hist_exact_90220c67ab2c3ed150e9",
+    "label_conflict": false,
+    "member_count": 2,
+    "record_ids": [
+      "hist_5f67c6740d99ed54f604",
+      "hist_71cf9b9d8f2a6a7b72da"
+    ],
+    "sha256": "90220c67ab2c3ed150e93f0c26691d463200e784c74152e62acedac8a4d2d525",
+    "source_labels": [
+      "Tomato___Late_blight"
+    ],
+    "target_classes": [
+      "Tomato Late blight"
+    ]
+  },
+  {
+    "copy_count_beyond_first": 1,
+    "group_id": "hist_exact_a05e573ae6c4a28b077b",
+    "label_conflict": false,
+    "member_count": 2,
+    "record_ids": [
+      "hist_57e5cf489d28c0e071fa",
+      "hist_8d2a50574cca0406b1d1"
+    ],
+    "sha256": "a05e573ae6c4a28b077b8c9d01249be849f4f8e1790b2625b42c6bc01098f718",
+    "source_labels": [
+      "Tomato___Late_blight"
+    ],
+    "target_classes": [
+      "Tomato Late blight"
+    ]
+  },
+  {
+    "copy_count_beyond_first": 1,
+    "group_id": "hist_exact_addddf5cb2a74192c983",
+    "label_conflict": false,
+    "member_count": 2,
+    "record_ids": [
+      "hist_4822f58a7af1c4d51c1a",
+      "hist_c50d61ed55413f45a876"
+    ],
+    "sha256": "addddf5cb2a74192c9836be70fc223659062675eb325d55429c341a0c44937d0",
+    "source_labels": [
+      "Tomato___healthy"
+    ],
+    "target_classes": [
+      "Tomato healthy"
+    ]
+  },
+  {
+    "copy_count_beyond_first": 1,
+    "group_id": "hist_exact_d4b74359138ab2e04caf",
+    "label_conflict": false,
+    "member_count": 2,
+    "record_ids": [
+      "hist_5086d64fcd354ace892a",
+      "hist_9b3eb59c0da51d36c2d2"
+    ],
+    "sha256": "d4b74359138ab2e04caffe9733f40ccdf616ee2fc9a4ecb2f058d7ba98c94fa8",
+    "source_labels": [
+      "Apple___healthy"
+    ],
+    "target_classes": [
+      "Apple healthy"
+    ]
+  },
+  {
+    "copy_count_beyond_first": 1,
+    "group_id": "hist_exact_ec2fe5801c82d7ffff33",
+    "label_conflict": false,
+    "member_count": 2,
+    "record_ids": [
+      "hist_0ffeac8cdba6d06e56d2",
+      "hist_80c6e9f55fb74ba637d5"
+    ],
+    "sha256": "ec2fe5801c82d7ffff332b9429480c6a432830ccce2f7e1aec1cc4c05f6a0abb",
+    "source_labels": [
+      "Apple___healthy"
+    ],
+    "target_classes": [
+      "Apple healthy"
+    ]
+  }
+]
