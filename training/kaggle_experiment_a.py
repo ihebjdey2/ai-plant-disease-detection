@@ -74,6 +74,14 @@ def sha256_file(path: Path) -> str:
     return digest.hexdigest()
 
 
+def sha256_csv_with_canonical_crlf(path: Path) -> str:
+    """Hash CSV bytes after changing line endings only to canonical CRLF."""
+    content = Path(path).read_bytes()
+    without_crlf = content.replace(b"\r\n", b"\n")
+    canonical = without_crlf.replace(b"\n", b"\r\n")
+    return hashlib.sha256(canonical).hexdigest()
+
+
 def write_json(path: Path, payload: object) -> None:
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -230,7 +238,7 @@ def load_train_validation(project_root: Path) -> tuple[list[ManifestRecord], lis
 
 def verify_internal_test_lock(project_root: Path) -> str:
     path = Path(project_root) / "training/datasets/manifests/dataset-v2-test.csv"
-    digest = sha256_file(path)
+    digest = sha256_csv_with_canonical_crlf(path)
     if digest != EXPECTED_INTERNAL_TEST_SHA256:
         raise TrainingPolicyError("Locked INTERNAL TEST manifest hash changed.")
     return digest

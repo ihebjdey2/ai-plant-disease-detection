@@ -18,6 +18,7 @@ from training.kaggle_experiment_a import (
     require_fresh_or_explicit_restart,
     require_kaggle_gpu,
     select_candidate,
+    sha256_csv_with_canonical_crlf,
     verify_internal_test_lock,
 )
 
@@ -100,6 +101,35 @@ def test_kaggle_loader_never_loads_internal_test():
     assert {row.split for row in train} == {"TRAIN"}
     assert {row.split for row in validation} == {"VALIDATION"}
     assert verify_internal_test_lock(PROJECT_ROOT) == EXPECTED_INTERNAL_TEST_SHA256
+
+
+def test_internal_test_hash_is_identical_for_crlf_and_lf(tmp_path):
+    source = (
+        PROJECT_ROOT / "training/datasets/manifests/dataset-v2-test.csv"
+    ).read_bytes()
+    lf = source.replace(b"\r\n", b"\n")
+    crlf = lf.replace(b"\n", b"\r\n")
+    lf_path = tmp_path / "test-lf.csv"
+    crlf_path = tmp_path / "test-crlf.csv"
+    lf_path.write_bytes(lf)
+    crlf_path.write_bytes(crlf)
+    assert sha256_csv_with_canonical_crlf(crlf_path) == EXPECTED_INTERNAL_TEST_SHA256
+    assert sha256_csv_with_canonical_crlf(lf_path) == EXPECTED_INTERNAL_TEST_SHA256
+
+
+def test_internal_test_hash_rejects_actual_record_modification(tmp_path):
+    source = (
+        PROJECT_ROOT / "training/datasets/manifests/dataset-v2-test.csv"
+    ).read_bytes()
+    modified = source.replace(b"FINAL_INTERNAL_TEST", b"FINAL_INTERNAL_TESX", 1)
+    assert modified != source
+    manifest_dir = tmp_path / "training/datasets/manifests"
+    manifest_dir.mkdir(parents=True)
+    modified_path = manifest_dir / "dataset-v2-test.csv"
+    modified_path.write_bytes(modified)
+    assert sha256_csv_with_canonical_crlf(modified_path) != EXPECTED_INTERNAL_TEST_SHA256
+    with pytest.raises(TrainingPolicyError, match="hash changed"):
+        verify_internal_test_lock(tmp_path)
 
 
 def test_candidate_selection_uses_validation_tie_break_order():
