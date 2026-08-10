@@ -1,5 +1,11 @@
 # Dataset V2 logical cleaning policy
 
+> Historical note: this document records the original Step 5C dHash screening
+> decisions. Step 5C.1 subsequently corrected connected-component chaining with
+> pHash, geometry, ORB, and direct representative grouping. See
+> `docs/dataset-v2-perceptual-resolution.md`. The original reports and counts
+> below remain intentionally preserved for audit transparency.
+
 ## Scope
 
 Step 5C converts the audited Dataset V2 inventory into deterministic manifests. It does not edit, move, rename, resize, or delete source images. It also does not create a train/validation split, balance classes, augment data, or train a model.
