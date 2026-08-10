@@ -207,6 +207,33 @@ def test_validation_tf_pipeline_has_deterministic_shape_and_range(tmp_path):
     assert labels.numpy().tolist() == [0]
 
 
+def test_train_tf_augmentation_remains_in_zero_one_range(tmp_path):
+    image_path = tmp_path / "images" / "train.png"
+    image_path.parent.mkdir()
+    Image.new("RGB", (20, 14), (255, 255, 255)).save(image_path)
+    record = ManifestRecord(
+        composition_record_id="comp-train",
+        source_domain="REAL_WORLD",
+        source_dataset="PlantDoc",
+        source_path="images/train.png",
+        target_index=0,
+        target_class=CLASS_NAMES[0],
+        split="TRAIN",
+        evaluation_role="MODEL_TRAINING",
+    )
+    dataset = build_tf_dataset(
+        [record],
+        load_policy(),
+        {"PlantDoc": tmp_path},
+        training=True,
+        batch_size=1,
+    )
+    images, _ = next(iter(dataset))
+    assert tuple(images.shape) == (1, 224, 224, 3)
+    assert float(np.min(images.numpy())) >= 0.0
+    assert float(np.max(images.numpy())) <= 1.0
+
+
 def test_validation_metrics_report_real_world_supported_slice_only():
     records = [
         ManifestRecord(

@@ -52,6 +52,9 @@ training/datasets/local-audits/
 evaluation/results/*
 !evaluation/results/.gitkeep
 
+# Local trained candidates (metadata stays under training/runs/)
+models/candidates/
+
 # Temporary Files
 *.tmp
 *.temp

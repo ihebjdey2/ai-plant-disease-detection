@@ -1,0 +1,154 @@
+{
+  "batch_size": 32,
+  "callback_policy": {
+    "early_stopping": {
+      "monitor": "val_loss",
+      "patience": 5,
+      "restore_best_weights": true
+    },
+    "model_checkpoint": {
+      "mode": "max",
+      "monitor": "val_macro_f1",
+      "path": "models/candidates/agri-diagnose-v2-exp-a/phase1-best.keras",
+      "save_best_only": true
+    },
+    "reduce_lr_on_plateau": {
+      "factor": 0.2,
+      "min_lr": 1e-07,
+      "monitor": "val_loss",
+      "patience": 2
+    }
+  },
+  "candidate_model_created": false,
+  "class_weights": null,
+  "confidence_threshold_changed": false,
+  "experiment_name": "agri-diagnose-v2-exp-a",
+  "internal_test": {
+    "evaluated": false,
+    "hash_unchanged": true,
+    "loaded": false,
+    "manifest_sha256": "f0df59c42268163d485feea0e54dd7780aa56fe08a7984ae7869a09c604a9151"
+  },
+  "macro_f1_validation": {
+    "absolute_difference": 2.9062e-08,
+    "passed": true,
+    "reset_state_result": 0.0,
+    "sklearn_macro_f1": 0.862020164,
+    "tensorflow_macro_f1": 0.8620201349,
+    "tolerance": 1e-06
+  },
+  "model_fit_called": false,
+  "phase1_model_audit": {
+    "backbone_trainable": false,
+    "learning_rate": 0.001,
+    "metric_names": [
+      "accuracy",
+      "macro_f1"
+    ],
+    "non_trainable_parameters": 2257984,
+    "output_shape": [
+      null,
+      39
+    ],
+    "total_parameters": 2307943,
+    "trainable_parameters": 49959
+  },
+  "phase2_model_audit": {
+    "batch_normalization_layer_count": 52,
+    "fine_tune_boundary_index": 116,
+    "first_trainable_backbone_layer": "block_13_expand",
+    "frozen_backbone_layer_count": 129,
+    "frozen_batch_normalization_count": 52,
+    "learning_rate": 2e-05,
+    "metric_names": [
+      "accuracy",
+      "macro_f1"
+    ],
+    "new_optimizer_created": true,
+    "non_trainable_parameters": 594624,
+    "total_backbone_layers": 154,
+    "total_parameters": 2307943,
+    "trainable_backbone_layer_count": 25,
+    "trainable_parameters": 1713319
+  },
+  "plantdoc_test": {
+    "evaluated": false,
+    "loaded": false
+  },
+  "policy_version": "agri-diagnose-model-v2-training-policy-v1",
+  "production_model_sha256": "bf076af34eba83053a7843dfc8b27d77e77412b7629e48227b8e30f278e81d09",
+  "seed": 20260810,
+  "status": "GPU_NOT_AVAILABLE_FOR_TENSORFLOW",
+  "stop_reason": "GPU_NOT_AVAILABLE_FOR_TENSORFLOW",
+  "tensor_pipeline": {
+    "train": {
+      "augmentation_enabled": true,
+      "dtype": "float32",
+      "maximum": 1.0,
+      "maximum_label": 38,
+      "minimum": 0.0,
+      "minimum_label": 0,
+      "shape": [
+        32,
+        224,
+        224,
+        3
+      ]
+    },
+    "validation": {
+      "augmentation_enabled": false,
+      "dtype": "float32",
+      "maximum": 1.0,
+      "maximum_label": 38,
+      "minimum": 0.0,
+      "minimum_label": 0,
+      "shape": [
+        32,
+        224,
+        224,
+        3
+      ],
+      "shuffle_enabled": false
+    }
+  },
+  "train_manifest": {
+    "audit_duration_seconds": 37.303887,
+    "class_coverage": 39,
+    "expected": 58857,
+    "missing": 0,
+    "missing_record_ids_preview": [],
+    "resolved": 58857,
+    "resolved_by_source": {
+      "Historical Mendeley 39-class source": 44340,
+      "PLDD-UP": 12030,
+      "PlantDoc": 829,
+      "Potato Leaf Disease Dataset": 20,
+      "Seasonal Corn Leaf Disease Dataset": 1638
+    },
+    "sha256": "935483f8bde5596e56aec5ac59e3d032128e685247a59a7a49e29c0ba32c74a3",
+    "unreadable": 0,
+    "unreadable_record_ids_preview": [],
+    "verification_workers": 8
+  },
+  "training_authorized": false,
+  "training_performed": false,
+  "validation_manifest": {
+    "audit_duration_seconds": 4.890822,
+    "class_coverage": 39,
+    "expected": 7362,
+    "missing": 0,
+    "missing_record_ids_preview": [],
+    "resolved": 7362,
+    "resolved_by_source": {
+      "Historical Mendeley 39-class source": 5546,
+      "PLDD-UP": 1504,
+      "PlantDoc": 105,
+      "Potato Leaf Disease Dataset": 2,
+      "Seasonal Corn Leaf Disease Dataset": 205
+    },
+    "sha256": "fbe6be537c394c907f473401a856650764f2206b0ef59401460e33fe9a432d85",
+    "unreadable": 0,
+    "unreadable_record_ids_preview": [],
+    "verification_workers": 8
+  }
+}
