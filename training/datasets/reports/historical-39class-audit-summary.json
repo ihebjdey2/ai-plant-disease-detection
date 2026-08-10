@@ -1,0 +1,788 @@
+{
+  "audit_date": "2026-08-10",
+  "background_audit": {
+    "exact_duplicate_group_count": 1,
+    "formats": {
+      "JPEG": 1143
+    },
+    "maximum_dimensions": {
+      "height": 192,
+      "width": 256
+    },
+    "minimum_dimensions": {
+      "height": 192,
+      "width": 256
+    },
+    "provenance_scope": "Files are members of the same hash-verified official non-augmented archive; the source documentation does not establish universal OOD coverage.",
+    "semantic_mapping": "MATCHED_TO_DEPLOYED_INDEX_4",
+    "source_label": "Background_without_leaves",
+    "target_class": "Background without leaves",
+    "target_index": 4,
+    "verified_image_count": 1143
+  },
+  "candidate_status_counts": {
+    "EXCLUDE_EXACT_DUPLICATE": 23,
+    "INCLUDE_CANDIDATE": 55423,
+    "REVIEW_PERCEPTUAL_CONFLICT": 2
+  },
+  "clean_candidate_count": 55423,
+  "clean_candidates_by_target": {
+    "0": {
+      "count": 630,
+      "target_class": "Apple Apple scab"
+    },
+    "1": {
+      "count": 621,
+      "target_class": "Apple Black rot"
+    },
+    "10": {
+      "count": 985,
+      "target_class": "Corn Northern Leaf Blight"
+    },
+    "11": {
+      "count": 1162,
+      "target_class": "Corn healthy"
+    },
+    "12": {
+      "count": 1180,
+      "target_class": "Grape Black rot"
+    },
+    "13": {
+      "count": 1383,
+      "target_class": "Grape Esca"
+    },
+    "14": {
+      "count": 1076,
+      "target_class": "Grape Leaf blight"
+    },
+    "15": {
+      "count": 423,
+      "target_class": "Grape healthy"
+    },
+    "16": {
+      "count": 5507,
+      "target_class": "Orange Huanglongbing"
+    },
+    "17": {
+      "count": 2297,
+      "target_class": "Peach Bacterial spot"
+    },
+    "18": {
+      "count": 360,
+      "target_class": "Peach healthy"
+    },
+    "19": {
+      "count": 997,
+      "target_class": "Bell pepper Bacterial spot"
+    },
+    "2": {
+      "count": 275,
+      "target_class": "Apple Cedar apple rust"
+    },
+    "20": {
+      "count": 1478,
+      "target_class": "Bell pepper healthy"
+    },
+    "21": {
+      "count": 1000,
+      "target_class": "Potato Early blight"
+    },
+    "22": {
+      "count": 1000,
+      "target_class": "Potato Late blight"
+    },
+    "23": {
+      "count": 152,
+      "target_class": "Potato healthy"
+    },
+    "24": {
+      "count": 371,
+      "target_class": "Raspberry healthy"
+    },
+    "25": {
+      "count": 5090,
+      "target_class": "Soybean healthy"
+    },
+    "26": {
+      "count": 1835,
+      "target_class": "Squash Powdery mildew"
+    },
+    "27": {
+      "count": 1109,
+      "target_class": "Strawberry Leaf scorch"
+    },
+    "28": {
+      "count": 456,
+      "target_class": "Strawberry healthy"
+    },
+    "29": {
+      "count": 2127,
+      "target_class": "Tomato Bacterial spot"
+    },
+    "3": {
+      "count": 1638,
+      "target_class": "Apple healthy"
+    },
+    "30": {
+      "count": 1000,
+      "target_class": "Tomato Early blight"
+    },
+    "31": {
+      "count": 1900,
+      "target_class": "Tomato Late blight"
+    },
+    "32": {
+      "count": 952,
+      "target_class": "Tomato Leaf Mold"
+    },
+    "33": {
+      "count": 1771,
+      "target_class": "Tomato Septoria leaf spot"
+    },
+    "34": {
+      "count": 1676,
+      "target_class": "Tomato Spider mites"
+    },
+    "35": {
+      "count": 1404,
+      "target_class": "Tomato Target Spot"
+    },
+    "36": {
+      "count": 5357,
+      "target_class": "Tomato Yellow Leaf Curl Virus"
+    },
+    "37": {
+      "count": 373,
+      "target_class": "Tomato mosaic virus"
+    },
+    "38": {
+      "count": 1584,
+      "target_class": "Tomato healthy"
+    },
+    "4": {
+      "count": 1141,
+      "target_class": "Background without leaves"
+    },
+    "5": {
+      "count": 1502,
+      "target_class": "Blueberry healthy"
+    },
+    "6": {
+      "count": 1052,
+      "target_class": "Cherry Powdery mildew"
+    },
+    "7": {
+      "count": 854,
+      "target_class": "Cherry healthy"
+    },
+    "8": {
+      "count": 513,
+      "target_class": "Corn Cercospora leaf spot"
+    },
+    "9": {
+      "count": 1192,
+      "target_class": "Corn Common rust"
+    }
+  },
+  "combined_coverage_projection": {
+    "by_target_class": [
+      {
+        "historical_count": 630,
+        "projected_total": 713,
+        "real_world_source_count": 1,
+        "real_world_sources": [
+          "PlantDoc"
+        ],
+        "real_world_v2_count": 83,
+        "target_class": "Apple Apple scab",
+        "target_index": 0
+      },
+      {
+        "historical_count": 621,
+        "projected_total": 621,
+        "real_world_source_count": 0,
+        "real_world_sources": [],
+        "real_world_v2_count": 0,
+        "target_class": "Apple Black rot",
+        "target_index": 1
+      },
+      {
+        "historical_count": 275,
+        "projected_total": 275,
+        "real_world_source_count": 0,
+        "real_world_sources": [],
+        "real_world_v2_count": 0,
+        "target_class": "Apple Cedar apple rust",
+        "target_index": 2
+      },
+      {
+        "historical_count": 1638,
+        "projected_total": 1638,
+        "real_world_source_count": 0,
+        "real_world_sources": [],
+        "real_world_v2_count": 0,
+        "target_class": "Apple healthy",
+        "target_index": 3
+      },
+      {
+        "historical_count": 1141,
+        "projected_total": 1141,
+        "real_world_source_count": 0,
+        "real_world_sources": [],
+        "real_world_v2_count": 0,
+        "target_class": "Background without leaves",
+        "target_index": 4
+      },
+      {
+        "historical_count": 1502,
+        "projected_total": 1502,
+        "real_world_source_count": 0,
+        "real_world_sources": [],
+        "real_world_v2_count": 0,
+        "target_class": "Blueberry healthy",
+        "target_index": 5
+      },
+      {
+        "historical_count": 1052,
+        "projected_total": 1052,
+        "real_world_source_count": 0,
+        "real_world_sources": [],
+        "real_world_v2_count": 0,
+        "target_class": "Cherry Powdery mildew",
+        "target_index": 6
+      },
+      {
+        "historical_count": 854,
+        "projected_total": 854,
+        "real_world_source_count": 0,
+        "real_world_sources": [],
+        "real_world_v2_count": 0,
+        "target_class": "Cherry healthy",
+        "target_index": 7
+      },
+      {
+        "historical_count": 513,
+        "projected_total": 1463,
+        "real_world_source_count": 2,
+        "real_world_sources": [
+          "PlantDoc",
+          "Seasonal Corn Leaf Disease Dataset"
+        ],
+        "real_world_v2_count": 950,
+        "target_class": "Corn Cercospora leaf spot",
+        "target_index": 8
+      },
+      {
+        "historical_count": 1192,
+        "projected_total": 1321,
+        "real_world_source_count": 1,
+        "real_world_sources": [
+          "Seasonal Corn Leaf Disease Dataset"
+        ],
+        "real_world_v2_count": 129,
+        "target_class": "Corn Common rust",
+        "target_index": 9
+      },
+      {
+        "historical_count": 985,
+        "projected_total": 985,
+        "real_world_source_count": 0,
+        "real_world_sources": [],
+        "real_world_v2_count": 0,
+        "target_class": "Corn Northern Leaf Blight",
+        "target_index": 10
+      },
+      {
+        "historical_count": 1162,
+        "projected_total": 2192,
+        "real_world_source_count": 1,
+        "real_world_sources": [
+          "Seasonal Corn Leaf Disease Dataset"
+        ],
+        "real_world_v2_count": 1030,
+        "target_class": "Corn healthy",
+        "target_index": 11
+      },
+      {
+        "historical_count": 1180,
+        "projected_total": 1236,
+        "real_world_source_count": 1,
+        "real_world_sources": [
+          "PlantDoc"
+        ],
+        "real_world_v2_count": 56,
+        "target_class": "Grape Black rot",
+        "target_index": 12
+      },
+      {
+        "historical_count": 1383,
+        "projected_total": 1383,
+        "real_world_source_count": 0,
+        "real_world_sources": [],
+        "real_world_v2_count": 0,
+        "target_class": "Grape Esca",
+        "target_index": 13
+      },
+      {
+        "historical_count": 1076,
+        "projected_total": 1076,
+        "real_world_source_count": 0,
+        "real_world_sources": [],
+        "real_world_v2_count": 0,
+        "target_class": "Grape Leaf blight",
+        "target_index": 14
+      },
+      {
+        "historical_count": 423,
+        "projected_total": 423,
+        "real_world_source_count": 0,
+        "real_world_sources": [],
+        "real_world_v2_count": 0,
+        "target_class": "Grape healthy",
+        "target_index": 15
+      },
+      {
+        "historical_count": 5507,
+        "projected_total": 5507,
+        "real_world_source_count": 0,
+        "real_world_sources": [],
+        "real_world_v2_count": 0,
+        "target_class": "Orange Huanglongbing",
+        "target_index": 16
+      },
+      {
+        "historical_count": 2297,
+        "projected_total": 2297,
+        "real_world_source_count": 0,
+        "real_world_sources": [],
+        "real_world_v2_count": 0,
+        "target_class": "Peach Bacterial spot",
+        "target_index": 17
+      },
+      {
+        "historical_count": 360,
+        "projected_total": 360,
+        "real_world_source_count": 0,
+        "real_world_sources": [],
+        "real_world_v2_count": 0,
+        "target_class": "Peach healthy",
+        "target_index": 18
+      },
+      {
+        "historical_count": 997,
+        "projected_total": 997,
+        "real_world_source_count": 0,
+        "real_world_sources": [],
+        "real_world_v2_count": 0,
+        "target_class": "Bell pepper Bacterial spot",
+        "target_index": 19
+      },
+      {
+        "historical_count": 1478,
+        "projected_total": 1478,
+        "real_world_source_count": 0,
+        "real_world_sources": [],
+        "real_world_v2_count": 0,
+        "target_class": "Bell pepper healthy",
+        "target_index": 20
+      },
+      {
+        "historical_count": 1000,
+        "projected_total": 5751,
+        "real_world_source_count": 2,
+        "real_world_sources": [
+          "PLDD-UP",
+          "PlantDoc"
+        ],
+        "real_world_v2_count": 4751,
+        "target_class": "Potato Early blight",
+        "target_index": 21
+      },
+      {
+        "historical_count": 1000,
+        "projected_total": 7105,
+        "real_world_source_count": 3,
+        "real_world_sources": [
+          "PLDD-UP",
+          "PlantDoc",
+          "Potato Leaf Disease Dataset"
+        ],
+        "real_world_v2_count": 6105,
+        "target_class": "Potato Late blight",
+        "target_index": 22
+      },
+      {
+        "historical_count": 152,
+        "projected_total": 4540,
+        "real_world_source_count": 2,
+        "real_world_sources": [
+          "PLDD-UP",
+          "Potato Leaf Disease Dataset"
+        ],
+        "real_world_v2_count": 4388,
+        "target_class": "Potato healthy",
+        "target_index": 23
+      },
+      {
+        "historical_count": 371,
+        "projected_total": 371,
+        "real_world_source_count": 0,
+        "real_world_sources": [],
+        "real_world_v2_count": 0,
+        "target_class": "Raspberry healthy",
+        "target_index": 24
+      },
+      {
+        "historical_count": 5090,
+        "projected_total": 5090,
+        "real_world_source_count": 0,
+        "real_world_sources": [],
+        "real_world_v2_count": 0,
+        "target_class": "Soybean healthy",
+        "target_index": 25
+      },
+      {
+        "historical_count": 1835,
+        "projected_total": 1959,
+        "real_world_source_count": 1,
+        "real_world_sources": [
+          "PlantDoc"
+        ],
+        "real_world_v2_count": 124,
+        "target_class": "Squash Powdery mildew",
+        "target_index": 26
+      },
+      {
+        "historical_count": 1109,
+        "projected_total": 1109,
+        "real_world_source_count": 0,
+        "real_world_sources": [],
+        "real_world_v2_count": 0,
+        "target_class": "Strawberry Leaf scorch",
+        "target_index": 27
+      },
+      {
+        "historical_count": 456,
+        "projected_total": 456,
+        "real_world_source_count": 0,
+        "real_world_sources": [],
+        "real_world_v2_count": 0,
+        "target_class": "Strawberry healthy",
+        "target_index": 28
+      },
+      {
+        "historical_count": 2127,
+        "projected_total": 2225,
+        "real_world_source_count": 1,
+        "real_world_sources": [
+          "PlantDoc"
+        ],
+        "real_world_v2_count": 98,
+        "target_class": "Tomato Bacterial spot",
+        "target_index": 29
+      },
+      {
+        "historical_count": 1000,
+        "projected_total": 1069,
+        "real_world_source_count": 1,
+        "real_world_sources": [
+          "PlantDoc"
+        ],
+        "real_world_v2_count": 69,
+        "target_class": "Tomato Early blight",
+        "target_index": 30
+      },
+      {
+        "historical_count": 1900,
+        "projected_total": 1993,
+        "real_world_source_count": 1,
+        "real_world_sources": [
+          "PlantDoc"
+        ],
+        "real_world_v2_count": 93,
+        "target_class": "Tomato Late blight",
+        "target_index": 31
+      },
+      {
+        "historical_count": 952,
+        "projected_total": 1037,
+        "real_world_source_count": 1,
+        "real_world_sources": [
+          "PlantDoc"
+        ],
+        "real_world_v2_count": 85,
+        "target_class": "Tomato Leaf Mold",
+        "target_index": 32
+      },
+      {
+        "historical_count": 1771,
+        "projected_total": 1904,
+        "real_world_source_count": 1,
+        "real_world_sources": [
+          "PlantDoc"
+        ],
+        "real_world_v2_count": 133,
+        "target_class": "Tomato Septoria leaf spot",
+        "target_index": 33
+      },
+      {
+        "historical_count": 1676,
+        "projected_total": 1678,
+        "real_world_source_count": 1,
+        "real_world_sources": [
+          "PlantDoc"
+        ],
+        "real_world_v2_count": 2,
+        "target_class": "Tomato Spider mites",
+        "target_index": 34
+      },
+      {
+        "historical_count": 1404,
+        "projected_total": 1404,
+        "real_world_source_count": 0,
+        "real_world_sources": [],
+        "real_world_v2_count": 0,
+        "target_class": "Tomato Target Spot",
+        "target_index": 35
+      },
+      {
+        "historical_count": 5357,
+        "projected_total": 5357,
+        "real_world_source_count": 0,
+        "real_world_sources": [],
+        "real_world_v2_count": 0,
+        "target_class": "Tomato Yellow Leaf Curl Virus",
+        "target_index": 36
+      },
+      {
+        "historical_count": 373,
+        "projected_total": 417,
+        "real_world_source_count": 1,
+        "real_world_sources": [
+          "PlantDoc"
+        ],
+        "real_world_v2_count": 44,
+        "target_class": "Tomato mosaic virus",
+        "target_index": 37
+      },
+      {
+        "historical_count": 1584,
+        "projected_total": 1584,
+        "real_world_source_count": 0,
+        "real_world_sources": [],
+        "real_world_v2_count": 0,
+        "target_class": "Tomato healthy",
+        "target_index": 38
+      }
+    ],
+    "classes_with_multiple_real_world_sources": [
+      "Corn Cercospora leaf spot",
+      "Potato Early blight",
+      "Potato Late blight",
+      "Potato healthy"
+    ],
+    "classes_with_real_world_support": [
+      "Apple Apple scab",
+      "Corn Cercospora leaf spot",
+      "Corn Common rust",
+      "Corn healthy",
+      "Grape Black rot",
+      "Potato Early blight",
+      "Potato Late blight",
+      "Potato healthy",
+      "Squash Powdery mildew",
+      "Tomato Bacterial spot",
+      "Tomato Early blight",
+      "Tomato Late blight",
+      "Tomato Leaf Mold",
+      "Tomato Septoria leaf spot",
+      "Tomato Spider mites",
+      "Tomato mosaic virus"
+    ],
+    "historical_only_classes": [
+      "Apple Black rot",
+      "Apple Cedar apple rust",
+      "Apple healthy",
+      "Background without leaves",
+      "Blueberry healthy",
+      "Cherry Powdery mildew",
+      "Cherry healthy",
+      "Corn Northern Leaf Blight",
+      "Grape Esca",
+      "Grape Leaf blight",
+      "Grape healthy",
+      "Orange Huanglongbing",
+      "Peach Bacterial spot",
+      "Peach healthy",
+      "Bell pepper Bacterial spot",
+      "Bell pepper healthy",
+      "Raspberry healthy",
+      "Soybean healthy",
+      "Strawberry Leaf scorch",
+      "Strawberry healthy",
+      "Tomato Target Spot",
+      "Tomato Yellow Leaf Curl Virus",
+      "Tomato healthy"
+    ],
+    "largest_projected_class": {
+      "historical_count": 1000,
+      "projected_total": 7105,
+      "real_world_source_count": 3,
+      "real_world_sources": [
+        "PLDD-UP",
+        "PlantDoc",
+        "Potato Leaf Disease Dataset"
+      ],
+      "real_world_v2_count": 6105,
+      "target_class": "Potato Late blight",
+      "target_index": 22
+    },
+    "median_projected_class_size": 1383,
+    "smallest_projected_class": {
+      "historical_count": 275,
+      "projected_total": 275,
+      "real_world_source_count": 0,
+      "real_world_sources": [],
+      "real_world_v2_count": 0,
+      "target_class": "Apple Cedar apple rust",
+      "target_index": 2
+    }
+  },
+  "corrupt_image_count": 0,
+  "coverage_count": 39,
+  "coverage_missing": [],
+  "exact_internal_duplicate_copies": 23,
+  "exact_internal_duplicate_groups": 22,
+  "exact_leakage_to_plantdoc_test": 0,
+  "exact_leakage_to_plantdoc_test_by_relationship": [],
+  "exact_leakage_to_plantdoc_test_pairs": 0,
+  "exact_overlap_with_dataset_v2": 0,
+  "exact_overlap_with_dataset_v2_by_relationship": [],
+  "exact_overlap_with_dataset_v2_pairs": 0,
+  "invariants": {
+    "augmentation_performed": false,
+    "deployed_taxonomy_modified": false,
+    "final_combined_manifest_created": false,
+    "plantdoc_test_modified": false,
+    "raw_data_modified": false,
+    "split_created": false,
+    "training_performed": false
+  },
+  "inventory": {
+    "class_counts": {
+      "Apple___Apple_scab": 630,
+      "Apple___Black_rot": 621,
+      "Apple___Cedar_apple_rust": 275,
+      "Apple___healthy": 1645,
+      "Background_without_leaves": 1143,
+      "Blueberry___healthy": 1502,
+      "Cherry___Powdery_mildew": 1052,
+      "Cherry___healthy": 854,
+      "Corn___Cercospora_leaf_spot Gray_leaf_spot": 513,
+      "Corn___Common_rust": 1192,
+      "Corn___Northern_Leaf_Blight": 985,
+      "Corn___healthy": 1162,
+      "Grape___Black_rot": 1180,
+      "Grape___Esca_(Black_Measles)": 1383,
+      "Grape___Leaf_blight_(Isariopsis_Leaf_Spot)": 1076,
+      "Grape___healthy": 423,
+      "Orange___Haunglongbing_(Citrus_greening)": 5507,
+      "Peach___Bacterial_spot": 2297,
+      "Peach___healthy": 360,
+      "Pepper,_bell___Bacterial_spot": 997,
+      "Pepper,_bell___healthy": 1478,
+      "Potato___Early_blight": 1000,
+      "Potato___Late_blight": 1000,
+      "Potato___healthy": 152,
+      "Raspberry___healthy": 371,
+      "Soybean___healthy": 5090,
+      "Squash___Powdery_mildew": 1835,
+      "Strawberry___Leaf_scorch": 1109,
+      "Strawberry___healthy": 456,
+      "Tomato___Bacterial_spot": 2127,
+      "Tomato___Early_blight": 1000,
+      "Tomato___Late_blight": 1909,
+      "Tomato___Leaf_Mold": 952,
+      "Tomato___Septoria_leaf_spot": 1771,
+      "Tomato___Spider_mites Two-spotted_spider_mite": 1676,
+      "Tomato___Target_Spot": 1404,
+      "Tomato___Tomato_Yellow_Leaf_Curl_Virus": 5357,
+      "Tomato___Tomato_mosaic_virus": 373,
+      "Tomato___healthy": 1591
+    },
+    "corrupt_image_count": 0,
+    "corrupted": [],
+    "format_counts": {
+      "JPEG": 55447,
+      "PNG": 1
+    },
+    "maximum_dimensions": {
+      "height": 256,
+      "width": 256
+    },
+    "minimum_dimensions": {
+      "height": 192,
+      "width": 256
+    },
+    "mode_counts": {
+      "RGB": 55447,
+      "RGBA": 1
+    },
+    "source_class_count": 39,
+    "source_root_name": "Plant_leave_diseases_dataset_without_augmentation",
+    "total_image_candidate_count": 55448,
+    "unsupported_file_count": 0,
+    "unsupported_files": [],
+    "valid_image_count": 55448
+  },
+  "label_conflict_groups": 0,
+  "mapped_class_count": 39,
+  "perceptual_audit": {
+    "dataset_v2_by_relationship": [],
+    "dataset_v2_verified_historical_image_count": 0,
+    "dataset_v2_verified_pair_count": 0,
+    "dhash_screened_pair_count": {
+      "dataset_v2": 23,
+      "internal": 268,
+      "plantdoc_test": 0
+    },
+    "internal_direct_group_count": 22,
+    "internal_grouped_image_count": 44,
+    "internal_possible_conflict_image_count": 2,
+    "internal_verified_conflict_image_count": 0,
+    "internal_verified_same_target_pair_count": 22,
+    "orb_candidate_count": {
+      "dataset_v2": 0,
+      "internal": 59,
+      "plantdoc_test": 0
+    },
+    "plantdoc_test_by_relationship": [],
+    "plantdoc_test_possible_historical_image_count": 0,
+    "plantdoc_test_verified_historical_image_count": 0,
+    "plantdoc_test_verified_pair_count": 0,
+    "possible_signal_count": 18,
+    "screened_signal_count": 59,
+    "verified_signal_count": 22
+  },
+  "perceptual_leakage_to_plantdoc_test": 0,
+  "perceptual_leakage_to_plantdoc_test_by_relationship": [],
+  "perceptual_leakage_to_plantdoc_test_pairs": 0,
+  "perceptual_overlap_with_dataset_v2": 0,
+  "perceptual_overlap_with_dataset_v2_by_relationship": [],
+  "perceptual_overlap_with_dataset_v2_pairs": 0,
+  "possible_perceptual_leakage_to_plantdoc_test": 0,
+  "provenance_confidence": "STRONG_MATCH_BUT_NOT_PROVEN",
+  "provenance_evidence": {
+    "limitation": "The notebook does not persist class_indices, a source archive hash, or immutable file identifiers.",
+    "matching_preprocessing": "RGB, 224x224, float32 rescale 1./255",
+    "notebook_class_count": 39,
+    "notebook_total_images": 55448,
+    "official_non_augmented_valid_images": 55448,
+    "official_source_class_count": 39
+  },
+  "schema_version": 1,
+  "source_class_count": 39,
+  "unsupported_file_count": 0,
+  "valid_image_count": 55448,
+  "verified_image_count": 55448
+}

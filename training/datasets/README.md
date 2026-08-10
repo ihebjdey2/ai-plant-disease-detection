@@ -56,6 +56,20 @@ PlantDoc TEST belongs under `evaluation/datasets/` and is a locked benchmark. It
 
    Their expected hashes and Mendeley file identifiers are recorded in `training/datasets/sources/pldd-up.json`.
 
+5. Download only the official non-augmented historical V1 archive from
+   <https://doi.org/10.17632/tywbtsjrjv.1> as:
+
+   ```text
+   training/datasets/downloads/Plant_leaf_diseases_dataset_without_augmentation.zip
+   ```
+
+   Expected file ID: `d5652a28-c1d8-4b76-97f3-72fb80f94efc`.
+   Expected SHA-256:
+   `ac3432453984d02a86197987e775a5429d0d59e7cc7c35bcf5a8f50349b90ff0`.
+   Extract it without changing source names under
+   `training/datasets/raw/historical-mendeley-39/`. Do not acquire the
+   pre-generated augmented archive for the historical base candidate pool.
+
 ## Run the audit
 
 ```powershell
@@ -67,6 +81,30 @@ The command validates all images, materializes PlantDoc TRAIN, only Banu/Deb Pot
 The exhaustive dHash pair report is intentionally local because field-image bursts produce more than one million candidate pairs. Its SHA-256 and complete count are versioned in `step5b-audit-summary.json`. Git contains all locked-test and cross-dataset pairs, deterministic review samples, and the full aggregate counts.
 
 See `docs/dataset-v2-acquisition-audit.md` for the reviewed Step 5B and Step 5B.1 findings.
+
+## Audit the historical 39-class source
+
+Step 5D validates the official non-augmented Mendeley archive, explicitly maps
+all source folders to deployed indices, creates per-image SHA-256/dHash/pHash
+metadata, and compares the source against final Dataset V2 candidates and the
+locked PlantDoc TEST split:
+
+```powershell
+python scripts/audit_historical_39class_source.py
+```
+
+The verified archive contains 55,448 valid images across all 39 deployed
+concepts. The logical clean candidate manifest contains 55,423 INCLUDE records,
+23 excluded exact copies, and two unresolved interclass perceptual reviews.
+No exact or verified perceptual overlap was found with Dataset V2 or PlantDoc
+TEST. These findings recover full 39-class candidate coverage but do not prove
+byte-level identity with the model's historical training directory. See
+`docs/historical-39class-source-audit.md` for evidence, limitations, and the
+complete coverage projection.
+
+This command does not merge datasets, create splits, balance classes, augment
+images, or train a model. Its large ORB signal report and pHash cache remain in
+the ignored `local-audits/` directory.
 
 ## Build the logically cleaned manifests
 

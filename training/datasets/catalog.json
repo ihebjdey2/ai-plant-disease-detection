@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "audit_date": "2026-08-09",
+  "audit_date": "2026-08-10",
   "scope": "Metadata inventory only; no dataset images are stored by this catalog.",
   "target_taxonomy": {
     "class_count": 39,
@@ -25,6 +25,43 @@
     "E": "unknown provenance"
   },
   "datasets": [
+    {
+      "id": "historical_mendeley_39_v1",
+      "name": "Data for: Identification of Plant Leaf Diseases Using a 9-layer Deep Convolutional Neural Network",
+      "source": "https://doi.org/10.17632/tywbtsjrjv.1",
+      "authors": ["Arun Pandian J", "Geetharamani Gopal"],
+      "publication_year": 2019,
+      "version": 1,
+      "license": "CC0 1.0",
+      "published_augmented_total_images": 61486,
+      "verified_non_augmented_images": 55448,
+      "verified_valid_images": 55448,
+      "classes": 39,
+      "domain": "controlled_plantvillage_style",
+      "visual_provenance_category": "A",
+      "official_file_name": "Plant_leaf_diseases_dataset_without_augmentation.zip",
+      "official_file_id": "d5652a28-c1d8-4b76-97f3-72fb80f94efc",
+      "archive_sha256": "ac3432453984d02a86197987e775a5429d0d59e7cc7c35bcf5a8f50349b90ff0",
+      "mapping_status": "39_MATCHED_TO_DEPLOYED_TAXONOMY",
+      "background_class_images": 1143,
+      "exact_duplicate_groups": 22,
+      "exact_duplicate_copies": 23,
+      "exact_label_conflict_groups": 0,
+      "exact_overlap_with_dataset_v2": 0,
+      "verified_perceptual_overlap_with_dataset_v2": 0,
+      "exact_leakage_to_plantdoc_test": 0,
+      "verified_perceptual_leakage_to_plantdoc_test": 0,
+      "clean_candidate_images": 55423,
+      "review_images": 2,
+      "clean_class_coverage": 39,
+      "provenance_confidence": "STRONG_MATCH_BUT_NOT_PROVEN",
+      "suggested_role": "historical_controlled_candidate_pending_final_composition",
+      "exclusions": [
+        "Official augmented archive was not acquired",
+        "23 exact duplicate copies are metadata-only exclusions",
+        "Two possible cross-class perceptual matches require human review"
+      ]
+    },
     {
       "id": "plantdoc",
       "name": "PlantDoc classification dataset",
