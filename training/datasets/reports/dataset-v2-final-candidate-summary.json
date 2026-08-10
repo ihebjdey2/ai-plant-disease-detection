@@ -1,0 +1,456 @@
+{
+  "by_source": {
+    "PLDD-UP": {
+      "excluded": 484,
+      "included": 15035,
+      "review": 0,
+      "semantic_candidates": 15519,
+      "unique_contents": 15265
+    },
+    "PlantDoc": {
+      "excluded": 51,
+      "included": 1034,
+      "review": 0,
+      "semantic_candidates": 1085,
+      "unique_contents": 1084
+    },
+    "Potato Leaf Disease Dataset": {
+      "excluded": 12,
+      "included": 24,
+      "review": 0,
+      "semantic_candidates": 36,
+      "unique_contents": 24
+    },
+    "Seasonal Corn Leaf Disease Dataset": {
+      "excluded": 617,
+      "included": 2047,
+      "review": 0,
+      "semantic_candidates": 2664,
+      "unique_contents": 2060
+    }
+  },
+  "by_target_class": {
+    "Apple Apple scab": {
+      "excluded": 0,
+      "included": 83,
+      "near_duplicate_group_count": 1,
+      "raw_candidates": 83,
+      "refined_group_count": 1,
+      "review": 0,
+      "source_count": 1
+    },
+    "Corn Cercospora leaf spot": {
+      "excluded": 611,
+      "included": 950,
+      "near_duplicate_group_count": 63,
+      "raw_candidates": 1561,
+      "refined_group_count": 62,
+      "review": 0,
+      "source_count": 2
+    },
+    "Corn Common rust": {
+      "excluded": 0,
+      "included": 129,
+      "near_duplicate_group_count": 2,
+      "raw_candidates": 129,
+      "refined_group_count": 2,
+      "review": 0,
+      "source_count": 1
+    },
+    "Corn healthy": {
+      "excluded": 8,
+      "included": 1030,
+      "near_duplicate_group_count": 433,
+      "raw_candidates": 1038,
+      "refined_group_count": 432,
+      "review": 0,
+      "source_count": 1
+    },
+    "Grape Black rot": {
+      "excluded": 0,
+      "included": 56,
+      "near_duplicate_group_count": 1,
+      "raw_candidates": 56,
+      "refined_group_count": 1,
+      "review": 0,
+      "source_count": 1
+    },
+    "Potato Early blight": {
+      "excluded": 161,
+      "included": 4751,
+      "near_duplicate_group_count": 319,
+      "raw_candidates": 4912,
+      "refined_group_count": 336,
+      "review": 0,
+      "source_count": 2
+    },
+    "Potato Late blight": {
+      "excluded": 128,
+      "included": 6105,
+      "near_duplicate_group_count": 351,
+      "raw_candidates": 6233,
+      "refined_group_count": 409,
+      "review": 0,
+      "source_count": 3
+    },
+    "Potato healthy": {
+      "excluded": 228,
+      "included": 4388,
+      "near_duplicate_group_count": 1196,
+      "raw_candidates": 4616,
+      "refined_group_count": 1484,
+      "review": 0,
+      "source_count": 2
+    },
+    "Squash Powdery mildew": {
+      "excluded": 0,
+      "included": 124,
+      "near_duplicate_group_count": 2,
+      "raw_candidates": 124,
+      "refined_group_count": 2,
+      "review": 0,
+      "source_count": 1
+    },
+    "Tomato Bacterial spot": {
+      "excluded": 3,
+      "included": 98,
+      "near_duplicate_group_count": 5,
+      "raw_candidates": 101,
+      "refined_group_count": 4,
+      "review": 0,
+      "source_count": 1
+    },
+    "Tomato Early blight": {
+      "excluded": 10,
+      "included": 69,
+      "near_duplicate_group_count": 12,
+      "raw_candidates": 79,
+      "refined_group_count": 12,
+      "review": 0,
+      "source_count": 1
+    },
+    "Tomato Late blight": {
+      "excluded": 8,
+      "included": 93,
+      "near_duplicate_group_count": 11,
+      "raw_candidates": 101,
+      "refined_group_count": 11,
+      "review": 0,
+      "source_count": 1
+    },
+    "Tomato Leaf Mold": {
+      "excluded": 0,
+      "included": 85,
+      "near_duplicate_group_count": 1,
+      "raw_candidates": 85,
+      "refined_group_count": 0,
+      "review": 0,
+      "source_count": 1
+    },
+    "Tomato Septoria leaf spot": {
+      "excluded": 7,
+      "included": 133,
+      "near_duplicate_group_count": 11,
+      "raw_candidates": 140,
+      "refined_group_count": 9,
+      "review": 0,
+      "source_count": 1
+    },
+    "Tomato Spider mites": {
+      "excluded": 0,
+      "included": 2,
+      "near_duplicate_group_count": 0,
+      "raw_candidates": 2,
+      "refined_group_count": 0,
+      "review": 0,
+      "source_count": 1
+    },
+    "Tomato mosaic virus": {
+      "excluded": 0,
+      "included": 44,
+      "near_duplicate_group_count": 1,
+      "raw_candidates": 44,
+      "refined_group_count": 0,
+      "review": 0,
+      "source_count": 1
+    }
+  },
+  "conservative_final_exclusion_count": 38,
+  "conservative_final_exclusion_percentage_of_semantic_pool": 0.19685039370078738,
+  "counts_by_source": {
+    "PLDD-UP": {
+      "exclude": 484,
+      "include": 15035,
+      "raw": 15519,
+      "review": 0
+    },
+    "PlantDoc": {
+      "exclude": 51,
+      "include": 1034,
+      "raw": 1085,
+      "review": 0
+    },
+    "Potato Leaf Disease Dataset": {
+      "exclude": 12,
+      "include": 24,
+      "raw": 36,
+      "review": 0
+    },
+    "Seasonal Corn Leaf Disease Dataset": {
+      "exclude": 617,
+      "include": 2047,
+      "raw": 2664,
+      "review": 0
+    }
+  },
+  "counts_by_target": {
+    "Apple Apple scab": {
+      "exclude": 0,
+      "include": 83,
+      "raw": 83,
+      "refined_group_count": 1,
+      "review": 0,
+      "source_count": 1
+    },
+    "Corn Cercospora leaf spot": {
+      "exclude": 611,
+      "include": 950,
+      "raw": 1561,
+      "refined_group_count": 62,
+      "review": 0,
+      "source_count": 2
+    },
+    "Corn Common rust": {
+      "exclude": 0,
+      "include": 129,
+      "raw": 129,
+      "refined_group_count": 2,
+      "review": 0,
+      "source_count": 1
+    },
+    "Corn healthy": {
+      "exclude": 8,
+      "include": 1030,
+      "raw": 1038,
+      "refined_group_count": 432,
+      "review": 0,
+      "source_count": 1
+    },
+    "Grape Black rot": {
+      "exclude": 0,
+      "include": 56,
+      "raw": 56,
+      "refined_group_count": 1,
+      "review": 0,
+      "source_count": 1
+    },
+    "Potato Early blight": {
+      "exclude": 161,
+      "include": 4751,
+      "raw": 4912,
+      "refined_group_count": 336,
+      "review": 0,
+      "source_count": 2
+    },
+    "Potato Late blight": {
+      "exclude": 128,
+      "include": 6105,
+      "raw": 6233,
+      "refined_group_count": 409,
+      "review": 0,
+      "source_count": 3
+    },
+    "Potato healthy": {
+      "exclude": 228,
+      "include": 4388,
+      "raw": 4616,
+      "refined_group_count": 1484,
+      "review": 0,
+      "source_count": 2
+    },
+    "Squash Powdery mildew": {
+      "exclude": 0,
+      "include": 124,
+      "raw": 124,
+      "refined_group_count": 2,
+      "review": 0,
+      "source_count": 1
+    },
+    "Tomato Bacterial spot": {
+      "exclude": 3,
+      "include": 98,
+      "raw": 101,
+      "refined_group_count": 4,
+      "review": 0,
+      "source_count": 1
+    },
+    "Tomato Early blight": {
+      "exclude": 10,
+      "include": 69,
+      "raw": 79,
+      "refined_group_count": 12,
+      "review": 0,
+      "source_count": 1
+    },
+    "Tomato Late blight": {
+      "exclude": 8,
+      "include": 93,
+      "raw": 101,
+      "refined_group_count": 11,
+      "review": 0,
+      "source_count": 1
+    },
+    "Tomato Leaf Mold": {
+      "exclude": 0,
+      "include": 85,
+      "raw": 85,
+      "refined_group_count": 0,
+      "review": 0,
+      "source_count": 1
+    },
+    "Tomato Septoria leaf spot": {
+      "exclude": 7,
+      "include": 133,
+      "raw": 140,
+      "refined_group_count": 9,
+      "review": 0,
+      "source_count": 1
+    },
+    "Tomato Spider mites": {
+      "exclude": 0,
+      "include": 2,
+      "raw": 2,
+      "refined_group_count": 0,
+      "review": 0,
+      "source_count": 1
+    },
+    "Tomato mosaic virus": {
+      "exclude": 0,
+      "include": 44,
+      "raw": 44,
+      "refined_group_count": 0,
+      "review": 0,
+      "source_count": 1
+    }
+  },
+  "exact_duplicate_audit": {
+    "benchmark_groups": 11,
+    "benchmark_training_exclusions": 11,
+    "copies_beyond_canonical": 882,
+    "exact_copy_exclusions": 863,
+    "groups": 835,
+    "label_conflict_groups": 16,
+    "label_conflict_record_exclusions": 16
+  },
+  "exclude": 1164,
+  "exclusions_by_reason": {
+    "EXACT_BENCHMARK_LEAKAGE": 11,
+    "EXACT_DUPLICATE_COPY": 863,
+    "EXACT_LABEL_CONFLICT": 16,
+    "LOCKED_BENCHMARK": 236,
+    "UNRESOLVED_MAPPING": 1254,
+    "UNRESOLVED_PERCEPTUAL_IDENTITY": 38,
+    "UNSUPPORTED_CLASS": 327,
+    "VERIFIED_PERCEPTUAL_BENCHMARK_LEAKAGE": 4,
+    "VERIFIED_PERCEPTUAL_LABEL_CONFLICT": 235
+  },
+  "full_39_class_retraining_supported_by_candidate_pool": false,
+  "full_master_decisions": {
+    "exclude": 2984,
+    "include": 18140,
+    "review": 0
+  },
+  "include": 18140,
+  "invariants": {
+    "all_targets_use_deployed_taxonomy": true,
+    "ambiguous_and_unsupported_mappings_are_excluded": true,
+    "clean_manifest_contains_only_include": true,
+    "clean_manifest_has_unique_sha256": true,
+    "exact_benchmark_leakage_is_excluded": true,
+    "exact_label_conflicts_are_excluded": true,
+    "locked_benchmark_is_excluded": true,
+    "raw_data_modified": false,
+    "review_count_is_zero": true,
+    "split_created": false,
+    "training_performed": false,
+    "unresolved_perceptual_identity_is_excluded": true,
+    "verified_perceptual_risks_are_excluded": true
+  },
+  "inventory_record_count": 21124,
+  "missing_class_count": 23,
+  "missing_class_data_requirement": "Recover or reproducibly reconstruct the historical PlantVillage-style training source before designing a full 39-output retraining plan.",
+  "missing_classes": [
+    "Apple Black rot",
+    "Apple Cedar apple rust",
+    "Apple healthy",
+    "Background without leaves",
+    "Bell pepper Bacterial spot",
+    "Bell pepper healthy",
+    "Blueberry healthy",
+    "Cherry Powdery mildew",
+    "Cherry healthy",
+    "Corn Northern Leaf Blight",
+    "Grape Esca",
+    "Grape Leaf blight",
+    "Grape healthy",
+    "Orange Huanglongbing",
+    "Peach Bacterial spot",
+    "Peach healthy",
+    "Raspberry healthy",
+    "Soybean healthy",
+    "Strawberry Leaf scorch",
+    "Strawberry healthy",
+    "Tomato Target Spot",
+    "Tomato Yellow Leaf Curl Virus",
+    "Tomato healthy"
+  ],
+  "perceptual_audit": {
+    "benchmark_group_count": 4,
+    "benchmark_pair_count": 4,
+    "different_target_group_count": 75,
+    "different_target_pair_count": 883702,
+    "finalization": {
+      "conservative_final_exclusions": 38
+    },
+    "group_count": 2351,
+    "grouped_record_count": 8066,
+    "pair_count": 1445318,
+    "resolution": {
+      "protected_existing_exclusion": 72,
+      "resolution_rows": 8066,
+      "resolved_exclude": 239,
+      "resolved_include": 7717,
+      "resolved_review": 38
+    },
+    "review_queue_rows": 79
+  },
+  "raw_semantic_candidate_count": 19304,
+  "represented_class_count": 16,
+  "represented_classes": [
+    "Apple Apple scab",
+    "Corn Cercospora leaf spot",
+    "Corn Common rust",
+    "Corn healthy",
+    "Grape Black rot",
+    "Potato Early blight",
+    "Potato Late blight",
+    "Potato healthy",
+    "Squash Powdery mildew",
+    "Tomato Bacterial spot",
+    "Tomato Early blight",
+    "Tomato Late blight",
+    "Tomato Leaf Mold",
+    "Tomato Septoria leaf spot",
+    "Tomato Spider mites",
+    "Tomato mosaic virus"
+  ],
+  "review": 0,
+  "reviews_by_reason": {},
+  "schema_version": 2,
+  "semantic_candidate_decisions": {
+    "exclude": 1164,
+    "include": 18140,
+    "review": 0
+  },
+  "semantic_raw": 19304
+}

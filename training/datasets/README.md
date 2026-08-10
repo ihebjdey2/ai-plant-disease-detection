@@ -111,3 +111,18 @@ The historical Step 5C dHash reports remain unchanged. Step 5D must use
 indivisible grouping constraint. See
 `docs/dataset-v2-perceptual-resolution.md` for thresholds, before/after counts,
 benchmark decisions, and remaining human-review cases.
+
+## Final candidate pool
+
+Step 5C.2 conservatively excludes only the 38 Step 5C.1 records whose visual
+identity remained unresolved. Rebuild the final deterministic manifests with:
+
+```powershell
+python scripts/build_dataset_v2_manifest.py
+```
+
+The command writes `dataset-v2-final-candidate-summary.json`. The final semantic
+pool contains 18,140 INCLUDE, zero REVIEW, and 1,164 EXCLUDE records. Dataset V2
+currently represents 16 of the 39 deployed classes, so it is not by itself a
+valid source for full 39-output retraining. No split or training has occurred.
+See `docs/dataset-v2-final-candidate-pool.md`.

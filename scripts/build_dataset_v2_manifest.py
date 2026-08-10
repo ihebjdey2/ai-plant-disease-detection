@@ -225,6 +225,7 @@ def apply_perceptual_resolution(
         "VERIFIED_LABEL_CONFLICT",
         "VERIFIED_BENCHMARK_LEAKAGE",
         "STILL_UNCERTAIN",
+        "CONSERVATIVE_FINAL_EXCLUSION",
     }
     allowed_similarity = {
         "NOT_SCREENED",
@@ -280,6 +281,22 @@ def apply_perceptual_resolution(
         counts[f"resolved_{resolved_status.lower()}"] += 1
     counts["resolution_rows"] = len(rows)
     return dict(counts)
+
+
+def finalize_unresolved_perceptual_reviews(
+    records: Sequence[dict[str, str]],
+) -> dict[str, int]:
+    """Exclude only Step 5C.1 reviews that remained perceptually unresolved."""
+    finalized = 0
+    for record in records:
+        if record["cleaning_status"] != "REVIEW":
+            continue
+        if record["review_resolution"] != "STILL_UNCERTAIN":
+            continue
+        exclude(record, "UNRESOLVED_PERCEPTUAL_IDENTITY")
+        record["review_resolution"] = "CONSERVATIVE_FINAL_EXCLUSION"
+        finalized += 1
+    return {"conservative_final_exclusions": finalized}
 
 
 def apply_exact_policy(
@@ -646,7 +663,9 @@ def load_perceptual_members(
 
 
 def validate_manifests(
-    master: Sequence[dict[str, str]], clean: Sequence[dict[str, str]]
+    master: Sequence[dict[str, str]],
+    clean: Sequence[dict[str, str]],
+    require_final: bool = False,
 ) -> None:
     allowed_statuses = {"INCLUDE", "EXCLUDE", "REVIEW"}
     allowed_reasons = {
@@ -662,6 +681,7 @@ def validate_manifests(
         "UNSUPPORTED_CLASS",
         "VERIFIED_PERCEPTUAL_LABEL_CONFLICT",
         "VERIFIED_PERCEPTUAL_BENCHMARK_LEAKAGE",
+        "UNRESOLVED_PERCEPTUAL_IDENTITY",
     }
     for record in master:
         if record["cleaning_status"] not in allowed_statuses:
@@ -673,6 +693,8 @@ def validate_manifests(
         if record["cleaning_status"] == "INCLUDE":
             if record["role"] == "locked_test":
                 raise ManifestBuildError("A locked benchmark record was included.")
+            if record["benchmark_leakage"] == "true":
+                raise ManifestBuildError("An exact benchmark leak was included.")
             if record["mapping_status"] != "MATCHED":
                 raise ManifestBuildError("An unresolved semantic mapping was included.")
             if record["label_conflict"] == "true":
@@ -684,6 +706,20 @@ def validate_manifests(
                 raise ManifestBuildError(
                     "A verified perceptual conflict or benchmark leak was included."
                 )
+            if record["review_resolution"] in {
+                "STILL_UNCERTAIN",
+                "CONSERVATIVE_FINAL_EXCLUSION",
+            }:
+                raise ManifestBuildError(
+                    "An unresolved perceptual identity record was included."
+                )
+        if record["review_resolution"] == "CONSERVATIVE_FINAL_EXCLUSION" and (
+            record["cleaning_status"] != "EXCLUDE"
+            or record["exclusion_reason"] != "UNRESOLVED_PERCEPTUAL_IDENTITY"
+        ):
+            raise ManifestBuildError(
+                "A conservative final exclusion has inconsistent decision metadata."
+            )
     expected_clean = [row for row in master if row["cleaning_status"] == "INCLUDE"]
     if [row["record_id"] for row in clean] != [row["record_id"] for row in expected_clean]:
         raise ManifestBuildError("Clean manifest is not the exact INCLUDE subset.")
@@ -692,6 +728,14 @@ def validate_manifests(
         raise ManifestBuildError("Clean manifest contains duplicate SHA-256 contents.")
     if any(row["manual_review_required"] == "true" for row in clean):
         raise ManifestBuildError("Clean manifest contains unresolved review records.")
+    if require_final and any(row["cleaning_status"] == "REVIEW" for row in master):
+        raise ManifestBuildError("Final Dataset V2 manifest contains REVIEW records.")
+    if require_final and any(
+        row["review_resolution"] == "STILL_UNCERTAIN" for row in master
+    ):
+        raise ManifestBuildError(
+            "Final Dataset V2 manifest contains unresolved perceptual identities."
+        )
 
 
 def write_exact_conflict_report(
@@ -749,18 +793,77 @@ def summarize(
             "near_duplicate_group_count": len(
                 {row["near_duplicate_group_id"] for row in rows if row["near_duplicate_group_id"]}
             ),
+            "refined_group_count": len(
+                {row["refined_group_id"] for row in rows if row["refined_group_id"]}
+            ),
         }
 
     semantic_decisions = decision_counts(training_matched)
     full_decisions = decision_counts(master)
+    represented_classes = sorted(
+        target for target, counts in by_target.items() if counts["included"] > 0
+    )
+    missing_classes = sorted(set(CLASS_NAMES) - set(represented_classes))
+    counts_by_source = {
+        source: {
+            "raw": counts["semantic_candidates"],
+            "include": counts["included"],
+            "exclude": counts["excluded"],
+            "review": counts["review"],
+        }
+        for source, counts in by_source.items()
+    }
+    counts_by_target = {
+        target: {
+            "raw": counts["raw_candidates"],
+            "include": counts["included"],
+            "exclude": counts["excluded"],
+            "review": counts["review"],
+            "source_count": counts["source_count"],
+            "refined_group_count": counts["refined_group_count"],
+        }
+        for target, counts in by_target.items()
+    }
+    include_count = semantic_decisions.get("INCLUDE", 0)
+    review_count = semantic_decisions.get("REVIEW", 0)
+    exclude_count = semantic_decisions.get("EXCLUDE", 0)
+    conservative_final_exclusions = sum(
+        row["exclusion_reason"] == "UNRESOLVED_PERCEPTUAL_IDENTITY"
+        for row in training_matched
+    )
+    include_rows = [row for row in master if row["cleaning_status"] == "INCLUDE"]
+    supports_full_taxonomy = len(represented_classes) == len(CLASS_NAMES)
     return {
-        "schema_version": 1,
+        "schema_version": 2,
+        "semantic_raw": len(training_matched),
+        "include": include_count,
+        "review": review_count,
+        "exclude": exclude_count,
+        "represented_class_count": len(represented_classes),
+        "represented_classes": represented_classes,
+        "missing_class_count": len(missing_classes),
+        "missing_classes": missing_classes,
+        "conservative_final_exclusion_count": conservative_final_exclusions,
+        "conservative_final_exclusion_percentage_of_semantic_pool": (
+            conservative_final_exclusions / len(training_matched) * 100
+            if training_matched
+            else 0.0
+        ),
+        "full_39_class_retraining_supported_by_candidate_pool": supports_full_taxonomy,
+        "missing_class_data_requirement": (
+            "Recover or reproducibly reconstruct the historical PlantVillage-style "
+            "training source before designing a full 39-output retraining plan."
+            if not supports_full_taxonomy
+            else "No missing deployed classes."
+        ),
+        "counts_by_source": counts_by_source,
+        "counts_by_target": counts_by_target,
         "inventory_record_count": len(master),
         "raw_semantic_candidate_count": len(training_matched),
         "semantic_candidate_decisions": {
-            "include": semantic_decisions.get("INCLUDE", 0),
-            "review": semantic_decisions.get("REVIEW", 0),
-            "exclude": semantic_decisions.get("EXCLUDE", 0),
+            "include": include_count,
+            "review": review_count,
+            "exclude": exclude_count,
         },
         "full_master_decisions": {
             "include": full_decisions.get("INCLUDE", 0),
@@ -795,6 +898,37 @@ def summarize(
             "training_performed": False,
             "clean_manifest_contains_only_include": True,
             "clean_manifest_has_unique_sha256": True,
+            "review_count_is_zero": review_count == 0,
+            "locked_benchmark_is_excluded": not any(
+                row["role"] == "locked_test" and row["cleaning_status"] == "INCLUDE"
+                for row in master
+            ),
+            "unresolved_perceptual_identity_is_excluded": not any(
+                row["review_resolution"] == "STILL_UNCERTAIN"
+                or (
+                    row["review_resolution"] == "CONSERVATIVE_FINAL_EXCLUSION"
+                    and row["cleaning_status"] != "EXCLUDE"
+                )
+                for row in master
+            ),
+            "exact_benchmark_leakage_is_excluded": not any(
+                row["benchmark_leakage"] == "true" for row in include_rows
+            ),
+            "exact_label_conflicts_are_excluded": not any(
+                row["label_conflict"] == "true" for row in include_rows
+            ),
+            "verified_perceptual_risks_are_excluded": not any(
+                row["refined_similarity_status"]
+                in {"VERIFIED_LABEL_CONFLICT", "VERIFIED_BENCHMARK_LEAKAGE"}
+                for row in include_rows
+            ),
+            "ambiguous_and_unsupported_mappings_are_excluded": all(
+                row["mapping_status"] == "MATCHED" for row in include_rows
+            ),
+            "all_targets_use_deployed_taxonomy": all(
+                not row["target_class"] or row["target_class"] in CLASS_NAMES
+                for row in master
+            ),
         },
     }
 
@@ -811,6 +945,7 @@ def build_manifests(
     full_perceptual_path: Path | None = None,
     exact_conflicts_path: Path | None = None,
     perceptual_resolution_path: Path | None = None,
+    finalize_candidates: bool = False,
 ) -> dict:
     records = load_inventory(inventory_path)
     initialize_cleaning(records)
@@ -867,9 +1002,17 @@ def build_manifests(
         perceptual_stats["resolution"] = apply_perceptual_resolution(
             records, perceptual_resolution_path
         )
+    elif finalize_candidates:
+        raise ManifestBuildError(
+            "Final candidate generation requires the Step 5C.1 perceptual resolution report."
+        )
+    if finalize_candidates:
+        perceptual_stats["finalization"] = finalize_unresolved_perceptual_reviews(
+            records
+        )
     master = sorted(records, key=lambda row: row["record_id"])
     clean = [row for row in master if row["cleaning_status"] == "INCLUDE"]
-    validate_manifests(master, clean)
+    validate_manifests(master, clean, require_final=finalize_candidates)
     write_csv(master_path, master, MASTER_FIELDS)
     write_csv(clean_path, clean, MASTER_FIELDS)
     if exact_conflicts_path is not None:
@@ -930,7 +1073,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--summary-output",
         type=Path,
-        default=datasets / "reports" / "dataset-v2-refined-cleaning-summary.json",
+        default=datasets / "reports" / "dataset-v2-final-candidate-summary.json",
     )
     parser.add_argument(
         "--exact-conflicts-report",
@@ -960,6 +1103,7 @@ def main() -> int:
             args.full_perceptual_report,
             args.exact_conflicts_report,
             args.perceptual_resolution,
+            True,
         )
     except (ManifestBuildError, OSError, csv.Error, json.JSONDecodeError) as exc:
         print(f"Dataset V2 manifest build failed: {exc}", file=sys.stderr)

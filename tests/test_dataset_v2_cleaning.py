@@ -8,6 +8,8 @@ from scripts.build_dataset_v2_manifest import (
     MASTER_FIELDS,
     ManifestBuildError,
     build_manifests,
+    stable_record_id,
+    summarize,
     validate_manifests,
 )
 
@@ -40,6 +42,17 @@ PAIR_FIELDS = [
     "second_role",
     "second_path",
     "hamming_distance",
+]
+
+RESOLUTION_FIELDS = [
+    "record_id",
+    "phash",
+    "review_resolution",
+    "refined_similarity_status",
+    "refined_group_id",
+    "refined_group_representative",
+    "resolved_cleaning_status",
+    "resolved_exclusion_reason",
 ]
 
 
@@ -93,7 +106,15 @@ def write_csv(path, rows, fields):
         writer.writerows(rows)
 
 
-def run_build(tmp_path, records, exact_groups=None, pairs=None, suffix=""):
+def run_build(
+    tmp_path,
+    records,
+    exact_groups=None,
+    pairs=None,
+    suffix="",
+    resolution_rows=None,
+    finalize_candidates=False,
+):
     inventory = tmp_path / "inventory.csv"
     exact = tmp_path / "exact.json"
     full = tmp_path / "pairs.csv"
@@ -103,9 +124,12 @@ def run_build(tmp_path, records, exact_groups=None, pairs=None, suffix=""):
     master = tmp_path / f"master{suffix}.csv"
     clean = tmp_path / f"clean{suffix}.csv"
     summary = tmp_path / f"summary{suffix}.json"
+    resolution = tmp_path / f"resolution{suffix}.csv"
     write_csv(inventory, records, INVENTORY_FIELDS)
     exact.write_text(json.dumps(exact_groups or []), encoding="utf-8")
     write_csv(full, pairs or [], PAIR_FIELDS)
+    if resolution_rows is not None:
+        write_csv(resolution, resolution_rows, RESOLUTION_FIELDS)
     result = build_manifests(
         inventory,
         exact,
@@ -116,6 +140,9 @@ def run_build(tmp_path, records, exact_groups=None, pairs=None, suffix=""):
         clean,
         summary,
         full,
+        None,
+        resolution if resolution_rows is not None else None,
+        finalize_candidates,
     )
     with master.open(encoding="utf-8", newline="") as handle:
         master_rows = list(csv.DictReader(handle))
@@ -131,6 +158,7 @@ def run_build(tmp_path, records, exact_groups=None, pairs=None, suffix=""):
         "master": master,
         "clean": clean,
         "summary": summary,
+        "resolution": resolution,
     }
 
 
@@ -308,3 +336,125 @@ def test_clean_manifest_validation_rejects_duplicate_include_hashes():
 
     with pytest.raises(ManifestBuildError, match="duplicate SHA-256"):
         validate_manifests([first, second], [first, second])
+
+
+def unresolved_resolution(row):
+    return {
+        "record_id": stable_record_id(row),
+        "phash": "0" * 16,
+        "review_resolution": "STILL_UNCERTAIN",
+        "refined_similarity_status": "POSSIBLE_NEAR_DUPLICATE",
+        "refined_group_id": "",
+        "refined_group_representative": "",
+        "resolved_cleaning_status": "REVIEW",
+        "resolved_exclusion_reason": "PERCEPTUAL_LABEL_CONFLICT",
+    }
+
+
+def test_unresolved_review_becomes_conservative_final_exclusion(tmp_path):
+    unresolved = record("early/unresolved.jpg")
+    included = record("healthy/safe.jpg", target="Potato healthy")
+
+    summary, master, clean, _ = run_build(
+        tmp_path,
+        [unresolved, included],
+        resolution_rows=[unresolved_resolution(unresolved)],
+        finalize_candidates=True,
+    )
+    indexed = by_path(master)
+
+    assert indexed["early/unresolved.jpg"]["cleaning_status"] == "EXCLUDE"
+    assert indexed["early/unresolved.jpg"]["exclusion_reason"] == (
+        "UNRESOLVED_PERCEPTUAL_IDENTITY"
+    )
+    assert indexed["early/unresolved.jpg"]["review_resolution"] == (
+        "CONSERVATIVE_FINAL_EXCLUSION"
+    )
+    assert {row["cleaning_status"] for row in clean} == {"INCLUDE"}
+    assert summary["review"] == 0
+    assert summary["perceptual_audit"]["finalization"] == {
+        "conservative_final_exclusions": 1
+    }
+    for invariant in (
+        "review_count_is_zero",
+        "locked_benchmark_is_excluded",
+        "unresolved_perceptual_identity_is_excluded",
+        "exact_benchmark_leakage_is_excluded",
+        "exact_label_conflicts_are_excluded",
+        "verified_perceptual_risks_are_excluded",
+        "ambiguous_and_unsupported_mappings_are_excluded",
+        "all_targets_use_deployed_taxonomy",
+    ):
+        assert summary["invariants"][invariant] is True
+
+
+def test_final_validation_rejects_any_remaining_review():
+    unresolved = {field: "" for field in MASTER_FIELDS}
+    unresolved.update(
+        {
+            "record_id": "rec_review",
+            "role": "training_candidate",
+            "mapping_status": "MATCHED",
+            "target_class": "Potato healthy",
+            "sha256": "e" * 64,
+            "cleaning_status": "REVIEW",
+            "exclusion_reason": "PERCEPTUAL_LABEL_CONFLICT",
+            "label_conflict": "false",
+            "benchmark_leakage": "false",
+            "manual_review_required": "true",
+            "review_resolution": "NOT_REQUIRED",
+        }
+    )
+
+    with pytest.raises(ManifestBuildError, match="contains REVIEW"):
+        validate_manifests([unresolved], [], require_final=True)
+
+
+def test_final_candidate_rebuild_is_deterministic(tmp_path):
+    unresolved = record("early/unresolved.jpg")
+    resolution = [unresolved_resolution(unresolved)]
+    first = run_build(
+        tmp_path,
+        [unresolved],
+        suffix="-first",
+        resolution_rows=resolution,
+        finalize_candidates=True,
+    )
+    second = run_build(
+        tmp_path,
+        [unresolved],
+        suffix="-second",
+        resolution_rows=resolution,
+        finalize_candidates=True,
+    )
+
+    for key in ("master", "clean", "summary"):
+        assert first[3][key].read_bytes() == second[3][key].read_bytes()
+
+
+def test_class_coverage_report_uses_deployed_taxonomy():
+    included = {field: "" for field in MASTER_FIELDS}
+    included.update(
+        {
+            "record_id": "rec_covered",
+            "dataset": "Synthetic",
+            "role": "training_candidate",
+            "mapping_status": "MATCHED",
+            "target_class": "Potato healthy",
+            "sha256": "f" * 64,
+            "cleaning_status": "INCLUDE",
+            "exclusion_reason": "",
+            "label_conflict": "false",
+            "benchmark_leakage": "false",
+            "manual_review_required": "false",
+            "review_resolution": "NOT_REQUIRED",
+        }
+    )
+
+    summary = summarize([included], {}, {})
+
+    assert summary["represented_classes"] == ["Potato healthy"]
+    assert summary["represented_class_count"] == 1
+    assert summary["missing_class_count"] == 38
+    assert "Background without leaves" in summary["missing_classes"]
+    assert summary["full_39_class_retraining_supported_by_candidate_pool"] is False
