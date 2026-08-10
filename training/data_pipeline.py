@@ -25,6 +25,12 @@ SOURCE_ROOT_ENV = {
     "PlantDoc": "AGRIDIAGNOSE_PLANTDOC_TRAIN_ROOT",
     "Potato Leaf Disease Dataset": "AGRIDIAGNOSE_BANU_DEB_ROOT",
 }
+SOURCE_LOCAL_MANIFESTS = {
+    "PlantDoc": PROJECT_ROOT / "training/datasets/manifests/plantdoc-train.csv",
+    "Potato Leaf Disease Dataset": (
+        PROJECT_ROOT / "training/datasets/manifests/potato-banu-deb-originals.csv"
+    ),
+}
 REQUIRED_MANIFEST_FIELDS = {
     "composition_record_id",
     "source_domain",
@@ -192,7 +198,36 @@ def configured_source_roots(
     return result
 
 
-def resolve_record_path(record: ManifestRecord, source_roots: Mapping[str, Path]) -> Path:
+def load_local_path_aliases(
+    manifest_paths: Mapping[str, Path] | None = None,
+) -> dict[str, dict[str, str]]:
+    """Map immutable source paths to local audit-copy names without private paths."""
+    aliases: dict[str, dict[str, str]] = {}
+    for source, path in (manifest_paths or SOURCE_LOCAL_MANIFESTS).items():
+        if not path.is_file():
+            raise TrainingPolicyError(f"Local-path mapping manifest is unavailable: {path}")
+        with path.open("r", encoding="utf-8", newline="") as handle:
+            reader = csv.DictReader(handle)
+            if not {"source_path", "local_file"}.issubset(reader.fieldnames or []):
+                raise TrainingPolicyError(f"Invalid local-path mapping manifest: {path}")
+            source_aliases: dict[str, str] = {}
+            for row in reader:
+                source_path = row["source_path"]
+                local_file = row["local_file"]
+                if source_path in source_aliases and source_aliases[source_path] != local_file:
+                    raise TrainingPolicyError(
+                        f"Conflicting local paths for {source}: {source_path}"
+                    )
+                source_aliases[source_path] = local_file
+            aliases[source] = source_aliases
+    return aliases
+
+
+def resolve_record_path(
+    record: ManifestRecord,
+    source_roots: Mapping[str, Path],
+    local_path_aliases: Mapping[str, Mapping[str, str]] | None = None,
+) -> Path:
     root = source_roots.get(record.source_dataset)
     if root is None:
         env_name = SOURCE_ROOT_ENV.get(record.source_dataset, "an approved source-root variable")
@@ -200,12 +235,18 @@ def resolve_record_path(record: ManifestRecord, source_roots: Mapping[str, Path]
             f"No local root configured for {record.source_dataset}; configure {env_name}."
         )
     root = Path(root).expanduser().resolve()
-    relative = Path(record.source_path)
+    source_aliases = (local_path_aliases or {}).get(record.source_dataset, {})
+    relative = Path(source_aliases.get(record.source_path, record.source_path))
     if relative.is_absolute():
         raise TrainingPolicyError("Manifest source paths must remain relative.")
     resolved = (root / relative).resolve()
     if not resolved.is_relative_to(root):
         raise TrainingPolicyError("Manifest source path escapes its configured root.")
+    if os.name == "nt" and len(str(resolved)) >= 248:
+        raw = str(resolved)
+        if raw.startswith("\\\\"):
+            return Path("\\\\?\\UNC\\" + raw.lstrip("\\"))
+        return Path("\\\\?\\" + raw)
     return resolved
 
 
@@ -290,6 +331,7 @@ def build_tf_dataset(
     *,
     training: bool,
     batch_size: int | None = None,
+    local_path_aliases: Mapping[str, Mapping[str, str]] | None = None,
 ):
     """Create a deterministic manifest-driven tf.data pipeline without training."""
     import tensorflow as tf
@@ -303,7 +345,10 @@ def build_tf_dataset(
     if not augmentation_enabled(training=training, split=expected) and training:
         raise TrainingPolicyError("TRAIN augmentation policy is inconsistent.")
 
-    paths = [str(resolve_record_path(record, source_roots)) for record in records]
+    paths = [
+        str(resolve_record_path(record, source_roots, local_path_aliases))
+        for record in records
+    ]
     labels = [record.target_index for record in records]
     dataset = tf.data.Dataset.from_tensor_slices((paths, labels))
     options = tf.data.Options()
@@ -332,7 +377,10 @@ def build_tf_dataset(
     if training:
         augmenter = build_augmentation(policy, seed)
         dataset = dataset.map(
-            lambda images, labels: (augmenter(images, training=True), labels),
+            lambda images, labels: (
+                tf.clip_by_value(augmenter(images, training=True), 0.0, 1.0),
+                labels,
+            ),
             num_parallel_calls=tf.data.AUTOTUNE,
         )
     return dataset.prefetch(tf.data.AUTOTUNE)

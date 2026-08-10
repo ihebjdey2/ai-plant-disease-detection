@@ -1,0 +1,52 @@
+{
+  "contains_private_paths": false,
+  "contains_secrets": false,
+  "cpu": {
+    "logical_processor_count": 12,
+    "model": "12th Gen Intel(R) Core(TM) i7-1255U"
+  },
+  "determinism": {
+    "bit_identical_gpu_training_guaranteed": false,
+    "enable_error_type": null,
+    "requested": true,
+    "tensorflow_op_determinism_enabled": true
+  },
+  "experiment_name": "agri-diagnose-v2-exp-a",
+  "experiment_seed": 20260810,
+  "git_base_commit": "70ccad93b44f7d93ed078414dda582bb63d33632",
+  "gpu": {
+    "detected": false,
+    "devices": [],
+    "memory_bytes": null,
+    "model": null
+  },
+  "gpu_gate_status": "GPU_NOT_AVAILABLE_FOR_TENSORFLOW",
+  "operating_system": {
+    "machine": "AMD64",
+    "release": "10",
+    "system": "Windows",
+    "version": "10.0.26200"
+  },
+  "packages": {
+    "keras": "2.15.0",
+    "numpy": "1.26.4",
+    "scikit_learn": "1.4.1.post1",
+    "tensorflow": "2.15.0"
+  },
+  "physical_devices": [
+    {
+      "device_type": "CPU",
+      "name": "/physical_device:CPU:0"
+    }
+  ],
+  "python": {
+    "implementation": "CPython",
+    "version": "3.11.9"
+  },
+  "ram_bytes": 16835268608,
+  "tensorflow_build": {
+    "built_with_cuda": false,
+    "cuda_version": null,
+    "cudnn_version": null
+  }
+}
