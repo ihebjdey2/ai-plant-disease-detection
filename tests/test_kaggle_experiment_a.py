@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 
 import pytest
@@ -153,3 +154,5 @@ def test_notebook_is_valid_and_training_is_manual():
     assert "plant_disease_model.h5" not in all_code
     assert "/mnt/c/" not in all_code
     assert ".fit(" in all_code
+    revision = re.search(r"APPROVED_CODE_REVISION = '([0-9a-f]{40})'", all_code)
+    assert revision is not None
