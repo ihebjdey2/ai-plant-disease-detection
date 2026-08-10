@@ -1,0 +1,132 @@
+{
+  "architecture": {
+    "backbone": "MobileNetV2",
+    "backbone_include_top": false,
+    "backbone_weights": "imagenet",
+    "classifier_head": [
+      "GlobalAveragePooling2D",
+      "Dropout(0.25)",
+      "Dense(39, softmax)"
+    ],
+    "dropout": 0.25,
+    "initialize_from_model_v1": false,
+    "output_activation": "softmax",
+    "output_classes": 39
+  },
+  "augmentation_policy": {
+    "brightness_factor": 0.1,
+    "contrast_factor": 0.1,
+    "enabled_for": [
+      "TRAIN"
+    ],
+    "horizontal_flip": true,
+    "rejected_baseline_methods": [
+      "MixUp",
+      "CutMix",
+      "synthetic image generation",
+      "aggressive hue or saturation changes",
+      "shear transformations",
+      "strong perspective distortion",
+      "large morphology-removing crops",
+      "background replacement"
+    ],
+    "rotation_degrees": 15.0,
+    "translation_fraction": 0.1,
+    "vertical_flip": true,
+    "zoom_range": [
+      0.9,
+      1.1
+    ]
+  },
+  "class_count": 39,
+  "confidence_threshold_changed": false,
+  "experiment_seed": 20260810,
+  "historical_train_count": 44340,
+  "locked_test_confirmed": true,
+  "model_selection_metric": "validation_macro_f1",
+  "plantdoc_locked_confirmed": true,
+  "policy_version": "agri-diagnose-model-v2-training-policy-v1",
+  "real_world_train_count": 14517,
+  "recommended_weight_method": "median_frequency_sqrt_normalized_clipped",
+  "recommended_weight_sample_weighted_mean": 1.0,
+  "test_evaluation_performed": false,
+  "train_count": 58857,
+  "train_counts_by_class": {
+    "0": 571,
+    "1": 497,
+    "10": 788,
+    "11": 1755,
+    "12": 989,
+    "13": 1107,
+    "14": 861,
+    "15": 339,
+    "16": 4405,
+    "17": 1837,
+    "18": 288,
+    "19": 797,
+    "2": 220,
+    "20": 1182,
+    "21": 4601,
+    "22": 5685,
+    "23": 3634,
+    "24": 297,
+    "25": 4072,
+    "26": 1567,
+    "27": 887,
+    "28": 365,
+    "29": 1779,
+    "3": 1310,
+    "30": 855,
+    "31": 1595,
+    "32": 830,
+    "33": 1524,
+    "34": 1343,
+    "35": 1123,
+    "36": 4285,
+    "37": 334,
+    "38": 1267,
+    "4": 913,
+    "5": 1202,
+    "6": 842,
+    "7": 683,
+    "8": 1171,
+    "9": 1057
+  },
+  "train_counts_by_domain": {
+    "HISTORICAL_CONTROLLED": 44340,
+    "REAL_WORLD": 14517
+  },
+  "train_counts_by_source": {
+    "Historical Mendeley 39-class source": 44340,
+    "PLDD-UP": 12030,
+    "PlantDoc": 829,
+    "Potato Leaf Disease Dataset": 20,
+    "Seasonal Corn Leaf Disease Dataset": 1638
+  },
+  "train_max_class_count": 5685,
+  "train_maximum_to_minimum_ratio": 25.84090909,
+  "train_mean_class_count": 1509.15384615,
+  "train_median_class_count": 1107.0,
+  "train_min_class_count": 220,
+  "training_performed": false,
+  "transfer_learning_phases": {
+    "phase1": {
+      "backbone_trainable": false,
+      "learning_rate": 0.001,
+      "max_epochs": 10,
+      "name": "feature_extraction"
+    },
+    "phase2": {
+      "batch_normalization_trainable": false,
+      "fine_tune_from_layer_index_tensorflow_2_15": 116,
+      "fine_tune_from_layer_name": "block_13_expand",
+      "frozen_backbone_layers": 129,
+      "learning_rate": 2e-05,
+      "max_epochs": 20,
+      "name": "upper_backbone_fine_tuning",
+      "total_backbone_layers_tensorflow_2_15": 154,
+      "trainable_non_batchnorm_backbone_layers": 25
+    }
+  },
+  "validation_count": 7362
+}

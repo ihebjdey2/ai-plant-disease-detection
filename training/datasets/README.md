@@ -221,3 +221,37 @@ PlantDoc TEST leakage. Do not use the TEST manifest for early stopping,
 threshold tuning, augmentation, sampling, fine-tuning, or model selection.
 PlantDoc TEST remains a separate external benchmark. Balancing, augmentation,
 and training are outside Step 5F. See `docs/dataset-v2-group-aware-split.md`.
+
+## Model V2 training policy
+
+Step 5G freezes the development methodology before any neural-network
+training. The machine-readable policy is
+`training/config/model-v2-training-policy.json`, and the manifest-driven
+pipeline is `training/data_pipeline.py`.
+
+Validate the policy without training:
+
+```powershell
+python scripts/prepare_model_v2_training.py --dry-run
+```
+
+The dry-run reads only TRAIN and VALIDATION, verifies 39-class coverage,
+rebuilds the TRAIN-only class-weight analysis, enforces TEST guards, and
+optionally checks a small deterministic image sample when local source roots
+are configured. It produces:
+
+- `reports/model-v2-class-weight-analysis.csv` — all 39 TRAIN counts and
+  unweighted/square-root weight candidates;
+- `reports/model-v2-training-policy-summary.json` — the dataset, architecture,
+  augmentation, two-phase transfer-learning, lock, and no-training audit.
+
+The baseline uses RGB 224×224 `/255` preprocessing, moderate dynamic TRAIN-only
+augmentation, MobileNetV2/ImageNet, and VALIDATION-only selection. INTERNAL
+TEST and PlantDoc TEST remain locked. Step 5G does not call `model.fit`, create
+model weights, balance/duplicate records, or evaluate either test. See
+`docs/model-v2-training-policy.md`.
+
+The next human-approved step is the first controlled training comparison:
+Experiment A without class weights versus otherwise identical Experiment B
+with moderate normalized square-root class weights. Only VALIDATION may select
+between them.
