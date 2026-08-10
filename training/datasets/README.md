@@ -164,3 +164,29 @@ pool contains 18,140 INCLUDE, zero REVIEW, and 1,164 EXCLUDE records. Dataset V2
 currently represents 16 of the 39 deployed classes, so it is not by itself a
 valid source for full 39-output retraining. No split or training has occurred.
 See `docs/dataset-v2-final-candidate-pool.md`.
+
+## Compose the final 39-class candidate pool
+
+Step 5E combines only the two committed clean manifests: 55,423 controlled
+historical candidates and 18,140 real-world Dataset V2 candidates. It also
+finalizes the two historical review records as conservative metadata-only
+exclusions and prepares indivisible grouping metadata for the future split:
+
+```powershell
+python scripts/build_dataset_v2_39class_composition.py
+```
+
+The command writes:
+
+- `manifests/dataset-v2-39class-combined.csv` — 73,563 final candidates with
+  complete provenance, authoritative target indices, and `split_group_id`;
+- `reports/dataset-v2-39class-composition-summary.json` — class, domain,
+  source, imbalance, group, collision, and benchmark metrics;
+- `reports/historical-review-finalization.json` — the explicit Step 5E
+  decisions for the two records formerly under review.
+
+The combined pool covers 39/39 deployed classes. PlantDoc TEST remains locked,
+and no known exact or verified perceptual cross-domain collision is admitted.
+The command does not decode raw images, assign TRAIN/VALIDATION, materialize
+directories, balance classes, augment data, or train a model. See
+`docs/dataset-v2-39class-composition.md`.
