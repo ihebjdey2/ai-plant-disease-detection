@@ -54,6 +54,8 @@ evaluation/results/*
 
 # Local trained candidates (metadata stays under training/runs/)
 models/candidates/
+agridiagnose-exp-a-results/
+agridiagnose-exp-a-results.zip
 
 # Temporary Files
 *.tmp
