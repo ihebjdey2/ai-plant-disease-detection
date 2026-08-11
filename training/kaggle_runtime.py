@@ -169,9 +169,14 @@ def bootstrap_commands(layout: KaggleRuntimeLayout) -> list[list[str]]:
 
 
 def validate_uv_version(output: str) -> None:
-    if output.strip() != f"uv {UV_VERSION}":
+    normalized = output.strip()
+    match = re.fullmatch(
+        r"uv\s+(\d+\.\d+\.\d+)(?:\s+\([^()\r\n]+\))?",
+        normalized,
+    )
+    if match is None or match.group(1) != UV_VERSION:
         raise RuntimeError(
-            f"Standalone uv version mismatch: expected {UV_VERSION}, got {output.strip()!r}."
+            f"Standalone uv version mismatch: expected {UV_VERSION}, got {normalized!r}."
         )
 
 
