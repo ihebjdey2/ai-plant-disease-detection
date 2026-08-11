@@ -44,7 +44,7 @@ The isolated requirements are committed in `requirements-kaggle-tf215.txt`. They
 
 The CUDA extra installs TensorFlow's Python-side NVIDIA dependencies inside the isolated environment. The Kaggle host driver remains untouched.
 
-TensorFlow 2.15's historical `and-cuda` metadata pins TensorRT 8.6.1 packages that are hosted on NVIDIA's package index rather than standard PyPI. The bootstrap keeps `tensorflow[and-cuda]==2.15.0` unchanged and gives uv the official `https://pypi.nvidia.com` supplemental index so those exact dependencies can resolve. TensorRT remains part of the upstream TensorFlow extra; no package versions or experiment behavior are substituted.
+TensorFlow 2.15's historical `and-cuda` metadata pins TensorRT 8.6.1 packages that are hosted on NVIDIA's package index rather than standard PyPI. Other exact CUDA dependencies, including `nvidia-nccl-cu12==2.16.5`, are available on PyPI. The bootstrap keeps `tensorflow[and-cuda]==2.15.0` unchanged, gives uv the official `https://pypi.nvidia.com` supplemental index, and uses `unsafe-first-match` so uv moves to PyPI only when the higher-priority NVIDIA index has no compatible version. It does not use the broader `unsafe-best-match` strategy. TensorRT remains part of the upstream TensorFlow extra; no package versions or experiment behavior are substituted.
 
 ## Required private Kaggle datasets
 
@@ -164,7 +164,7 @@ Linux includes the target platform in `uv --version`. The validator accepts this
 
 ### `No solution found` for `tensorrt-libs==8.6.1`
 
-The package exists on NVIDIA's official Python index, not standard PyPI. The corrected bootstrap passes `--extra-index-url https://pypi.nvidia.com` to the isolated uv installation command while preserving `tensorflow[and-cuda]==2.15.0`. Rerun Step 3; the partial Python 3.11 environment can be reused safely.
+The package exists on NVIDIA's official Python index, not standard PyPI. The corrected bootstrap passes `--extra-index-url https://pypi.nvidia.com --index-strategy unsafe-first-match` to the isolated uv installation command while preserving `tensorflow[and-cuda]==2.15.0`. This also allows exact packages absent from NVIDIA, such as `nvidia-nccl-cu12==2.16.5`, to resolve from PyPI. Rerun Step 3; the partial Python 3.11 environment can be reused safely.
 
 ### `KAGGLE_TF215_GPU_RUNTIME_FAILED`
 
