@@ -189,8 +189,5 @@ def test_notebook_is_valid_and_training_is_manual():
     assert "'verify-runtime'" in all_code
     assert "'preflight'" in all_code
     assert "'--authorize-training'" in all_code
-    revision = re.search(
-        r"APPROVED_CODE_REVISION = '(?:[0-9a-f]{40}|__APPROVED_CODE_REVISION__)'",
-        all_code,
-    )
+    revision = re.search(r"APPROVED_CODE_REVISION = '([0-9a-f]{40})'", all_code)
     assert revision is not None
