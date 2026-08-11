@@ -8,7 +8,7 @@ from collections import Counter
 
 import pytest
 
-from app.taxonomy import CLASS_NAMES
+from training.taxonomy import CLASS_NAMES
 from scripts.build_dataset_v2_group_aware_split import (
     HISTORICAL_DOMAIN,
     REAL_WORLD_DOMAIN,

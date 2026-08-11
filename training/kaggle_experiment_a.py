@@ -21,7 +21,7 @@ from sklearn.metrics import (
     precision_recall_fscore_support,
 )
 
-from app.taxonomy import CLASS_NAMES
+from training.taxonomy import CLASS_NAMES
 from scripts.run_model_v2_experiment_a import (
     audit_paths,
     validate_macro_f1,

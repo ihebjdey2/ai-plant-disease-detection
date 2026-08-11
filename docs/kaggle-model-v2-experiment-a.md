@@ -44,19 +44,23 @@ The isolated requirements are committed in `requirements-kaggle-tf215.txt`. They
 
 The CUDA extra installs TensorFlow's Python-side NVIDIA dependencies inside the isolated environment. The Kaggle host driver remains untouched.
 
-TensorFlow 2.15's historical `and-cuda` metadata pins TensorRT 8.6.1 packages that are hosted on NVIDIA's package index rather than standard PyPI. The bootstrap keeps `tensorflow[and-cuda]==2.15.0` unchanged and gives uv the official `https://pypi.nvidia.com` supplemental index so those exact dependencies can resolve. TensorRT remains part of the upstream TensorFlow extra; no package versions or experiment behavior are substituted.
+TensorFlow 2.15's historical `and-cuda` metadata pins TensorRT 8.6.1 packages that are hosted on NVIDIA's package index rather than standard PyPI. Other exact CUDA dependencies, including `nvidia-nccl-cu12==2.16.5`, are available on PyPI. The bootstrap keeps `tensorflow[and-cuda]==2.15.0` unchanged, gives uv the official `https://pypi.nvidia.com` supplemental index, and uses `unsafe-first-match` so uv moves to PyPI only when the higher-priority NVIDIA index has no compatible version. It does not use the broader `unsafe-best-match` strategy. TensorRT remains part of the upstream TensorFlow extra; no package versions or experiment behavior are substituted.
+
+The authoritative 39-class taxonomy lives in framework-neutral `training/taxonomy.py`. Kaggle ML modules import that source directly and therefore do not execute the Flask application package. `app/taxonomy.py` remains as a thin compatibility re-export for the web application, so there is still exactly one `CLASS_NAMES` list. Flask is intentionally not added to `requirements-kaggle-tf215.txt`.
 
 ## Required private Kaggle datasets
 
-Attach five private datasets that preserve the existing source-relative paths and contain only files required by TRAIN and VALIDATION:
+Attach five private datasets that preserve the existing source-relative paths and contain only files required by TRAIN and VALIDATION. Cell 5 discovers them recursively below `/kaggle/input` from their unique data-root directory, not from an owner name or potentially misleading Kaggle parent slug:
 
-| Configuration key | Expected input root |
+| Configuration key | Unique required directory |
 |---|---|
-| `historical` | `/kaggle/input/agridiagnose-historical` |
-| `pldd_up` | `/kaggle/input/agridiagnose-pldd-up` |
-| `seasonal_corn` | `/kaggle/input/agridiagnose-seasonal-corn` |
-| `plantdoc_train` | `/kaggle/input/agridiagnose-plantdoc-train` |
-| `banu_deb` | `/kaggle/input/agridiagnose-banu-deb` |
+| `historical` | `historical-mendeley-39` |
+| `pldd_up` | `pldd_up` |
+| `seasonal_corn` | `seasonal_corn` |
+| `plantdoc_train` | `plantdoc-train` |
+| `banu_deb` | `potato-banu-deb-originals` |
+
+Both `/kaggle/input/<dataset-slug>/...` and `/kaggle/input/datasets/<owner-or-container>/<dataset-slug>/...` mounts are supported. The owner/container segment is never hardcoded. Every unique directory must occur exactly once: no match raises a missing-source error, multiple matches raise an ambiguity error, and any match under an INTERNAL TEST or PlantDoc TEST-like path is rejected.
 
 PlantDoc and Banu/Deb use committed `local_file` aliases. Preserve those filenames. Do not upload or attach INTERNAL TEST images or the official PlantDoc TEST split.
 
@@ -78,7 +82,7 @@ PlantDoc and Banu/Deb use committed `local_file` aliases. Preserve those filenam
    - at least one TensorFlow GPU;
    - matrix multiplication placed on `/GPU:0`.
 9. If any condition fails, stop at `KAGGLE_TF215_GPU_RUNTIME_FAILED`. Do not train with system TensorFlow 2.20.
-10. Review the folders printed from `/kaggle/input`, then edit only `SOURCE_ROOTS` if the slugs differ.
+10. Review the five resolved source roots printed by Cell 5. Stop if discovery reports a missing, ambiguous, escaping, or TEST-like path; do not manually choose the first match.
 11. Keep `START_TRAINING = False` and write the execution configuration.
 12. Run the isolated preflight cell. It verifies every TRAIN/VALIDATION file, MacroF1, preprocessing, model shapes, fresh ImageNet initialization, Phase 1 freezing, Phase 2 boundary, and BatchNormalization freeze policy.
 13. Confirm TRAIN `58,857/58,857`, VALIDATION `7,362/7,362`, missing/corrupt `0`, and coverage `39/39`.
@@ -164,7 +168,11 @@ Linux includes the target platform in `uv --version`. The validator accepts this
 
 ### `No solution found` for `tensorrt-libs==8.6.1`
 
-The package exists on NVIDIA's official Python index, not standard PyPI. The corrected bootstrap passes `--extra-index-url https://pypi.nvidia.com` to the isolated uv installation command while preserving `tensorflow[and-cuda]==2.15.0`. Rerun Step 3; the partial Python 3.11 environment can be reused safely.
+The package exists on NVIDIA's official Python index, not standard PyPI. The corrected bootstrap passes `--extra-index-url https://pypi.nvidia.com --index-strategy unsafe-first-match` to the isolated uv installation command while preserving `tensorflow[and-cuda]==2.15.0`. This also allows exact packages absent from NVIDIA, such as `nvidia-nccl-cu12==2.16.5`, to resolve from PyPI. Rerun Step 3; the partial Python 3.11 environment can be reused safely.
+
+### `ModuleNotFoundError: No module named 'flask'` during Step 4
+
+Older revisions imported `app.taxonomy`, which necessarily executed `app/__init__.py` and leaked Flask into the isolated ML import graph. The corrected revision imports `training.taxonomy` throughout training and evaluation tooling. Do not install Flask into the Kaggle ML venv; rerun the repository checkout at the notebook's pinned revision, then rerun Step 4.
 
 ### `KAGGLE_TF215_GPU_RUNTIME_FAILED`
 

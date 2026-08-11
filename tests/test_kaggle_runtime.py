@@ -10,10 +10,12 @@ from scripts.bootstrap_kaggle_tf215_runtime import has_approved_isolated_python
 from training.kaggle_runtime import (
     KaggleRuntimeLayout,
     NVIDIA_PYPI_INDEX_URL,
+    UV_INDEX_STRATEGY,
     UV_VERSION,
     bootstrap_commands,
     bootstrap_environment,
     build_execution_config,
+    discover_kaggle_source_roots,
     isolated_entrypoint_command,
     load_execution_config,
     require_kaggle_working_root,
@@ -92,7 +94,12 @@ def test_bootstrap_commands_use_isolated_uv_and_python():
     assert "--managed-python" in commands[4]
     assert commands[5][1:3] == ["pip", "install"]
     assert str(layout.requirements_path) in commands[5]
-    assert commands[5][-2:] == ["--extra-index-url", NVIDIA_PYPI_INDEX_URL]
+    assert commands[5][-4:] == [
+        "--extra-index-url",
+        NVIDIA_PYPI_INDEX_URL,
+        "--index-strategy",
+        UV_INDEX_STRATEGY,
+    ]
     assert "python -m venv" not in flattened
     assert "python -m pip" not in flattened
     assert "uv-bootstrap/bin/python" not in flattened
@@ -127,6 +134,88 @@ def test_bootstrap_sanitizes_targeted_environment_contamination_only():
     assert environment["LD_LIBRARY_PATH"] == inherited["LD_LIBRARY_PATH"]
     assert environment["NVIDIA_VISIBLE_DEVICES"] == "all"
     assert environment["UV_UNMANAGED_INSTALL"] == str(layout.uv_bin_dir)
+
+
+def create_source_data_roots(base: Path, parents: dict[str, str]) -> dict[str, Path]:
+    directory_names = {
+        "historical": "historical-mendeley-39",
+        "pldd_up": "pldd_up",
+        "seasonal_corn": "seasonal_corn",
+        "plantdoc_train": "plantdoc-train",
+        "banu_deb": "potato-banu-deb-originals",
+    }
+    created = {}
+    for key, directory_name in directory_names.items():
+        path = base / parents[key] / directory_name
+        path.mkdir(parents=True)
+        created[key] = path.resolve()
+    return created
+
+
+def test_source_discovery_supports_standard_kaggle_slug_layout(tmp_path):
+    input_root = tmp_path / "input"
+    parents = {
+        "historical": "agridiagnose-historical",
+        "pldd_up": "agridiagnose-pldd-up",
+        "seasonal_corn": "agridiagnose-seasonal-corn",
+        "plantdoc_train": "agridiagnose-plantdoc-train",
+        "banu_deb": "agridiagnose-banu-deb",
+    }
+    expected = create_source_data_roots(input_root, parents)
+    assert discover_kaggle_source_roots(input_root) == expected
+
+
+def test_source_discovery_supports_nested_owner_and_misleading_parents(tmp_path):
+    input_root = tmp_path / "input"
+    owner_root = input_root / "datasets" / "portable-owner"
+    parents = {
+        "historical": "agridiagnose-historical",
+        "pldd_up": "agridiagnose-plddd-up",
+        "seasonal_corn": "agridiagnose-seasonal-corn",
+        "plantdoc_train": "agridiagnose-pldd-up",
+        "banu_deb": "agridiagnose-banu-deb",
+    }
+    expected = create_source_data_roots(owner_root, parents)
+    assert discover_kaggle_source_roots(input_root) == expected
+
+
+def test_source_discovery_fails_when_a_required_source_is_missing(tmp_path):
+    input_root = tmp_path / "input"
+    parents = {
+        key: f"{key}-source"
+        for key in source_roots()
+        if key != "plantdoc_train"
+    }
+    directory_names = {
+        "historical": "historical-mendeley-39",
+        "pldd_up": "pldd_up",
+        "seasonal_corn": "seasonal_corn",
+        "banu_deb": "potato-banu-deb-originals",
+    }
+    for key, parent in parents.items():
+        (input_root / parent / directory_names[key]).mkdir(parents=True)
+    with pytest.raises(ValueError, match="Missing Kaggle source root for plantdoc_train"):
+        discover_kaggle_source_roots(input_root)
+
+
+def test_source_discovery_rejects_duplicate_ambiguous_roots(tmp_path):
+    input_root = tmp_path / "input"
+    parents = {key: f"{key}-source" for key in source_roots()}
+    create_source_data_roots(input_root, parents)
+    (input_root / "duplicate" / "pldd_up").mkdir(parents=True)
+    with pytest.raises(ValueError, match="Ambiguous Kaggle source root for pldd_up"):
+        discover_kaggle_source_roots(input_root)
+
+
+def test_source_discovery_rejects_forbidden_test_like_path(tmp_path):
+    input_root = tmp_path / "input"
+    parents = {key: f"{key}-source" for key in source_roots()}
+    create_source_data_roots(input_root, parents)
+    safe = input_root / "plantdoc_train-source" / "plantdoc-train"
+    safe.rmdir()
+    (input_root / "plantdoc-test" / "plantdoc-train").mkdir(parents=True)
+    with pytest.raises(ValueError, match="TEST-like"):
+        discover_kaggle_source_roots(input_root)
 
 
 def test_kaggle_uv_install_dir_cannot_override_unmanaged_runtime_destination():
@@ -292,7 +381,13 @@ def test_tf215_cuda_resolution_uses_official_nvidia_package_index_only():
     )
     install_command = bootstrap_commands(layout)[5]
     assert NVIDIA_PYPI_INDEX_URL == "https://pypi.nvidia.com"
-    assert install_command[-2:] == ["--extra-index-url", NVIDIA_PYPI_INDEX_URL]
+    assert install_command[-4:] == [
+        "--extra-index-url",
+        NVIDIA_PYPI_INDEX_URL,
+        "--index-strategy",
+        "unsafe-first-match",
+    ]
+    assert "unsafe-best-match" not in install_command
     requirements = (PROJECT_ROOT / "requirements-kaggle-tf215.txt").read_text(
         encoding="utf-8"
     )

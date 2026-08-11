@@ -180,6 +180,10 @@ def test_notebook_is_valid_and_training_is_manual():
     assert "system_tf.config.list_physical_devices('GPU')" in first
     assert "System TensorFlow:" in first
     assert "START_TRAINING = False" in all_code
+    assert "BATCH_SIZE = 32" in all_code
+    assert "discover_kaggle_source_roots(Path('/kaggle/input'))" in all_code
+    assert "Resolved approved source roots:" in all_code
+    assert "ihebjjd" not in all_code
     assert "dataset-v2-test.csv" not in all_code
     assert "plant_disease_model.h5" not in all_code
     assert "/mnt/c/" not in all_code
@@ -196,4 +200,4 @@ def test_notebook_is_valid_and_training_is_manual():
     assert "'--authorize-training'" in all_code
     revision = re.search(r"APPROVED_CODE_REVISION = '([0-9a-f]{40})'", all_code)
     assert revision is not None
-    assert revision.group(1) == "7be0deb3c7983f240df2a4cb8dda886258e40dad"
+    assert revision.group(1) == "20564df9332f82b3be0bacd176cb3cab28edab6a"

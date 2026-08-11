@@ -12,7 +12,7 @@ from typing import Mapping, Sequence
 import numpy as np
 from PIL import Image, UnidentifiedImageError
 
-from app.taxonomy import CLASS_NAMES
+from training.taxonomy import CLASS_NAMES
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]

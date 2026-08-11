@@ -9,7 +9,7 @@ import numpy as np
 import pytest
 from PIL import Image
 
-from app.taxonomy import CLASS_NAMES
+from training.taxonomy import CLASS_NAMES
 from scripts.prepare_model_v2_training import (
     analyze_class_weights,
     run_dry_run,
