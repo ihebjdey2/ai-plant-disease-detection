@@ -198,6 +198,18 @@ def test_notebook_is_valid_and_training_is_manual():
     assert "'verify-runtime'" in all_code
     assert "'preflight'" in all_code
     assert "'--authorize-training'" in all_code
+    recovery_cells = [
+        "".join(cell["source"])
+        for cell in code
+        if "'finalize-existing'" in "".join(cell["source"])
+    ]
+    assert len(recovery_cells) == 1
+    recovery = recovery_cells[0]
+    assert "RECOVERY_ENV['MPLBACKEND'] = 'Agg'" in recovery
+    assert "'--preflight-report'" in recovery
+    assert "'train'" not in recovery
+    assert "'--authorize-training'" not in recovery
+    assert "retraining_performed'] is False" in recovery
     revision = re.search(r"APPROVED_CODE_REVISION = '([0-9a-f]{40})'", all_code)
     assert revision is not None
-    assert revision.group(1) == "20564df9332f82b3be0bacd176cb3cab28edab6a"
+    assert revision.group(1) == "dd29f3d128367deb02b69d4d861c393f3d7c6b70"
