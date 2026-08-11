@@ -10,6 +10,7 @@ from scripts.bootstrap_kaggle_tf215_runtime import has_approved_isolated_python
 from training.kaggle_runtime import (
     KaggleRuntimeLayout,
     NVIDIA_PYPI_INDEX_URL,
+    UV_INDEX_STRATEGY,
     UV_VERSION,
     bootstrap_commands,
     bootstrap_environment,
@@ -92,7 +93,12 @@ def test_bootstrap_commands_use_isolated_uv_and_python():
     assert "--managed-python" in commands[4]
     assert commands[5][1:3] == ["pip", "install"]
     assert str(layout.requirements_path) in commands[5]
-    assert commands[5][-2:] == ["--extra-index-url", NVIDIA_PYPI_INDEX_URL]
+    assert commands[5][-4:] == [
+        "--extra-index-url",
+        NVIDIA_PYPI_INDEX_URL,
+        "--index-strategy",
+        UV_INDEX_STRATEGY,
+    ]
     assert "python -m venv" not in flattened
     assert "python -m pip" not in flattened
     assert "uv-bootstrap/bin/python" not in flattened
@@ -292,7 +298,13 @@ def test_tf215_cuda_resolution_uses_official_nvidia_package_index_only():
     )
     install_command = bootstrap_commands(layout)[5]
     assert NVIDIA_PYPI_INDEX_URL == "https://pypi.nvidia.com"
-    assert install_command[-2:] == ["--extra-index-url", NVIDIA_PYPI_INDEX_URL]
+    assert install_command[-4:] == [
+        "--extra-index-url",
+        NVIDIA_PYPI_INDEX_URL,
+        "--index-strategy",
+        "unsafe-first-match",
+    ]
+    assert "unsafe-best-match" not in install_command
     requirements = (PROJECT_ROOT / "requirements-kaggle-tf215.txt").read_text(
         encoding="utf-8"
     )
