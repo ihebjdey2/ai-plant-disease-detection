@@ -1,114 +1,165 @@
-# Model V2 Experiment A on a free Kaggle GPU
+# Model V2 Experiment A: isolated TensorFlow 2.15 on Kaggle
 
-This workflow prepares the approved, unweighted Experiment A without requiring paid cloud infrastructure. Training is performed manually in a Kaggle Notebook with a free NVIDIA GPU when Kaggle capacity is available. Nothing in this workflow changes the Flask application, the production `plant_disease_model.h5`, the 60% threshold, or the 39-class taxonomy.
+Kaggle currently exposes a useful free Tesla P100 GPU, but its notebook image may use Python 3.12, TensorFlow 2.20, Keras 3, and NumPy 2. Experiment A must not silently inherit that scientific stack. The approved baseline remains Python 3.11, TensorFlow 2.15.0, Keras 2.15.0, and NumPy 1.26.4.
 
-The notebook is [`notebooks/kaggle_model_v2_experiment_a.ipynb`](../notebooks/kaggle_model_v2_experiment_a.ipynb).
+The notebook [`notebooks/kaggle_model_v2_experiment_a.ipynb`](../notebooks/kaggle_model_v2_experiment_a.ipynb) therefore treats the Kaggle kernel as an orchestrator only. It creates an isolated Python 3.11 environment under `/kaggle/working` and launches every TensorFlow operation through an explicit subprocess. It does not uninstall, replace, or import TensorFlow 2.15 into the Python 3.12 kernel.
 
 ## Safety boundaries
 
-Experiment A uses only:
+- TRAIN: 58,857 images and 39/39 classes.
+- VALIDATION: 7,362 images and 39/39 classes.
+- INTERNAL TEST images: not attached or loaded.
+- PlantDoc TEST: not attached or loaded.
+- `START_TRAINING = False` by default.
+- No class weights.
+- Production `plant_disease_model.h5`, taxonomy, no-leaf behavior, and the 60% threshold remain unchanged.
+- Runtime preparation and preflight never call `model.fit()`.
 
-- 58,857 TRAIN images;
-- 7,362 VALIDATION images;
-- the approved `pixel / 255.0` preprocessing;
-- TRAIN-only augmentation;
-- no class weights.
+## Runtime layout
 
-It does not require or evaluate INTERNAL TEST images or PlantDoc TEST images. Prefer not to attach either locked dataset to the Kaggle notebook. The INTERNAL TEST manifest is read only as bytes to confirm its approved SHA-256; its records and images are not loaded.
+The bootstrap uses `uv==0.12.3` in a dedicated tool environment. uv installs a managed Python 3.11 and creates the TensorFlow environment without touching system Python:
+
+```text
+/kaggle/working/agridiagnose-tf215-runtime/
+├── uv-bootstrap/                         # isolated uv tool venv
+├── uv-python/                            # uv-managed CPython 3.11
+├── uv-cache/
+├── venvs/
+│   └── agridiagnose-tf215/
+│       └── bin/python                    # Experiment A interpreter
+├── bootstrap.json
+├── tf215-gpu-runtime.json
+├── experiment-a-config.json
+└── experiment-a-preflight.json
+```
+
+The isolated requirements are committed in `requirements-kaggle-tf215.txt`. They pin:
+
+- `tensorflow[and-cuda]==2.15.0`;
+- `keras==2.15.0`;
+- `numpy==1.26.4`;
+- only the image, metrics, tabular, plotting, and HDF5 dependencies needed by Experiment A.
+
+The CUDA extra installs TensorFlow's Python-side NVIDIA dependencies inside the isolated environment. The Kaggle host driver remains untouched.
 
 ## Required private Kaggle datasets
 
-Create or upload five private Kaggle datasets while preserving the source layouts used by the existing manifests:
+Attach five private datasets that preserve the existing source-relative paths and contain only files required by TRAIN and VALIDATION:
 
-| Notebook key | Suggested Kaggle input | Source |
-|---|---|---|
-| `historical` | `/kaggle/input/agridiagnose-historical` | Historical Mendeley 39-class source |
-| `pldd_up` | `/kaggle/input/agridiagnose-pldd-up` | PLDD-UP |
-| `seasonal_corn` | `/kaggle/input/agridiagnose-seasonal-corn` | Seasonal Corn Leaf Disease Dataset |
-| `plantdoc_train` | `/kaggle/input/agridiagnose-plantdoc-train` | PlantDoc TRAIN-source audit copy only |
-| `banu_deb` | `/kaggle/input/agridiagnose-banu-deb` | Banu/Deb Potato audit copy |
+| Configuration key | Expected input root |
+|---|---|
+| `historical` | `/kaggle/input/agridiagnose-historical` |
+| `pldd_up` | `/kaggle/input/agridiagnose-pldd-up` |
+| `seasonal_corn` | `/kaggle/input/agridiagnose-seasonal-corn` |
+| `plantdoc_train` | `/kaggle/input/agridiagnose-plantdoc-train` |
+| `banu_deb` | `/kaggle/input/agridiagnose-banu-deb` |
 
-PlantDoc and Banu/Deb use the committed `local_file` aliases in their provenance manifests. Their private Kaggle datasets must preserve those local audit-copy filenames. Do not rename source images or edit committed manifests.
+PlantDoc and Banu/Deb use committed `local_file` aliases. Preserve those filenames. Do not upload or attach INTERNAL TEST images or the official PlantDoc TEST split.
 
 ## Beginner workflow
 
-1. Sign in to Kaggle and select **Create → New Notebook**.
-2. Open **Notebook options / Settings** and set **Accelerator → GPU**. Free GPU availability is controlled by Kaggle and may be temporarily unavailable.
-3. Attach the five private TRAIN-source datasets listed above. Do not attach INTERNAL TEST or PlantDoc TEST.
-4. Import `notebooks/kaggle_model_v2_experiment_a.ipynb`, or upload it as a notebook.
-5. Keep Internet enabled so the public GitHub repository and official ImageNet MobileNetV2 weights can be downloaded.
-6. Run the first runtime-audit cell. It prints Python, TensorFlow, Keras, NumPy, OS, CUDA status, TensorFlow devices, and `nvidia-smi`.
-7. Run the scientific-stack gate. Do not install packages before inspecting these versions.
-8. If the Python runtime is compatible but the approved versions are missing, explicitly enable the optional pinned-install cell, run it once, restart the Kaggle session, then rerun both gates. Never continue with TensorFlow 2.18+ or Keras 3 without a separately approved experiment change.
-9. Run the repository cell. It clones the public repository and checks out the exact approved preparation revision recorded in the notebook.
-10. Edit only the five entries in `SOURCE_ROOTS` if Kaggle assigned different input slugs.
-11. Run the exhaustive preflight. Continue only when TRAIN is `58,857/58,857`, VALIDATION is `7,362/7,362`, missing/corrupt counts are zero, coverage is `39/39`, and MacroF1 passes.
-12. Review the GPU memory information. Keep `BATCH_SIZE = 32` unless an actual out-of-memory error requires 16 or 8. Record any fallback.
-13. Run the model-build and single-batch inference cell. This does not optimize weights.
-14. Review every result, then change `START_TRAINING = True`.
-15. Run Phase 1 and wait for completion. The full backbone is frozen, Adam uses `1e-3`, and the phase is limited to 10 epochs.
-16. Run Phase 2 and wait for completion. Fine-tuning begins at `block_13_expand`, all BatchNormalization layers remain frozen, a new Adam optimizer uses `2e-5`, and the phase is limited to 20 epochs.
-17. Run VALIDATION-only selection and artifact generation.
-18. Open the Kaggle **Output** panel and download `/kaggle/working/agridiagnose-exp-a-results.zip`.
-19. Preserve the ZIP and its SHA-256 unchanged for review. Do not replace the production model.
+1. Open Kaggle and create a Notebook.
+2. In **Settings**, choose **Accelerator → GPU** and enable Internet.
+3. Use **Add Input → Your Datasets** to attach the five private TRAIN/VALIDATION sources.
+4. Import `notebooks/kaggle_model_v2_experiment_a.ipynb`.
+5. Run the first cell. It reports the Kaggle system kernel and `nvidia-smi`. Python 3.12 / TensorFlow 2.20 here is acceptable because it is not used for Experiment A.
+6. Run the repository cell. It clones the public repository at the immutable revision embedded in the notebook.
+7. Run the bootstrap cell. It creates the uv tool venv, managed Python 3.11, isolated venv, and installs the directly pinned TensorFlow 2.15 dependencies under `/kaggle/working`. The resulting complete package set is checked and recorded by the runtime report.
+8. Run the isolated runtime gate. It must report all of the following:
+   - Python `3.11.x`;
+   - TensorFlow `2.15.x`;
+   - Keras `2.15.x`;
+   - NumPy `1.26.4`;
+   - `tf.test.is_built_with_cuda() == True`;
+   - at least one TensorFlow GPU;
+   - matrix multiplication placed on `/GPU:0`.
+9. If any condition fails, stop at `KAGGLE_TF215_GPU_RUNTIME_FAILED`. Do not train with system TensorFlow 2.20.
+10. Review the folders printed from `/kaggle/input`, then edit only `SOURCE_ROOTS` if the slugs differ.
+11. Keep `START_TRAINING = False` and write the execution configuration.
+12. Run the isolated preflight cell. It verifies every TRAIN/VALIDATION file, MacroF1, preprocessing, model shapes, fresh ImageNet initialization, Phase 1 freezing, Phase 2 boundary, and BatchNormalization freeze policy.
+13. Confirm TRAIN `58,857/58,857`, VALIDATION `7,362/7,362`, missing/corrupt `0`, and coverage `39/39`.
+14. Download or copy `tf215-gpu-runtime.json` and `experiment-a-preflight.json` for review.
+15. Stop. Do not enable the final training cell until separate human approval.
 
-## Persistence and interrupted sessions
+## Commands executed by the notebook
 
-Best checkpoints are written immediately under:
+Bootstrap, launched by system Python without modifying it:
 
-`/kaggle/working/models/candidates/agri-diagnose-v2-exp-a/`
+```bash
+python scripts/bootstrap_kaggle_tf215_runtime.py \
+  --working-root /kaggle/working/agridiagnose-tf215-runtime \
+  --project-root /kaggle/working/ai-plant-disease-detection
+```
 
-Each completed epoch atomically updates the relevant history CSV in:
+Runtime gate, launched with isolated Python 3.11:
 
-`/kaggle/working/agridiagnose-exp-a-results/`
+```bash
+/kaggle/working/agridiagnose-tf215-runtime/venvs/agridiagnose-tf215/bin/python \
+  scripts/run_kaggle_model_v2_experiment_a.py verify-runtime \
+  --output /kaggle/working/agridiagnose-tf215-runtime/tf215-gpu-runtime.json
+```
 
-The notebook detects existing `phase1-*` and `phase2-*` artifacts. Exact mid-phase continuation is not claimed because callback and data-iterator continuity cannot be guaranteed across a free-session interruption. By default the notebook stops. Download existing artifacts first; then set `RESTART_INTERRUPTED_PHASE = True` only when intentionally restarting the affected phase. The resulting metadata records `fresh` or `restarted`.
+Preflight, also launched with isolated Python 3.11:
 
-Kaggle's `/kaggle/working` storage is session-scoped. Saving frequently reduces loss during a running session but is not a substitute for creating a notebook version or downloading outputs.
+```bash
+/kaggle/working/agridiagnose-tf215-runtime/venvs/agridiagnose-tf215/bin/python \
+  scripts/run_kaggle_model_v2_experiment_a.py preflight \
+  --config /kaggle/working/agridiagnose-tf215-runtime/experiment-a-config.json \
+  --output /kaggle/working/agridiagnose-tf215-runtime/experiment-a-preflight.json
+```
 
-## Output archive
+The future training command requires both `start_training: true` in the validated configuration and the explicit `--authorize-training` flag. Without both, it stops with `TRAINING_DISABLED_BY_USER`.
 
-The final ZIP is designed to contain:
+## Runtime verification details
 
-- `agri-diagnose-v2-exp-a.keras`;
-- `environment.json`;
-- `experiment.json`;
-- `preflight.json`;
-- `phase1-history.csv` and `phase2-history.csv`;
-- `validation-metrics.json`;
-- `validation-confusion-matrix.csv` and PNG;
-- loss, accuracy, and MacroF1 learning curves;
-- `model-v2-exp-a-summary.json`;
-- a short experiment report.
+The isolated verifier prints and records Python, TensorFlow, Keras, NumPy, CUDA build status, TensorFlow GPU devices, `nvidia-smi` information, and the actual device of a small matrix multiplication. TensorFlow soft device placement is disabled for the smoke test, preventing a silent CPU fallback.
 
-Candidate selection uses VALIDATION only, in this order: highest MacroF1, lower loss, higher macro recall, then earlier epoch. The real-world VALIDATION slice contains 1,816 images across its supported classes.
+The provided Kaggle system audit reported a Tesla P100-PCIE-16GB and driver `580.159.04`. That confirms the host GPU, not yet TensorFlow 2.15 compatibility. Only `tf215-gpu-runtime.json`, produced by the isolated interpreter, can validate the approved runtime.
+
+## Preflight details
+
+The isolated preflight:
+
+- loads only the TRAIN and VALIDATION manifests;
+- validates every referenced image with Pillow;
+- requires zero missing and zero corrupt images;
+- checks RGB `224×224×3`, float32, `[0,1]` preprocessing;
+- confirms augmentation only on TRAIN;
+- validates epoch-level MacroF1 against scikit-learn within `1e-6`;
+- verifies the INTERNAL TEST manifest hash without loading its records or images;
+- does not access PlantDoc TEST;
+- downloads fresh official ImageNet MobileNetV2 weights;
+- verifies input `(None,224,224,3)` and output `(None,39)`;
+- verifies the entire backbone is frozen for Phase 1;
+- verifies fine-tuning begins at `block_13_expand` and all 52 BatchNormalization layers remain frozen for Phase 2;
+- records `training_performed: false`.
 
 ## Troubleshooting
 
 ### `KAGGLE_GPU_NOT_AVAILABLE`
 
-Open **Settings → Accelerator → GPU**, restart the session, and rerun the first cell. If Kaggle has no free capacity, save the notebook and try later. Never fall back to CPU silently.
+Select **Settings → Accelerator → GPU**, restart the session, and rerun the system audit.
 
-### `KAGGLE_TF215_RUNTIME_INCOMPATIBLE`
+### Bootstrap or uv download failure
 
-The current Kaggle Python version cannot safely run TensorFlow 2.15. Stop. Do not change TensorFlow/Keras versions or redesign the experiment without human approval.
+Confirm Internet is enabled and `/kaggle/working` has sufficient free space. Rerunning the bootstrap is safe: existing uv and Python environments are reused, while the pinned requirements are synchronized again.
 
-### `KAGGLE_APPROVED_STACK_REQUIRED`
+### `KAGGLE_TF215_GPU_RUNTIME_FAILED`
 
-Python is compatible but the active scientific packages do not match the approved stack. Review the displayed versions. If appropriate, manually enable the pinned-install cell, restart, and rerun the runtime and GPU gates.
+Read `tf215-gpu-runtime.json`. Stop if Python/package versions, CUDA build, GPU enumeration, or the GPU smoke device fails. Never fall back to system TensorFlow 2.20 or CPU training.
 
-### Missing datasets or images
+### Missing datasets
 
-Confirm all five private datasets are attached and edit only `SOURCE_ROOTS`. Preserve the source directory structure and PlantDoc/Banu local audit-copy names. A count below the approved total is a hard stop; do not train on a subset.
+Inspect the printed `/kaggle/input` entries and correct only the five source-root values. Do not train an incomplete subset.
 
-### Out of memory
+### P100 memory error later
 
-Record the GPU model and free VRAM. Retry with batch size 16, then 8 only if a real OOM occurred. Do not change image size, augmentation, architecture, or optimizer policy.
+The approved initial batch size is 32. After a real OOM, 16 and then 8 are permitted fallbacks, but the reason must be recorded. Do not modify architecture, resolution, augmentation, or learning rates.
 
 ### Session interruption
 
-Download any available checkpoint/history artifacts. Restart only the affected phase using the explicit restart flag; do not fabricate missing epochs or combine incompatible histories. If `/kaggle/working` was lost, restart the experiment phase from its defined starting point.
+Everything under `/kaggle/working` is session-scoped. Preserve reports and checkpoints through Kaggle outputs. Exact mid-epoch continuation is not claimed; restart the affected phase explicitly rather than inventing continuity.
 
-## After the download
+## Stop condition
 
-Do not evaluate INTERNAL TEST, rerun PlantDoc, start Experiment B, modify the threshold, or deploy the candidate. The ZIP must first be reviewed for environment integrity, histories, VALIDATION metrics, confusion patterns, and candidate hash.
+This preparation step ends after the isolated GPU gate, model audit, and complete TRAIN/VALIDATION preflight. Keep `START_TRAINING = False`. Do not evaluate either TEST set and do not create a candidate model yet.

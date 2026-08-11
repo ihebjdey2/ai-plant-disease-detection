@@ -177,12 +177,20 @@ def test_notebook_is_valid_and_training_is_manual():
     assert code
     first = "".join(code[0]["source"])
     all_code = "\n".join("".join(cell["source"]) for cell in code)
-    assert "tf.config.list_physical_devices(\"GPU\")" in first
-    assert "KAGGLE_GPU_NOT_AVAILABLE" in first
+    assert "system_tf.config.list_physical_devices('GPU')" in first
+    assert "System TensorFlow:" in first
     assert "START_TRAINING = False" in all_code
     assert "dataset-v2-test.csv" not in all_code
     assert "plant_disease_model.h5" not in all_code
     assert "/mnt/c/" not in all_code
-    assert ".fit(" in all_code
-    revision = re.search(r"APPROVED_CODE_REVISION = '([0-9a-f]{40})'", all_code)
+    assert ".fit(" not in all_code
+    assert "bootstrap_kaggle_tf215_runtime.py" in all_code
+    assert "TF215_PYTHON" in all_code
+    assert "'verify-runtime'" in all_code
+    assert "'preflight'" in all_code
+    assert "'--authorize-training'" in all_code
+    revision = re.search(
+        r"APPROVED_CODE_REVISION = '(?:[0-9a-f]{40}|__APPROVED_CODE_REVISION__)'",
+        all_code,
+    )
     assert revision is not None
