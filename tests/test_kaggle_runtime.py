@@ -102,7 +102,7 @@ def test_bootstrap_commands_use_isolated_uv_and_python():
     assert environment["UV_NO_MODIFY_PATH"] == "1"
 
 
-def test_bootstrap_sanitizes_only_python_environment_contamination():
+def test_bootstrap_sanitizes_targeted_environment_contamination_only():
     layout = KaggleRuntimeLayout(
         Path("/kaggle/working/runtime"), Path("/kaggle/working/project")
     )
@@ -110,6 +110,7 @@ def test_bootstrap_sanitizes_only_python_environment_contamination():
         "PYTHONPATH": "/kaggle/lib/kagglesitepackages",
         "PYTHONHOME": "/usr/local",
         "VIRTUAL_ENV": "/kaggle/host-venv",
+        "UV_INSTALL_DIR": "/usr/local/bin",
         "PATH": "/usr/local/cuda/bin:/usr/bin",
         "LD_LIBRARY_PATH": "/usr/local/cuda/lib64",
         "NVIDIA_VISIBLE_DEVICES": "all",
@@ -118,10 +119,30 @@ def test_bootstrap_sanitizes_only_python_environment_contamination():
     assert "PYTHONPATH" not in environment
     assert "PYTHONHOME" not in environment
     assert "VIRTUAL_ENV" not in environment
+    assert "UV_INSTALL_DIR" not in environment
     assert environment["PYTHONNOUSERSITE"] == "1"
     assert environment["PATH"] == inherited["PATH"]
     assert environment["LD_LIBRARY_PATH"] == inherited["LD_LIBRARY_PATH"]
     assert environment["NVIDIA_VISIBLE_DEVICES"] == "all"
+    assert environment["UV_UNMANAGED_INSTALL"] == str(layout.uv_bin_dir)
+
+
+def test_kaggle_uv_install_dir_cannot_override_unmanaged_runtime_destination():
+    layout = KaggleRuntimeLayout(
+        Path("/kaggle/working/agridiagnose-tf215-runtime"),
+        Path("/kaggle/working/ai-plant-disease-detection"),
+    )
+    environment = bootstrap_environment(
+        layout,
+        {
+            "UV_INSTALL_DIR": "/usr/local/bin",
+            "UV_UNMANAGED_INSTALL": "/tmp/wrong-uv-bin",
+            "UV_NO_MODIFY_PATH": "0",
+        },
+    )
+    assert "UV_INSTALL_DIR" not in environment
+    assert environment["UV_UNMANAGED_INSTALL"] == str(layout.uv_bin_dir)
+    assert environment["UV_NO_MODIFY_PATH"] == "1"
 
 
 def test_partial_legacy_bootstrap_without_pip_cannot_block_standalone_uv(tmp_path):

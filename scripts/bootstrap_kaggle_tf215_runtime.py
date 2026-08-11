@@ -124,6 +124,7 @@ def main() -> int:
             "PYTHONHOME",
             "VIRTUAL_ENV",
         ],
+        "installer_environment_sanitized": ["UV_INSTALL_DIR"],
         "python_no_user_site": True,
         "obsolete_uv_bootstrap_ignored": True,
         "python_request": "3.11",

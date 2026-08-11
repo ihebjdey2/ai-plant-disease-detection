@@ -97,7 +97,14 @@ def bootstrap_environment(
     inherited: Mapping[str, str] | None = None,
 ) -> dict[str, str]:
     environment = dict(inherited or {})
-    contaminated = {"PYTHONPATH", "PYTHONHOME", "VIRTUAL_ENV"}
+    contaminated = {
+        "PYTHONPATH",
+        "PYTHONHOME",
+        "VIRTUAL_ENV",
+        # Kaggle may set this to /usr/local/bin. The standalone installer gives
+        # it precedence over the runtime-controlled unmanaged destination.
+        "UV_INSTALL_DIR",
+    }
     for key in tuple(environment):
         if key.upper() in contaminated:
             environment.pop(key)
