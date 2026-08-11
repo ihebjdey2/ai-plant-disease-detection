@@ -44,6 +44,8 @@ The isolated requirements are committed in `requirements-kaggle-tf215.txt`. They
 
 The CUDA extra installs TensorFlow's Python-side NVIDIA dependencies inside the isolated environment. The Kaggle host driver remains untouched.
 
+TensorFlow 2.15's historical `and-cuda` metadata pins TensorRT 8.6.1 packages that are hosted on NVIDIA's package index rather than standard PyPI. The bootstrap keeps `tensorflow[and-cuda]==2.15.0` unchanged and gives uv the official `https://pypi.nvidia.com` supplemental index so those exact dependencies can resolve. TensorRT remains part of the upstream TensorFlow extra; no package versions or experiment behavior are substituted.
+
 ## Required private Kaggle datasets
 
 Attach five private datasets that preserve the existing source-relative paths and contain only files required by TRAIN and VALIDATION:
@@ -159,6 +161,10 @@ Kaggle may export `UV_INSTALL_DIR=/usr/local/bin`. Older bootstrap revisions all
 ### `uv 0.12.3 (x86_64-unknown-linux-gnu)` version mismatch
 
 Linux includes the target platform in `uv --version`. The validator accepts this official suffix but still requires the parsed semantic version to equal exactly `0.12.3`; different versions or arbitrary trailing text remain rejected.
+
+### `No solution found` for `tensorrt-libs==8.6.1`
+
+The package exists on NVIDIA's official Python index, not standard PyPI. The corrected bootstrap passes `--extra-index-url https://pypi.nvidia.com` to the isolated uv installation command while preserving `tensorflow[and-cuda]==2.15.0`. Rerun Step 3; the partial Python 3.11 environment can be reused safely.
 
 ### `KAGGLE_TF215_GPU_RUNTIME_FAILED`
 
