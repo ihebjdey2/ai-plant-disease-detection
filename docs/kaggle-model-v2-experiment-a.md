@@ -93,7 +93,7 @@ python scripts/bootstrap_kaggle_tf215_runtime.py \
   --project-root /kaggle/working/ai-plant-disease-detection
 ```
 
-The notebook also sets `PYTHONNOUSERSITE=1` for bootstrap, runtime-gate, preflight, and future training subprocesses. It preserves `PATH`, CUDA, NVIDIA, and driver-related environment variables. This prevents Kaggle's host `sitecustomize` and user-site packages from contaminating Python 3.11 without disabling GPU access.
+The notebook also sets `PYTHONNOUSERSITE=1` for bootstrap, runtime-gate, preflight, and future training subprocesses. The bootstrap removes an inherited `UV_INSTALL_DIR` (Kaggle may set it to `/usr/local/bin`) before enforcing `UV_UNMANAGED_INSTALL` under the runtime root. It preserves `PATH`, CUDA, NVIDIA, and driver-related environment variables. This prevents both host `sitecustomize` contamination and installer-path overrides without disabling GPU access.
 
 Runtime gate, launched with isolated Python 3.11:
 
@@ -151,6 +151,10 @@ Confirm Internet is enabled, `curl` and `sh` are available, and `/kaggle/working
 ### `uv-bootstrap/bin/python: No module named pip`
 
 This was the real failure of the previous bootstrap. The corrected workflow never invokes that Python or host `pip`. Rerun Step 3 with the notebook pinned to the corrected implementation revision; the official standalone installer writes `uv` directly to `runtime/uv-bin/uv`.
+
+### Installer reports `installing to /usr/local/bin`
+
+Kaggle may export `UV_INSTALL_DIR=/usr/local/bin`. Older bootstrap revisions allowed that host value to override the unmanaged runtime destination, then failed because `runtime/uv-bin/uv` did not exist. The corrected bootstrap removes the inherited value and enforces `UV_UNMANAGED_INSTALL=/kaggle/working/agridiagnose-tf215-runtime/uv-bin` before invoking the installer.
 
 ### `KAGGLE_TF215_GPU_RUNTIME_FAILED`
 
