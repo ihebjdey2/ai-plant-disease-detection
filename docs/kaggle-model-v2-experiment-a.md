@@ -156,6 +156,10 @@ This was the real failure of the previous bootstrap. The corrected workflow neve
 
 Kaggle may export `UV_INSTALL_DIR=/usr/local/bin`. Older bootstrap revisions allowed that host value to override the unmanaged runtime destination, then failed because `runtime/uv-bin/uv` did not exist. The corrected bootstrap removes the inherited value and enforces `UV_UNMANAGED_INSTALL=/kaggle/working/agridiagnose-tf215-runtime/uv-bin` before invoking the installer.
 
+### `uv 0.12.3 (x86_64-unknown-linux-gnu)` version mismatch
+
+Linux includes the target platform in `uv --version`. The validator accepts this official suffix but still requires the parsed semantic version to equal exactly `0.12.3`; different versions or arbitrary trailing text remain rejected.
+
 ### `KAGGLE_TF215_GPU_RUNTIME_FAILED`
 
 Read `tf215-gpu-runtime.json`. Stop if Python/package versions, CUDA build, GPU enumeration, or the GPU smoke device fails. Never fall back to system TensorFlow 2.20 or CPU training.
