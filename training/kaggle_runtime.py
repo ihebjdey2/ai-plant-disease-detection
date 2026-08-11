@@ -9,6 +9,7 @@ from typing import Mapping, Sequence
 
 UV_VERSION = "0.12.3"
 UV_INSTALLER_URL = f"https://astral.sh/uv/{UV_VERSION}/install.sh"
+NVIDIA_PYPI_INDEX_URL = "https://pypi.nvidia.com"
 PYTHON_REQUEST = "3.11"
 APPROVED_TENSORFLOW_PREFIX = "2.15."
 APPROVED_KERAS_PREFIX = "2.15."
@@ -157,6 +158,8 @@ def bootstrap_commands(layout: KaggleRuntimeLayout) -> list[list[str]]:
             str(layout.experiment_python),
             "--requirements",
             str(layout.requirements_path),
+            "--extra-index-url",
+            NVIDIA_PYPI_INDEX_URL,
         ],
         [
             str(layout.uv_executable),
