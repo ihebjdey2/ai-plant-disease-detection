@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 import json
+import subprocess
 from pathlib import Path
 
 import pytest
 
+from scripts.bootstrap_kaggle_tf215_runtime import has_approved_isolated_python
 from training.kaggle_runtime import (
     KaggleRuntimeLayout,
     UV_VERSION,
@@ -15,6 +17,7 @@ from training.kaggle_runtime import (
     load_execution_config,
     require_kaggle_working_root,
     validate_runtime_payload,
+    validate_uv_version,
     write_execution_config,
 )
 
@@ -49,7 +52,8 @@ def test_runtime_layout_keeps_all_mutations_below_working_root():
     root = Path("/kaggle/working/agridiagnose-tf215-runtime")
     layout = KaggleRuntimeLayout(root, Path("/kaggle/working/project"))
     mutable_paths = [
-        layout.uv_bootstrap_venv,
+        layout.uv_bin_dir,
+        layout.uv_installer,
         layout.managed_python_dir,
         layout.uv_cache_dir,
         layout.experiment_venv,
@@ -77,16 +81,124 @@ def test_bootstrap_commands_use_isolated_uv_and_python():
     layout = KaggleRuntimeLayout(
         Path("/kaggle/working/runtime"), Path("/kaggle/working/project")
     )
-    commands = bootstrap_commands(layout, "/usr/bin/python3.12")
-    assert commands[0][:3] == ["/usr/bin/python3.12", "-m", "venv"]
-    assert commands[1][-1] == f"uv=={UV_VERSION}"
-    assert commands[2][1:4] == ["python", "install", "3.11"]
-    assert "--managed-python" in commands[3]
-    assert commands[4][1:3] == ["pip", "install"]
-    assert str(layout.requirements_path) in commands[4]
-    assert bootstrap_environment(layout)["UV_PYTHON_INSTALL_DIR"] == str(
+    commands = bootstrap_commands(layout)
+    flattened = "\n".join(" ".join(command) for command in commands)
+    assert commands[0][0] == "curl"
+    assert any(f"/uv/{UV_VERSION}/install.sh" in part for part in commands[0])
+    assert commands[1] == ["sh", str(layout.uv_installer)]
+    assert commands[2] == [str(layout.uv_executable), "--version"]
+    assert commands[3][1:4] == ["python", "install", "3.11"]
+    assert "--managed-python" in commands[4]
+    assert commands[5][1:3] == ["pip", "install"]
+    assert str(layout.requirements_path) in commands[5]
+    assert "python -m venv" not in flattened
+    assert "python -m pip" not in flattened
+    assert "uv-bootstrap/bin/python" not in flattened
+    environment = bootstrap_environment(layout)
+    assert environment["UV_PYTHON_INSTALL_DIR"] == str(
         layout.managed_python_dir
     )
+    assert environment["UV_UNMANAGED_INSTALL"] == str(layout.uv_bin_dir)
+    assert environment["UV_NO_MODIFY_PATH"] == "1"
+
+
+def test_bootstrap_sanitizes_targeted_environment_contamination_only():
+    layout = KaggleRuntimeLayout(
+        Path("/kaggle/working/runtime"), Path("/kaggle/working/project")
+    )
+    inherited = {
+        "PYTHONPATH": "/kaggle/lib/kagglesitepackages",
+        "PYTHONHOME": "/usr/local",
+        "VIRTUAL_ENV": "/kaggle/host-venv",
+        "UV_INSTALL_DIR": "/usr/local/bin",
+        "PATH": "/usr/local/cuda/bin:/usr/bin",
+        "LD_LIBRARY_PATH": "/usr/local/cuda/lib64",
+        "NVIDIA_VISIBLE_DEVICES": "all",
+    }
+    environment = bootstrap_environment(layout, inherited)
+    assert "PYTHONPATH" not in environment
+    assert "PYTHONHOME" not in environment
+    assert "VIRTUAL_ENV" not in environment
+    assert "UV_INSTALL_DIR" not in environment
+    assert environment["PYTHONNOUSERSITE"] == "1"
+    assert environment["PATH"] == inherited["PATH"]
+    assert environment["LD_LIBRARY_PATH"] == inherited["LD_LIBRARY_PATH"]
+    assert environment["NVIDIA_VISIBLE_DEVICES"] == "all"
+    assert environment["UV_UNMANAGED_INSTALL"] == str(layout.uv_bin_dir)
+
+
+def test_kaggle_uv_install_dir_cannot_override_unmanaged_runtime_destination():
+    layout = KaggleRuntimeLayout(
+        Path("/kaggle/working/agridiagnose-tf215-runtime"),
+        Path("/kaggle/working/ai-plant-disease-detection"),
+    )
+    environment = bootstrap_environment(
+        layout,
+        {
+            "UV_INSTALL_DIR": "/usr/local/bin",
+            "UV_UNMANAGED_INSTALL": "/tmp/wrong-uv-bin",
+            "UV_NO_MODIFY_PATH": "0",
+        },
+    )
+    assert "UV_INSTALL_DIR" not in environment
+    assert environment["UV_UNMANAGED_INSTALL"] == str(layout.uv_bin_dir)
+    assert environment["UV_NO_MODIFY_PATH"] == "1"
+
+
+def test_partial_legacy_bootstrap_without_pip_cannot_block_standalone_uv(tmp_path):
+    layout = KaggleRuntimeLayout(tmp_path, tmp_path / "project")
+    legacy_python = layout.obsolete_uv_bootstrap_venv / "bin/python"
+    legacy_python.parent.mkdir(parents=True)
+    legacy_python.write_text("partial Kaggle bootstrap", encoding="utf-8")
+
+    commands = bootstrap_commands(layout)
+    flattened = "\n".join(" ".join(command) for command in commands)
+    assert str(legacy_python) not in flattened
+    assert " -m pip " not in f" {flattened} "
+    assert commands[0][0] == "curl"
+    assert commands[1] == ["sh", str(layout.uv_installer)]
+    assert commands[2][0] == str(layout.uv_executable)
+
+
+def test_standalone_uv_version_is_strictly_pinned():
+    validate_uv_version(f"uv {UV_VERSION}\n")
+    with pytest.raises(RuntimeError, match="version mismatch"):
+        validate_uv_version("uv 0.12.4")
+
+
+def test_partial_or_wrong_experiment_python_requires_recreation(tmp_path, monkeypatch):
+    python_path = tmp_path / "venvs/agridiagnose-tf215/bin/python"
+    environment = {"PYTHONNOUSERSITE": "1"}
+    assert has_approved_isolated_python(python_path, environment) is False
+
+    python_path.parent.mkdir(parents=True)
+    python_path.write_text("partial", encoding="utf-8")
+
+    def broken_run(*args, **kwargs):
+        raise OSError("incomplete interpreter")
+
+    monkeypatch.setattr(subprocess, "run", broken_run)
+    assert has_approved_isolated_python(python_path, environment) is False
+
+
+def test_existing_experiment_python_is_reused_only_when_it_is_311(
+    tmp_path, monkeypatch
+):
+    python_path = tmp_path / "venvs/agridiagnose-tf215/bin/python"
+    python_path.parent.mkdir(parents=True)
+    python_path.write_text("placeholder", encoding="utf-8")
+    captured = {}
+
+    def approved_run(command, **kwargs):
+        captured["command"] = command
+        captured["environment"] = kwargs["env"]
+        return subprocess.CompletedProcess(command, 0, stdout="3.11\n", stderr="")
+
+    monkeypatch.setattr(subprocess, "run", approved_run)
+    environment = {"PYTHONNOUSERSITE": "1"}
+    assert has_approved_isolated_python(python_path, environment) is True
+    assert "-I" in captured["command"]
+    assert captured["environment"] == environment
 
 
 @pytest.mark.parametrize(
@@ -177,6 +289,11 @@ def test_bootstrap_and_entrypoint_are_source_only_and_safe():
         PROJECT_ROOT / "scripts/run_kaggle_model_v2_experiment_a.py"
     ).read_text(encoding="utf-8")
     assert "model.fit(" not in bootstrap
+    assert "python -m pip" not in bootstrap
+    assert "uv-bootstrap/bin/python" not in bootstrap
+    assert "UV_UNMANAGED_INSTALL" in (
+        PROJECT_ROOT / "training/kaggle_runtime.py"
+    ).read_text(encoding="utf-8")
     assert "plant_disease_model.h5" not in entrypoint
     assert "--authorize-training" in entrypoint
     assert "TRAINING_DISABLED_BY_USER" in entrypoint

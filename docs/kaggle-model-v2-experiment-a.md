@@ -17,11 +17,13 @@ The notebook [`notebooks/kaggle_model_v2_experiment_a.ipynb`](../notebooks/kaggl
 
 ## Runtime layout
 
-The bootstrap uses `uv==0.12.3` in a dedicated tool environment. uv installs a managed Python 3.11 and creates the TensorFlow environment without touching system Python:
+The bootstrap installs `uv==0.12.3` with Astral's official versioned standalone installer. It sets `UV_UNMANAGED_INSTALL` to the runtime-controlled `uv-bin` directory, so it does not need Kaggle host `pip`, `venv`, `ensurepip`, or `pipx`, and it does not modify shell profiles or `PATH`. uv then installs a managed Python 3.11 and creates the TensorFlow environment without touching system Python:
 
 ```text
 /kaggle/working/agridiagnose-tf215-runtime/
-├── uv-bootstrap/                         # isolated uv tool venv
+├── uv-bin/
+│   └── uv                                # pinned standalone executable
+├── uv-installer.sh                       # versioned official installer
 ├── uv-python/                            # uv-managed CPython 3.11
 ├── uv-cache/
 ├── venvs/
@@ -64,7 +66,7 @@ PlantDoc and Banu/Deb use committed `local_file` aliases. Preserve those filenam
 4. Import `notebooks/kaggle_model_v2_experiment_a.ipynb`.
 5. Run the first cell. It reports the Kaggle system kernel and `nvidia-smi`. Python 3.12 / TensorFlow 2.20 here is acceptable because it is not used for Experiment A.
 6. Run the repository cell. It clones the public repository at the immutable revision embedded in the notebook.
-7. Run the bootstrap cell. It creates the uv tool venv, managed Python 3.11, isolated venv, and installs the directly pinned TensorFlow 2.15 dependencies under `/kaggle/working`. The resulting complete package set is checked and recorded by the runtime report.
+7. Run the bootstrap cell. It downloads the official `uv==0.12.3` standalone installer, creates managed Python 3.11 and the isolated venv, and installs the directly pinned TensorFlow 2.15 dependencies under `/kaggle/working`. The resulting complete package set is checked and recorded by the runtime report.
 8. Run the isolated runtime gate. It must report all of the following:
    - Python `3.11.x`;
    - TensorFlow `2.15.x`;
@@ -83,13 +85,15 @@ PlantDoc and Banu/Deb use committed `local_file` aliases. Preserve those filenam
 
 ## Commands executed by the notebook
 
-Bootstrap, launched by system Python without modifying it:
+Bootstrap, launched by system Python in isolated mode with `PYTHONPATH`, `PYTHONHOME`, and `VIRTUAL_ENV` removed from the child environment:
 
 ```bash
 python scripts/bootstrap_kaggle_tf215_runtime.py \
   --working-root /kaggle/working/agridiagnose-tf215-runtime \
   --project-root /kaggle/working/ai-plant-disease-detection
 ```
+
+The notebook also sets `PYTHONNOUSERSITE=1` for bootstrap, runtime-gate, preflight, and future training subprocesses. The bootstrap removes an inherited `UV_INSTALL_DIR` (Kaggle may set it to `/usr/local/bin`) before enforcing `UV_UNMANAGED_INSTALL` under the runtime root. It preserves `PATH`, CUDA, NVIDIA, and driver-related environment variables. This prevents both host `sitecustomize` contamination and installer-path overrides without disabling GPU access.
 
 Runtime gate, launched with isolated Python 3.11:
 
@@ -142,7 +146,15 @@ Select **Settings → Accelerator → GPU**, restart the session, and rerun the 
 
 ### Bootstrap or uv download failure
 
-Confirm Internet is enabled and `/kaggle/working` has sufficient free space. Rerunning the bootstrap is safe: existing uv and Python environments are reused, while the pinned requirements are synchronized again.
+Confirm Internet is enabled, `curl` and `sh` are available, and `/kaggle/working` has sufficient free space. Rerunning the bootstrap is safe: the pinned standalone uv executable is reinstalled and version-checked; managed Python is reused; a missing, broken, or non-3.11 experiment venv is recreated with `uv venv --clear`; and the pinned requirements are installed and checked again. The obsolete partial `uv-bootstrap/` directory from the host-pip implementation is ignored and can no longer block recovery.
+
+### `uv-bootstrap/bin/python: No module named pip`
+
+This was the real failure of the previous bootstrap. The corrected workflow never invokes that Python or host `pip`. Rerun Step 3 with the notebook pinned to the corrected implementation revision; the official standalone installer writes `uv` directly to `runtime/uv-bin/uv`.
+
+### Installer reports `installing to /usr/local/bin`
+
+Kaggle may export `UV_INSTALL_DIR=/usr/local/bin`. Older bootstrap revisions allowed that host value to override the unmanaged runtime destination, then failed because `runtime/uv-bin/uv` did not exist. The corrected bootstrap removes the inherited value and enforces `UV_UNMANAGED_INSTALL=/kaggle/working/agridiagnose-tf215-runtime/uv-bin` before invoking the installer.
 
 ### `KAGGLE_TF215_GPU_RUNTIME_FAILED`
 

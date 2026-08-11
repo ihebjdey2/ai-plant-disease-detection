@@ -2,13 +2,13 @@ from __future__ import annotations
 
 import json
 import re
-import sys
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Mapping, Sequence
 
 
 UV_VERSION = "0.12.3"
+UV_INSTALLER_URL = f"https://astral.sh/uv/{UV_VERSION}/install.sh"
 PYTHON_REQUEST = "3.11"
 APPROVED_TENSORFLOW_PREFIX = "2.15."
 APPROVED_KERAS_PREFIX = "2.15."
@@ -35,16 +35,21 @@ class KaggleRuntimeLayout:
     project_root: Path
 
     @property
-    def uv_bootstrap_venv(self) -> Path:
-        return self.working_root / "uv-bootstrap"
+    def uv_bin_dir(self) -> Path:
+        return self.working_root / "uv-bin"
 
     @property
-    def uv_bootstrap_python(self) -> Path:
-        return self.uv_bootstrap_venv / "bin/python"
+    def uv_installer(self) -> Path:
+        return self.working_root / "uv-installer.sh"
 
     @property
     def uv_executable(self) -> Path:
-        return self.uv_bootstrap_venv / "bin/uv"
+        return self.uv_bin_dir / "uv"
+
+    @property
+    def obsolete_uv_bootstrap_venv(self) -> Path:
+        """Location created by the superseded host-pip bootstrap."""
+        return self.working_root / "uv-bootstrap"
 
     @property
     def managed_python_dir(self) -> Path:
@@ -87,27 +92,47 @@ def require_kaggle_working_root(path: Path) -> Path:
     return resolved
 
 
-def bootstrap_environment(layout: KaggleRuntimeLayout) -> dict[str, str]:
-    return {
+def bootstrap_environment(
+    layout: KaggleRuntimeLayout,
+    inherited: Mapping[str, str] | None = None,
+) -> dict[str, str]:
+    environment = dict(inherited or {})
+    contaminated = {
+        "PYTHONPATH",
+        "PYTHONHOME",
+        "VIRTUAL_ENV",
+        # Kaggle may set this to /usr/local/bin. The standalone installer gives
+        # it precedence over the runtime-controlled unmanaged destination.
+        "UV_INSTALL_DIR",
+    }
+    for key in tuple(environment):
+        if key.upper() in contaminated:
+            environment.pop(key)
+    environment.update({
+        "PYTHONNOUSERSITE": "1",
+        "UV_UNMANAGED_INSTALL": str(layout.uv_bin_dir),
+        "UV_NO_MODIFY_PATH": "1",
         "UV_PYTHON_INSTALL_DIR": str(layout.managed_python_dir),
         "UV_CACHE_DIR": str(layout.uv_cache_dir),
         "UV_NO_CONFIG": "1",
-    }
+    })
+    return environment
 
 
-def bootstrap_commands(
-    layout: KaggleRuntimeLayout, host_python: str | Path = sys.executable
-) -> list[list[str]]:
+def bootstrap_commands(layout: KaggleRuntimeLayout) -> list[list[str]]:
     return [
-        [str(host_python), "-m", "venv", str(layout.uv_bootstrap_venv)],
         [
-            str(layout.uv_bootstrap_python),
-            "-m",
-            "pip",
-            "install",
-            "--disable-pip-version-check",
-            f"uv=={UV_VERSION}",
+            "curl",
+            "--proto",
+            "=https",
+            "--tlsv1.2",
+            "-LsSf",
+            UV_INSTALLER_URL,
+            "-o",
+            str(layout.uv_installer),
         ],
+        ["sh", str(layout.uv_installer)],
+        [str(layout.uv_executable), "--version"],
         [
             str(layout.uv_executable),
             "python",
@@ -141,6 +166,13 @@ def bootstrap_commands(
             str(layout.experiment_python),
         ],
     ]
+
+
+def validate_uv_version(output: str) -> None:
+    if output.strip() != f"uv {UV_VERSION}":
+        raise RuntimeError(
+            f"Standalone uv version mismatch: expected {UV_VERSION}, got {output.strip()!r}."
+        )
 
 
 def validate_runtime_payload(payload: Mapping[str, object]) -> None:

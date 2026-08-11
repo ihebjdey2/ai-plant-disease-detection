@@ -185,9 +185,15 @@ def test_notebook_is_valid_and_training_is_manual():
     assert "/mnt/c/" not in all_code
     assert ".fit(" not in all_code
     assert "bootstrap_kaggle_tf215_runtime.py" in all_code
+    assert "sys.executable, '-I'" in all_code
+    assert "ISOLATED_ENV" in all_code
+    assert "'PYTHONPATH', 'PYTHONHOME', 'VIRTUAL_ENV'" in all_code
+    assert "PYTHONNOUSERSITE" in all_code
+    assert all_code.count("env=ISOLATED_ENV") == 4
     assert "TF215_PYTHON" in all_code
     assert "'verify-runtime'" in all_code
     assert "'preflight'" in all_code
     assert "'--authorize-training'" in all_code
     revision = re.search(r"APPROVED_CODE_REVISION = '([0-9a-f]{40})'", all_code)
     assert revision is not None
+    assert revision.group(1) == "008d2e80b50ee79a2ccc638e9f2a5c12ac38882f"
