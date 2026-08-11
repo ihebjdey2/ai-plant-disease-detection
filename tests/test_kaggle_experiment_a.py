@@ -196,4 +196,4 @@ def test_notebook_is_valid_and_training_is_manual():
     assert "'--authorize-training'" in all_code
     revision = re.search(r"APPROVED_CODE_REVISION = '([0-9a-f]{40})'", all_code)
     assert revision is not None
-    assert revision.group(1) == "116ac1ea5032b925285c511987bcf29efbe135bc"
+    assert revision.group(1) == "183bdc0baae18cc02f9d02188462930bff423360"
