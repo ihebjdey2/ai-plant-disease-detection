@@ -144,6 +144,18 @@ The isolated preflight:
 - verifies fine-tuning begins at `block_13_expand` and all 52 BatchNormalization layers remain frozen for Phase 2;
 - records `training_performed: false`.
 
+## Finalize an already completed training run
+
+If both training phases and their VALIDATION evaluations completed but plotting failed afterward, do not rerun the training cell. Use the notebook's separate **Recover reports after completed training** cell. It invokes only:
+
+```text
+finalize-existing --config <experiment-a-config.json> --preflight-report <experiment-a-preflight.json>
+```
+
+The recovery command forces Matplotlib's non-interactive `Agg` backend before importing `pyplot`. It validates the existing Phase 1 and Phase 2 checkpoints, selected candidate, histories, VALIDATION metrics, confusion CSV, runtime audit, and successful preflight. The selected candidate must match exactly one phase checkpoint by SHA-256. The command then creates the missing confusion-matrix PNG, three learning curves, JSON/Markdown reports, and final ZIP archive.
+
+This path does not call `model.fit()`, load a model, repeat neural-network inference, resolve image files, or access either locked TEST set. It records `training_performed: true` because training happened before recovery and `retraining_performed: false` because finalization performs no training. Existing `.keras` artifacts are hash-, size-, and timestamp-checked before and after finalization.
+
 ## Troubleshooting
 
 ### `KAGGLE_GPU_NOT_AVAILABLE`
@@ -173,6 +185,10 @@ The package exists on NVIDIA's official Python index, not standard PyPI. The cor
 ### `ModuleNotFoundError: No module named 'flask'` during Step 4
 
 Older revisions imported `app.taxonomy`, which necessarily executed `app/__init__.py` and leaked Flask into the isolated ML import graph. The corrected revision imports `training.taxonomy` throughout training and evaluation tooling. Do not install Flask into the Kaggle ML venv; rerun the repository checkout at the notebook's pinned revision, then rerun Step 4.
+
+### `ModuleNotFoundError: No module named 'matplotlib_inline'` after training
+
+Training and VALIDATION evaluation may already be complete. The error is caused by the isolated reporting subprocess inheriting Kaggle's Jupyter inline backend. Do not install `matplotlib_inline` and do not rerun training. Checkout the notebook's corrected pinned revision, then run only the `finalize-existing` recovery cell. Reporting uses `MPLBACKEND=Agg` and reuses the already persisted artifacts.
 
 ### `KAGGLE_TF215_GPU_RUNTIME_FAILED`
 

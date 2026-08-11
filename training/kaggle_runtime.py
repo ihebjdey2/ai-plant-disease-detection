@@ -325,9 +325,10 @@ def isolated_entrypoint_command(
     *,
     config_path: Path | None = None,
     output_path: Path | None = None,
+    preflight_report_path: Path | None = None,
     authorize_training: bool = False,
 ) -> list[str]:
-    if action not in {"verify-runtime", "preflight", "train"}:
+    if action not in {"verify-runtime", "preflight", "train", "finalize-existing"}:
         raise ValueError(f"Unsupported isolated action: {action}")
     command = [
         str(layout.experiment_python),
@@ -338,6 +339,8 @@ def isolated_entrypoint_command(
         command.extend(["--config", str(config_path)])
     if output_path is not None:
         command.extend(["--output", str(output_path)])
+    if preflight_report_path is not None:
+        command.extend(["--preflight-report", str(preflight_report_path)])
     if authorize_training:
         command.append("--authorize-training")
     return command
