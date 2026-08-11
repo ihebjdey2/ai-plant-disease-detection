@@ -1,14 +1,27 @@
 from __future__ import annotations
 
 import argparse
+import csv
 import json
+import os
 import platform
 import shutil
 import sys
 from pathlib import Path
+from typing import Mapping
+
+
+# Kaggle's notebook kernel may export its inline backend to this subprocess.
+# Experiment reporting is file-only, so always select a deterministic headless backend.
+os.environ["MPLBACKEND"] = "Agg"
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
+KAGGLE_RESULTS_DIR = Path("/kaggle/working/agridiagnose-exp-a-results")
+KAGGLE_CANDIDATE_DIR = Path(
+    "/kaggle/working/models/candidates/agri-diagnose-v2-exp-a"
+)
+KAGGLE_ARCHIVE_BASE = Path("/kaggle/working/agridiagnose-exp-a-results")
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
@@ -181,6 +194,277 @@ def evaluate_checkpoint(
     }
 
 
+def read_json_mapping(path: Path, label: str) -> dict[str, object]:
+    path = Path(path)
+    if not path.is_file():
+        raise RuntimeError(f"Missing existing {label}: {path}")
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise RuntimeError(f"Invalid existing {label}: {path}") from exc
+    if not isinstance(payload, dict):
+        raise RuntimeError(f"Existing {label} must contain a JSON object: {path}")
+    return payload
+
+
+def require_existing_file(path: Path, label: str) -> Path:
+    path = Path(path)
+    if not path.is_file() or path.stat().st_size <= 0:
+        raise RuntimeError(f"Missing existing {label}: {path}")
+    return path
+
+
+def history_epoch_count(path: Path) -> int:
+    with Path(path).open("r", encoding="utf-8", newline="") as handle:
+        count = sum(1 for _ in csv.DictReader(handle))
+    if count <= 0:
+        raise RuntimeError(f"No completed epochs were persisted in {Path(path).name}.")
+    return count
+
+
+def validate_existing_preflight(payload: Mapping[str, object]) -> dict[str, object]:
+    if payload.get("status") != "KAGGLE_TF215_GPU_PREFLIGHT_PASSED":
+        raise RuntimeError("Existing Kaggle preflight did not pass successfully.")
+    preflight = payload.get("preflight")
+    if not isinstance(preflight, dict):
+        raise RuntimeError("Existing Kaggle preflight payload is incomplete.")
+    for layer_name, layer in (("preflight report", payload), ("data preflight", preflight)):
+        if layer.get("internal_test_loaded") is not False:
+            raise RuntimeError(f"{layer_name} does not preserve the INTERNAL TEST lock.")
+        if layer.get("plantdoc_test_loaded") is not False:
+            raise RuntimeError(f"{layer_name} does not preserve the PlantDoc TEST lock.")
+    if payload.get("training_performed") is not False:
+        raise RuntimeError("The saved preflight must precede neural-network training.")
+    for partition, expected in (("train", 58_857), ("validation", 7_362)):
+        audit = preflight.get(partition)
+        if not isinstance(audit, dict) or any(
+            (
+                audit.get("expected") != expected,
+                audit.get("resolved") != expected,
+                audit.get("missing") != 0,
+                audit.get("unreadable") != 0,
+            )
+        ):
+            raise RuntimeError(f"Existing {partition.upper()} preflight is invalid.")
+    if (
+        preflight.get("train_class_coverage") != 39
+        or preflight.get("validation_class_coverage") != 39
+    ):
+        raise RuntimeError("Existing TRAIN/VALIDATION class coverage is invalid.")
+    if not isinstance(preflight.get("internal_test_manifest_sha256"), str):
+        raise RuntimeError("Existing INTERNAL TEST manifest lock metadata is missing.")
+    return preflight
+
+
+def validate_existing_validation_metrics(
+    payload: Mapping[str, object],
+) -> dict[str, object]:
+    required = {
+        "loss",
+        "accuracy",
+        "overall_validation",
+        "real_world_validation",
+        "true_indices",
+        "predicted_indices",
+    }
+    missing = sorted(required - set(payload))
+    if missing:
+        raise RuntimeError(f"Existing validation metrics are incomplete: {missing}")
+    true_indices = payload["true_indices"]
+    predicted_indices = payload["predicted_indices"]
+    if (
+        not isinstance(true_indices, list)
+        or not isinstance(predicted_indices, list)
+        or not true_indices
+        or len(true_indices) != len(predicted_indices)
+    ):
+        raise RuntimeError("Existing VALIDATION prediction indices are invalid.")
+    if any(
+        not isinstance(value, int) or value < 0 or value >= 39
+        for value in [*true_indices, *predicted_indices]
+    ):
+        raise RuntimeError("Existing VALIDATION prediction indices are out of range.")
+    overall = payload["overall_validation"]
+    if not isinstance(overall, dict) or overall.get("image_count") != len(true_indices):
+        raise RuntimeError("Existing VALIDATION metric counts are inconsistent.")
+    return dict(payload)
+
+
+def model_signature(path: Path, sha256_file) -> tuple[str, int, int]:
+    stat = Path(path).stat()
+    return sha256_file(path), stat.st_size, stat.st_mtime_ns
+
+
+def finalize_existing(
+    config_path: Path,
+    preflight_report_path: Path,
+    *,
+    results_dir: Path = KAGGLE_RESULTS_DIR,
+    candidate_dir: Path = KAGGLE_CANDIDATE_DIR,
+    archive_base: Path = KAGGLE_ARCHIVE_BASE,
+) -> Path:
+    """Finish VALIDATION-only reporting from completed Experiment A artifacts."""
+    config = load_execution_config(config_path, allow_training=True)
+    if (
+        config["internal_test_loaded"] is not False
+        or config["plantdoc_test_loaded"] is not False
+    ):
+        raise RuntimeError("Locked TEST datasets are forbidden during finalization.")
+
+    from training.kaggle_experiment_a import (
+        EXPERIMENT_NAME,
+        best_history_row,
+        major_confusion_pairs,
+        package_results,
+        plot_learning_curves,
+        save_confusion_artifacts,
+        sha256_file,
+        write_json,
+    )
+
+    results_dir = Path(results_dir)
+    candidate_dir = Path(candidate_dir)
+    selected_path = require_existing_file(
+        results_dir / "agri-diagnose-v2-exp-a.keras", "selected candidate model"
+    )
+    phase1_checkpoint = require_existing_file(
+        candidate_dir / "phase1-best.keras", "Phase 1 checkpoint"
+    )
+    phase2_checkpoint = require_existing_file(
+        candidate_dir / "phase2-best.keras", "Phase 2 checkpoint"
+    )
+    phase1_history = require_existing_file(
+        results_dir / "phase1-history.csv", "Phase 1 history"
+    )
+    phase2_history = require_existing_file(
+        results_dir / "phase2-history.csv", "Phase 2 history"
+    )
+    require_existing_file(
+        results_dir / "validation-confusion-matrix.csv",
+        "VALIDATION confusion-matrix CSV",
+    )
+    metrics = validate_existing_validation_metrics(
+        read_json_mapping(
+            results_dir / "validation-metrics.json", "VALIDATION metrics"
+        )
+    )
+    runtime = read_json_mapping(
+        results_dir / "environment-runtime.json", "training runtime audit"
+    )
+    validate_runtime_payload(runtime)
+    preflight = validate_existing_preflight(
+        read_json_mapping(preflight_report_path, "Kaggle preflight report")
+    )
+
+    model_paths = {
+        "selected": selected_path,
+        "phase1": phase1_checkpoint,
+        "phase2": phase2_checkpoint,
+    }
+    signatures_before = {
+        name: model_signature(path, sha256_file)
+        for name, path in model_paths.items()
+    }
+    selected_hash = signatures_before["selected"][0]
+    matching_phases = [
+        phase
+        for phase in ("phase1", "phase2")
+        if signatures_before[phase][0] == selected_hash
+    ]
+    if len(matching_phases) != 1:
+        raise RuntimeError(
+            "Selected candidate must match exactly one existing phase checkpoint."
+        )
+    selected_phase = matching_phases[0]
+    phase1_best = best_history_row(phase1_history)
+    phase2_best = best_history_row(phase2_history)
+    selected_best = phase1_best if selected_phase == "phase1" else phase2_best
+    selection_epoch = int(selected_best["epoch"])
+    if selected_phase == "phase2":
+        selection_epoch += history_epoch_count(phase1_history)
+
+    save_confusion_artifacts(
+        metrics, results_dir, preserve_existing_csv=True
+    )
+    plot_learning_curves(phase1_history, phase2_history, results_dir)
+    environment = {
+        **runtime,
+        "status": "EXPERIMENT_A_EXISTING_ARTIFACTS_FINALIZED",
+        "os_environment": "Kaggle isolated Python 3.11 subprocess",
+        "batch_size": int(config["batch_size"]),
+        "training_performed": True,
+        "retraining_performed": False,
+    }
+    experiment = {
+        "experiment": EXPERIMENT_NAME,
+        "selected_phase": selected_phase,
+        "selected_epoch": int(selected_best["epoch"]),
+        "selection_epoch": selection_epoch,
+        "candidate_sha256": selected_hash,
+        "candidate_size_bytes": selected_path.stat().st_size,
+        "train_manifest_sha256": sha256_file(
+            PROJECT_ROOT / "training/datasets/manifests/dataset-v2-train.csv"
+        ),
+        "validation_manifest_sha256": sha256_file(
+            PROJECT_ROOT / "training/datasets/manifests/dataset-v2-validation.csv"
+        ),
+        "policy_sha256": sha256_file(
+            PROJECT_ROOT / "training/config/model-v2-training-policy.json"
+        ),
+        "internal_test_manifest_sha256": preflight[
+            "internal_test_manifest_sha256"
+        ],
+        "internal_test_loaded": False,
+        "plantdoc_test_loaded": False,
+        "training_performed": True,
+        "retraining_performed": False,
+        "finalization_mode": "finalize-existing",
+        "phase1_run_mode": "completed_before_recovery",
+        "phase2_run_mode": "completed_before_recovery",
+    }
+    summary = {
+        "selected_phase": selected_phase,
+        "selected_epoch": int(selected_best["epoch"]),
+        "validation": metrics["overall_validation"],
+        "real_world_validation": metrics["real_world_validation"],
+        "major_confusion_pairs": major_confusion_pairs(metrics),
+        "test_sets_evaluated": False,
+        "training_performed": True,
+        "retraining_performed": False,
+    }
+    write_json(results_dir / "environment.json", environment)
+    write_json(results_dir / "experiment.json", experiment)
+    write_json(results_dir / "preflight.json", preflight)
+    write_json(results_dir / "model-v2-exp-a-summary.json", summary)
+    (results_dir / "model-v2-exp-a-report.md").write_text(
+        "# Model V2 Experiment A\n\n"
+        "Existing completed training finalized without retraining.\n\n"
+        "Candidate selection and metrics use VALIDATION only. INTERNAL TEST and "
+        "PlantDoc TEST remain locked and unevaluated.\n",
+        encoding="utf-8",
+    )
+    archive = package_results(results_dir, Path(archive_base))
+
+    signatures_after = {
+        name: model_signature(path, sha256_file)
+        for name, path in model_paths.items()
+    }
+    if signatures_after != signatures_before:
+        raise RuntimeError("Recovery modified an existing trained model artifact.")
+    recovery = {
+        "status": "EXPERIMENT_A_EXISTING_ARTIFACTS_FINALIZED",
+        "archive": str(archive),
+        "selected_phase": selected_phase,
+        "training_performed": True,
+        "retraining_performed": False,
+        "internal_test_loaded": False,
+        "plantdoc_test_loaded": False,
+        "test_sets_evaluated": False,
+    }
+    print(json.dumps(recovery, indent=2, sort_keys=True))
+    return archive
+
+
 def run_training(config_path: Path, *, authorize_training: bool) -> Path:
     if not authorize_training:
         raise RuntimeError("TRAINING_DISABLED_BY_USER")
@@ -229,10 +513,8 @@ def run_training(config_path: Path, *, authorize_training: bool) -> Path:
     train_dataset, validation_dataset, _, validation_records = build_kaggle_datasets(
         PROJECT_ROOT, roots, batch_size=batch_size
     )
-    candidate_dir = Path(
-        "/kaggle/working/models/candidates/agri-diagnose-v2-exp-a"
-    )
-    results_dir = Path("/kaggle/working/agridiagnose-exp-a-results")
+    candidate_dir = KAGGLE_CANDIDATE_DIR
+    results_dir = KAGGLE_RESULTS_DIR
     candidate_dir.mkdir(parents=True, exist_ok=True)
     results_dir.mkdir(parents=True, exist_ok=True)
     restart = bool(config["restart_interrupted_phase"])
@@ -369,7 +651,7 @@ def run_training(config_path: Path, *, authorize_training: bool) -> Path:
         encoding="utf-8",
     )
     archive = package_results(
-        results_dir, Path("/kaggle/working/agridiagnose-exp-a-results")
+        results_dir, KAGGLE_ARCHIVE_BASE
     )
     print("Experiment A archive:", archive)
     return archive
@@ -388,6 +670,9 @@ def parse_args() -> argparse.Namespace:
     train = subparsers.add_parser("train")
     train.add_argument("--config", type=Path, required=True)
     train.add_argument("--authorize-training", action="store_true")
+    finalize = subparsers.add_parser("finalize-existing")
+    finalize.add_argument("--config", type=Path, required=True)
+    finalize.add_argument("--preflight-report", type=Path, required=True)
     return parser.parse_args()
 
 
@@ -397,8 +682,12 @@ def main() -> int:
         verify_runtime(args.output)
     elif args.action == "preflight":
         run_preflight(args.config, args.output)
-    else:
+    elif args.action == "train":
         run_training(args.config, authorize_training=args.authorize_training)
+    elif args.action == "finalize-existing":
+        finalize_existing(args.config, args.preflight_report)
+    else:  # pragma: no cover - argparse restricts actions before dispatch.
+        raise RuntimeError(f"Unsupported action: {args.action}")
     return 0
 
 

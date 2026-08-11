@@ -364,6 +364,23 @@ def test_isolated_entrypoint_never_uses_kernel_python():
     assert "--authorize-training" not in command
 
 
+def test_finalize_existing_entrypoint_has_no_training_authorization():
+    layout = KaggleRuntimeLayout(
+        Path("/kaggle/working/runtime"), Path("/kaggle/working/project")
+    )
+    preflight = layout.working_root / "experiment-a-preflight.json"
+    command = isolated_entrypoint_command(
+        layout,
+        "finalize-existing",
+        config_path=layout.execution_config,
+        preflight_report_path=preflight,
+    )
+    assert command[0] == str(layout.experiment_python)
+    assert command[2] == "finalize-existing"
+    assert command[-2:] == ["--preflight-report", str(preflight)]
+    assert "--authorize-training" not in command
+
+
 def test_isolated_requirements_keep_approved_scientific_stack():
     requirements = (PROJECT_ROOT / "requirements-kaggle-tf215.txt").read_text(
         encoding="utf-8"

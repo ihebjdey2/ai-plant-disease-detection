@@ -93,6 +93,17 @@ def write_json(path: Path, payload: object) -> None:
     temporary.replace(path)
 
 
+def headless_pyplot():
+    """Return pyplot with a deterministic non-interactive backend."""
+    os.environ["MPLBACKEND"] = "Agg"
+    import matplotlib
+
+    matplotlib.use("Agg", force=True)
+    import matplotlib.pyplot as plt
+
+    return plt
+
+
 def runtime_audit() -> dict[str, object]:
     gpus = tf.config.list_physical_devices("GPU")
     command = shutil.which("nvidia-smi")
@@ -519,8 +530,9 @@ def best_history_row(path: Path) -> dict[str, object]:
 def plot_learning_curves(
     phase1_history: Path, phase2_history: Path, output_dir: Path
 ) -> list[Path]:
-    import matplotlib.pyplot as plt
     import pandas as pd
+
+    plt = headless_pyplot()
 
     phase1 = pd.read_csv(phase1_history)
     phase2 = pd.read_csv(phase2_history)
@@ -555,10 +567,14 @@ def plot_learning_curves(
 
 
 def save_confusion_artifacts(
-    report: Mapping[str, object], output_dir: Path
+    report: Mapping[str, object],
+    output_dir: Path,
+    *,
+    preserve_existing_csv: bool = False,
 ) -> tuple[Path, Path]:
-    import matplotlib.pyplot as plt
     import pandas as pd
+
+    plt = headless_pyplot()
 
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -567,7 +583,24 @@ def save_confusion_artifacts(
     )
     csv_path = output_dir / "validation-confusion-matrix.csv"
     png_path = output_dir / "validation-confusion-matrix.png"
-    pd.DataFrame(matrix, index=CLASS_NAMES, columns=CLASS_NAMES).to_csv(csv_path)
+    matrix_frame = pd.DataFrame(matrix, index=CLASS_NAMES, columns=CLASS_NAMES)
+    if preserve_existing_csv:
+        if not csv_path.is_file():
+            raise RuntimeError(
+                "Existing validation confusion-matrix CSV is required for recovery."
+            )
+        existing = pd.read_csv(csv_path, index_col=0)
+        if (
+            list(existing.index) != list(CLASS_NAMES)
+            or list(existing.columns) != list(CLASS_NAMES)
+            or not np.array_equal(existing.to_numpy(), matrix)
+        ):
+            raise RuntimeError(
+                "Existing validation confusion-matrix CSV does not match "
+                "validation-metrics.json."
+            )
+    else:
+        matrix_frame.to_csv(csv_path)
     figure, axis = plt.subplots(figsize=(18, 16))
     image = axis.imshow(matrix, cmap="Blues")
     axis.set_title("Experiment A - VALIDATION confusion matrix")
@@ -617,7 +650,13 @@ def package_results(results_dir: Path, archive_base: Path) -> Path:
         "phase2-history.csv",
         "validation-metrics.json",
         "validation-confusion-matrix.csv",
+        "validation-confusion-matrix.png",
+        "learning-curve-loss.png",
+        "learning-curve-accuracy.png",
+        "learning-curve-macro-f1.png",
+        "preflight.json",
         "model-v2-exp-a-summary.json",
+        "model-v2-exp-a-report.md",
     }
     missing = sorted(name for name in required if not (results_dir / name).is_file())
     if missing:
