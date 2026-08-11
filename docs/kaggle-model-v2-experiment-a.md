@@ -50,15 +50,17 @@ The authoritative 39-class taxonomy lives in framework-neutral `training/taxonom
 
 ## Required private Kaggle datasets
 
-Attach five private datasets that preserve the existing source-relative paths and contain only files required by TRAIN and VALIDATION:
+Attach five private datasets that preserve the existing source-relative paths and contain only files required by TRAIN and VALIDATION. Cell 5 discovers them recursively below `/kaggle/input` from their unique data-root directory, not from an owner name or potentially misleading Kaggle parent slug:
 
-| Configuration key | Expected input root |
+| Configuration key | Unique required directory |
 |---|---|
-| `historical` | `/kaggle/input/agridiagnose-historical` |
-| `pldd_up` | `/kaggle/input/agridiagnose-pldd-up` |
-| `seasonal_corn` | `/kaggle/input/agridiagnose-seasonal-corn` |
-| `plantdoc_train` | `/kaggle/input/agridiagnose-plantdoc-train` |
-| `banu_deb` | `/kaggle/input/agridiagnose-banu-deb` |
+| `historical` | `historical-mendeley-39` |
+| `pldd_up` | `pldd_up` |
+| `seasonal_corn` | `seasonal_corn` |
+| `plantdoc_train` | `plantdoc-train` |
+| `banu_deb` | `potato-banu-deb-originals` |
+
+Both `/kaggle/input/<dataset-slug>/...` and `/kaggle/input/datasets/<owner-or-container>/<dataset-slug>/...` mounts are supported. The owner/container segment is never hardcoded. Every unique directory must occur exactly once: no match raises a missing-source error, multiple matches raise an ambiguity error, and any match under an INTERNAL TEST or PlantDoc TEST-like path is rejected.
 
 PlantDoc and Banu/Deb use committed `local_file` aliases. Preserve those filenames. Do not upload or attach INTERNAL TEST images or the official PlantDoc TEST split.
 
@@ -80,7 +82,7 @@ PlantDoc and Banu/Deb use committed `local_file` aliases. Preserve those filenam
    - at least one TensorFlow GPU;
    - matrix multiplication placed on `/GPU:0`.
 9. If any condition fails, stop at `KAGGLE_TF215_GPU_RUNTIME_FAILED`. Do not train with system TensorFlow 2.20.
-10. Review the folders printed from `/kaggle/input`, then edit only `SOURCE_ROOTS` if the slugs differ.
+10. Review the five resolved source roots printed by Cell 5. Stop if discovery reports a missing, ambiguous, escaping, or TEST-like path; do not manually choose the first match.
 11. Keep `START_TRAINING = False` and write the execution configuration.
 12. Run the isolated preflight cell. It verifies every TRAIN/VALIDATION file, MacroF1, preprocessing, model shapes, fresh ImageNet initialization, Phase 1 freezing, Phase 2 boundary, and BatchNormalization freeze policy.
 13. Confirm TRAIN `58,857/58,857`, VALIDATION `7,362/7,362`, missing/corrupt `0`, and coverage `39/39`.
