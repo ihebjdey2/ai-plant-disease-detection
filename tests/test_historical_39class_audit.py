@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pytest
 
-from app.taxonomy import CLASS_NAMES
+from training.taxonomy import CLASS_NAMES
 from scripts.audit_historical_39class_source import (
     HistoricalAuditError,
     apply_perceptual_policy,

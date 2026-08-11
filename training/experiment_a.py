@@ -5,7 +5,7 @@ from typing import Mapping
 
 import tensorflow as tf
 
-from app.taxonomy import CLASS_NAMES
+from training.taxonomy import CLASS_NAMES
 from training.metrics import MacroF1
 
 
