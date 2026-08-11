@@ -162,8 +162,11 @@ def test_partial_legacy_bootstrap_without_pip_cannot_block_standalone_uv(tmp_pat
 
 def test_standalone_uv_version_is_strictly_pinned():
     validate_uv_version(f"uv {UV_VERSION}\n")
+    validate_uv_version(f"uv {UV_VERSION} (x86_64-unknown-linux-gnu)\n")
     with pytest.raises(RuntimeError, match="version mismatch"):
         validate_uv_version("uv 0.12.4")
+    with pytest.raises(RuntimeError, match="version mismatch"):
+        validate_uv_version(f"uv {UV_VERSION} unexpected text")
 
 
 def test_partial_or_wrong_experiment_python_requires_recreation(tmp_path, monkeypatch):
