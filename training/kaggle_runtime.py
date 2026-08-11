@@ -22,6 +22,13 @@ SOURCE_ROOT_KEYS = (
     "plantdoc_train",
     "banu_deb",
 )
+SOURCE_DATA_ROOT_NAMES = {
+    "historical": "historical-mendeley-39",
+    "pldd_up": "pldd_up",
+    "seasonal_corn": "seasonal_corn",
+    "plantdoc_train": "plantdoc-train",
+    "banu_deb": "potato-banu-deb-originals",
+}
 ALLOWED_BATCH_SIZES = (32, 16, 8)
 FORBIDDEN_SOURCE_MARKERS = (
     "internal-test",
@@ -206,6 +213,52 @@ def validate_runtime_payload(payload: Mapping[str, object]) -> None:
         raise RuntimeError(
             "KAGGLE_TF215_GPU_RUNTIME_FAILED: " + ", ".join(failed)
         )
+
+
+def discover_kaggle_source_roots(input_root: Path) -> dict[str, Path]:
+    """Find each approved data root exactly once below a Kaggle input mount."""
+    root = Path(input_root).expanduser().resolve()
+    if not root.is_dir():
+        raise FileNotFoundError(f"Kaggle input root is unavailable: {root}")
+
+    keys_by_directory = {
+        directory_name: key
+        for key, directory_name in SOURCE_DATA_ROOT_NAMES.items()
+    }
+    matches: dict[str, list[Path]] = {key: [] for key in SOURCE_ROOT_KEYS}
+    for candidate in root.rglob("*"):
+        key = keys_by_directory.get(candidate.name)
+        if key is None or not candidate.is_dir():
+            continue
+        resolved = candidate.resolve()
+        if resolved != root and root not in resolved.parents:
+            raise ValueError(
+                f"Discovered Kaggle source escapes the input root: {candidate}"
+            )
+        if any(
+            marker in resolved.as_posix().casefold()
+            for marker in FORBIDDEN_SOURCE_MARKERS
+        ):
+            raise ValueError(f"Locked TEST-like source root is forbidden: {resolved}")
+        matches[key].append(resolved)
+
+    resolved_roots: dict[str, Path] = {}
+    for key in SOURCE_ROOT_KEYS:
+        unique = sorted(set(matches[key]), key=lambda path: path.as_posix())
+        expected = SOURCE_DATA_ROOT_NAMES[key]
+        if not unique:
+            raise ValueError(
+                f"Missing Kaggle source root for {key}: expected one directory "
+                f"named {expected!r} below {root}."
+            )
+        if len(unique) != 1:
+            rendered = ", ".join(path.as_posix() for path in unique)
+            raise ValueError(
+                f"Ambiguous Kaggle source root for {key}: expected exactly one "
+                f"directory named {expected!r}; found {len(unique)}: {rendered}"
+            )
+        resolved_roots[key] = unique[0]
+    return resolved_roots
 
 
 def build_execution_config(
