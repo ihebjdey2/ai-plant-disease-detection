@@ -59,7 +59,7 @@ The Kaggle system kernel remains an orchestrator. The existing bootstrap creates
 Experiment B uses `scripts/run_kaggle_model_v2_experiment_b.py` from that interpreter. `MPLBACKEND=Agg` is set for the subprocess so report plots are headless from the beginning.
 
 The notebook pins the reviewed immutable Experiment B resume implementation commit
-`1960e63d6eb8049d9b005bbbed377a1db085310d`. Never replace it with a moving
+`083ecde28ebf052764812cb3f317532a231d542c`. Never replace it with a moving
 branch name; a future code change requires a new reviewed implementation commit
 and an explicit notebook repin.
 
@@ -178,6 +178,57 @@ This is deliberately described as **exact-enough**, not bit-identical. The histo
 
 Resume fails closed for missing or malformed history, missing or unreadable checkpoints, gaps/duplicates/non-finite values, completed epochs at or above a resumable phase maximum, a selected Macro-F1 epoch other than the last completed epoch, an unreconstructable EarlyStopping state, policy/manifest/taxonomy/runtime/model/optimizer mismatches, Phase 2 artifacts beside an interrupted Phase 1, and any INTERNAL TEST or PlantDoc TEST safety violation.
 
+## Optional private Kaggle Dataset persistence
+
+`/kaggle/working` is ephemeral. Experiment B can therefore version the minimum
+recovery state to an existing **private** Kaggle Dataset after every completed
+epoch. Persistence is execution infrastructure only; it does not change the
+training policy, callbacks' scientific behavior, checkpoint selection, model,
+data, metrics, or TEST locks.
+
+The committed execution defaults are:
+
+```python
+PERSISTENT_BACKUP_ENABLED = False
+PERSISTENT_BACKUP_DATASET_HANDLE = ''
+```
+
+After separately creating a private Dataset and reviewing its permissions, an
+operator may configure an `owner/dataset` handle. The handle is never stored in
+the scientific policy. `kagglehub.dataset_upload` versions a dedicated staging
+directory after the local history and ModelCheckpoint callbacks have completed.
+The version note identifies Experiment B, the phase, and the absolute completed
+epoch.
+
+Only these files can be staged when available:
+
+- `phase1-best.keras`, `phase1-history.csv`, `phase1-complete.json`;
+- `phase2-best.keras`, `phase2-history.csv`, `phase2-complete.json`;
+- `environment-runtime.json` and `preflight.json`.
+
+Phase 2 versions retain both phase lineages. Images, manifests, temporary files,
+project sources, and unrelated outputs never enter the staging directory. If
+staging, byte verification, authentication, or upload fails, the callback raises
+`PersistentBackupError` before the next epoch. Local checkpoint/history bytes are
+not deleted or rewritten.
+
+### Explicit restore in a fresh Kaggle session
+
+Attach the private checkpoint Dataset, keep
+`RESTORE_PERSISTENT_CHECKPOINTS = False` until a deliberate restore decision,
+then point the notebook at exactly one directory under `/kaggle/input`. The
+`restore-persistent` command:
+
+- starts no training;
+- rejects TEST-like content and ambiguous checkpoint copies;
+- copies only allowlisted files using temporary destinations;
+- verifies SHA-256 and size and prints them for checkpoint/history files;
+- refuses to overwrite a different existing artifact.
+
+After copying, the normal history, provenance, policy, taxonomy, optimizer,
+checkpoint, and TEST-lock validators remain authoritative. Restore never bypasses
+or weakens the existing resume gates.
+
 ## Separate output boundaries
 
 Experiment B cannot target an Experiment A output path. Its approved Kaggle paths are:
@@ -244,4 +295,4 @@ either candidate model, any image, INTERNAL TEST, or PlantDoc TEST.
 
 ## Current stop condition
 
-Keep both notebook authorization switches `False`, keep `INTERRUPTED_PHASE_ACTION = 'fail'`, and preserve the existing Phase 1 checkpoint/history and runtime/preflight JSON reports until a separate human decision. No INTERNAL TEST or PlantDoc TEST dataset is needed or permitted for this workflow.
+Keep both notebook authorization switches `False`, keep `INTERRUPTED_PHASE_ACTION = 'fail'`, keep persistent backup and restore disabled, and preserve recovery artifacts until separate human decisions. No INTERNAL TEST or PlantDoc TEST dataset is needed or permitted for this workflow.

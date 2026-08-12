@@ -51,6 +51,8 @@ def _authorized_config(action: str) -> dict[str, object]:
         "batch_size": 32,
         "start_training": True,
         "interrupted_phase_action": action,
+        "persistent_backup_enabled": False,
+        "persistent_backup_dataset_handle": "",
         "internal_test_loaded": False,
         "plantdoc_test_loaded": False,
     }

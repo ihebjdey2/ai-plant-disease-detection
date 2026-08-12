@@ -8,7 +8,7 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 NOTEBOOK_PATH = PROJECT_ROOT / "notebooks/kaggle_model_v2_experiment_b.ipynb"
 DOCUMENTATION_PATH = PROJECT_ROOT / "docs/kaggle-model-v2-experiment-b.md"
-APPROVED_IMPLEMENTATION_REVISION = "1960e63d6eb8049d9b005bbbed377a1db085310d"
+APPROVED_IMPLEMENTATION_REVISION = "083ecde28ebf052764812cb3f317532a231d542c"
 
 
 def load_notebook() -> dict[str, object]:
@@ -30,6 +30,11 @@ def test_experiment_b_notebook_is_clean_compilable_and_training_disabled():
     assert "RUN_VALIDATION_COMPARISON = False" in code
     assert "BATCH_SIZE = 32" in code
     assert "INTERRUPTED_PHASE_ACTION = 'fail'" in code
+    assert "PERSISTENT_BACKUP_ENABLED = False" in code
+    assert "PERSISTENT_BACKUP_DATASET_HANDLE = ''" in code
+    assert "RESTORE_PERSISTENT_CHECKPOINTS = False" in code
+    assert "restore-persistent" in code
+    assert "ihebjjd/agridiagnose-exp-b-checkpoints" not in code
     assert "interrupted_phase_action=INTERRUPTED_PHASE_ACTION" in code
     assert "RESTART_INTERRUPTED_PHASE" not in code
     assert "restart_interrupted_phase" not in code

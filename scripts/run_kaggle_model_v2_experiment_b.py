@@ -17,6 +17,9 @@ KAGGLE_CANDIDATE_DIR = Path(
     "/kaggle/working/models/candidates/agri-diagnose-v2-exp-b"
 )
 KAGGLE_ARCHIVE_BASE = Path("/kaggle/working/agridiagnose-exp-b-results")
+KAGGLE_PERSISTENT_STAGING_DIR = Path(
+    "/kaggle/working/agridiagnose-exp-b-persistent-staging"
+)
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
@@ -69,6 +72,13 @@ from training.kaggle_experiment_b import (  # noqa: E402
     write_json,
 )
 from training.kaggle_runtime import validate_runtime_payload  # noqa: E402
+from training.kaggle_persistence import (  # noqa: E402
+    KaggleDatasetBackupService,
+    RecoveryLayout,
+    append_backup_callback,
+    restore_recovery_files,
+    validate_kaggle_restore_input,
+)
 from training.validation_comparison import (  # noqa: E402
     BOOTSTRAP_REPETITIONS,
     write_validation_comparison,
@@ -274,6 +284,13 @@ def run_training(config_path: Path, *, authorize_training: bool) -> Path:
     phase1_history = results_dir / "phase1-history.csv"
     phase2_checkpoint = candidate_dir / "phase2-best.keras"
     phase2_history = results_dir / "phase2-history.csv"
+    recovery_layout = RecoveryLayout(candidate_dir, results_dir)
+    backup_service = KaggleDatasetBackupService(
+        enabled=config["persistent_backup_enabled"],
+        dataset_handle=config["persistent_backup_dataset_handle"],
+        layout=recovery_layout,
+        staging_dir=KAGGLE_PERSISTENT_STAGING_DIR,
+    )
     action = str(config["interrupted_phase_action"])
     batch_size = int(config["batch_size"])
     policy, _ = load_experiment_b_policy(PROJECT_ROOT)
@@ -353,10 +370,14 @@ def run_training(config_path: Path, *, authorize_training: bool) -> Path:
             train_dataset,
             validation_data=validation_dataset,
             **fit_epoch_arguments(phase1_plan),
-            callbacks=build_phase_callbacks(
-                policy,
-                checkpoint_path=phase1_checkpoint,
-                history_path=phase1_history,
+            callbacks=append_backup_callback(
+                build_phase_callbacks(
+                    policy,
+                    checkpoint_path=phase1_checkpoint,
+                    history_path=phase1_history,
+                ),
+                backup_service,
+                phase="phase1",
             ),
             class_weight=None,
             verbose=1,
@@ -390,10 +411,14 @@ def run_training(config_path: Path, *, authorize_training: bool) -> Path:
             train_dataset,
             validation_data=validation_dataset,
             **fit_epoch_arguments(phase1_plan),
-            callbacks=build_resume_callbacks(
-                policy,
-                checkpoint_path=phase1_checkpoint,
-                history=phase1_plan.history,
+            callbacks=append_backup_callback(
+                build_resume_callbacks(
+                    policy,
+                    checkpoint_path=phase1_checkpoint,
+                    history=phase1_plan.history,
+                ),
+                backup_service,
+                phase="phase1",
             ),
             class_weight=None,
             verbose=1,
@@ -410,6 +435,9 @@ def run_training(config_path: Path, *, authorize_training: bool) -> Path:
             phase="phase1",
             history=phase1_complete,
             checkpoint=phase1_checkpoint,
+        )
+        backup_service.persist(
+            phase="phase1", completed_epoch=phase1_complete.completed_epochs
         )
     phase1_best = _checkpoint_best_row(phase1_complete)
 
@@ -475,10 +503,14 @@ def run_training(config_path: Path, *, authorize_training: bool) -> Path:
             train_dataset,
             validation_data=validation_dataset,
             **fit_epoch_arguments(phase2_plan),
-            callbacks=build_phase_callbacks(
-                policy,
-                checkpoint_path=phase2_checkpoint,
-                history_path=phase2_history,
+            callbacks=append_backup_callback(
+                build_phase_callbacks(
+                    policy,
+                    checkpoint_path=phase2_checkpoint,
+                    history_path=phase2_history,
+                ),
+                backup_service,
+                phase="phase2",
             ),
             class_weight=None,
             verbose=1,
@@ -511,10 +543,14 @@ def run_training(config_path: Path, *, authorize_training: bool) -> Path:
             train_dataset,
             validation_data=validation_dataset,
             **fit_epoch_arguments(phase2_plan),
-            callbacks=build_resume_callbacks(
-                policy,
-                checkpoint_path=phase2_checkpoint,
-                history=phase2_plan.history,
+            callbacks=append_backup_callback(
+                build_resume_callbacks(
+                    policy,
+                    checkpoint_path=phase2_checkpoint,
+                    history=phase2_plan.history,
+                ),
+                backup_service,
+                phase="phase2",
             ),
             class_weight=None,
             verbose=1,
@@ -529,6 +565,9 @@ def run_training(config_path: Path, *, authorize_training: bool) -> Path:
         phase="phase2",
         history=phase2_complete,
         checkpoint=phase2_checkpoint,
+    )
+    backup_service.persist(
+        phase="phase2", completed_epoch=phase2_complete.completed_epochs
     )
     phase2_best = _checkpoint_best_row(phase2_complete)
     phase1_result = evaluate_checkpoint(
@@ -648,6 +687,15 @@ def run_validation_comparison(
     return outputs
 
 
+def run_persistent_restore(source_dir: Path) -> dict[str, dict[str, int | str]]:
+    restored = restore_recovery_files(
+        validate_kaggle_restore_input(source_dir),
+        RecoveryLayout(KAGGLE_CANDIDATE_DIR, KAGGLE_RESULTS_DIR),
+    )
+    print(json.dumps({"restored": restored, "training_performed": False}, indent=2))
+    return restored
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Run AgriDiagnose Experiment B in isolated Kaggle Python 3.11."
@@ -672,6 +720,11 @@ def parse_args() -> argparse.Namespace:
     compare.add_argument(
         "--bootstrap-repetitions", type=int, default=BOOTSTRAP_REPETITIONS
     )
+    restore = subparsers.add_parser(
+        "restore-persistent",
+        help="Restore allowlisted Experiment B recovery artifacts without training.",
+    )
+    restore.add_argument("--source-dir", type=Path, required=True)
     return parser.parse_args()
 
 
@@ -691,6 +744,8 @@ def main() -> int:
             args.output_dir,
             bootstrap_repetitions=args.bootstrap_repetitions,
         )
+    elif args.action == "restore-persistent":
+        run_persistent_restore(args.source_dir)
     else:  # pragma: no cover
         raise RuntimeError(f"Unsupported action: {args.action}")
     return 0
