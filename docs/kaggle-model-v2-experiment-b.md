@@ -59,7 +59,7 @@ The Kaggle system kernel remains an orchestrator. The existing bootstrap creates
 Experiment B uses `scripts/run_kaggle_model_v2_experiment_b.py` from that interpreter. `MPLBACKEND=Agg` is set for the subprocess so report plots are headless from the beginning.
 
 The notebook pins the reviewed immutable Experiment B resume implementation commit
-`083ecde28ebf052764812cb3f317532a231d542c`. Never replace it with a moving
+`35d0929e9d8448fae0f31c0ed4140ab1ce0d0406`. Never replace it with a moving
 branch name; a future code change requires a new reviewed implementation commit
 and an explicit notebook repin.
 

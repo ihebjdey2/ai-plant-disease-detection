@@ -8,7 +8,7 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 NOTEBOOK_PATH = PROJECT_ROOT / "notebooks/kaggle_model_v2_experiment_b.ipynb"
 DOCUMENTATION_PATH = PROJECT_ROOT / "docs/kaggle-model-v2-experiment-b.md"
-APPROVED_IMPLEMENTATION_REVISION = "083ecde28ebf052764812cb3f317532a231d542c"
+APPROVED_IMPLEMENTATION_REVISION = "35d0929e9d8448fae0f31c0ed4140ab1ce0d0406"
 
 
 def load_notebook() -> dict[str, object]:
