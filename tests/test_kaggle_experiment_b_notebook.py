@@ -8,7 +8,7 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 NOTEBOOK_PATH = PROJECT_ROOT / "notebooks/kaggle_model_v2_experiment_b.ipynb"
 DOCUMENTATION_PATH = PROJECT_ROOT / "docs/kaggle-model-v2-experiment-b.md"
-APPROVED_IMPLEMENTATION_REVISION = "438a170aede710fd3d9ca2cd41815e49849c1744"
+APPROVED_IMPLEMENTATION_REVISION = "1960e63d6eb8049d9b005bbbed377a1db085310d"
 
 
 def load_notebook() -> dict[str, object]:
@@ -29,7 +29,10 @@ def test_experiment_b_notebook_is_clean_compilable_and_training_disabled():
     assert "AUTHORIZE_TRAINING_CLI = False" in code
     assert "RUN_VALIDATION_COMPARISON = False" in code
     assert "BATCH_SIZE = 32" in code
-    assert "RESTART_INTERRUPTED_PHASE = False" in code
+    assert "INTERRUPTED_PHASE_ACTION = 'fail'" in code
+    assert "interrupted_phase_action=INTERRUPTED_PHASE_ACTION" in code
+    assert "RESTART_INTERRUPTED_PHASE" not in code
+    assert "restart_interrupted_phase" not in code
     assert "build_execution_config_b" in code
     assert "run_kaggle_model_v2_experiment_b.py" in code
     assert "KAGGLE_TF215_GPU_EXPERIMENT_B_PREFLIGHT_PASSED" in code
@@ -86,6 +89,9 @@ def test_experiment_b_documentation_records_control_and_safety_contract():
         "start_training=true",
         "--authorize-training",
         "MPLBACKEND=Agg",
+        "exact-enough",
+        "initial_epoch=5",
+        "interrupted_phase_action",
     ):
         assert required in documentation
 

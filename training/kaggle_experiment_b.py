@@ -70,6 +70,10 @@ EXPECTED_VALIDATION_MANIFEST_SHA256 = (
 EXPECTED_TAXONOMY_SHA256 = (
     "2207c34ff2673bde7f36c53938cf5e6d97ca0652f21ef087be15680851ae87da"
 )
+EXPECTED_EXPERIMENT_B_POLICY_SHA256 = (
+    "029d3599f75daf9224680e0aa58ae66696fd08c08708ccea73057819ba928007"
+)
+INTERRUPTED_PHASE_ACTIONS = ("fail", "resume", "restart")
 CONTROLLED_POLICY_SECTIONS = (
     "input",
     "architecture",
@@ -106,7 +110,9 @@ RESULT_FILENAMES = {
 
 
 def sha256_with_canonical_lf(path: Path) -> str:
-    content = Path(path).read_bytes().replace(b"\r\n", b"\n")
+    content = (
+        Path(path).read_bytes().replace(b"\r\n", b"\n").replace(b"\r", b"\n")
+    )
     return hashlib.sha256(content).hexdigest()
 
 
@@ -199,6 +205,8 @@ def load_experiment_b_policy(project_root: Path) -> tuple[dict, dict[str, object
     if sha256_with_canonical_lf(baseline_path) != BASELINE_POLICY_CANONICAL_LF_SHA256:
         raise TrainingPolicyError("Finalized Experiment A policy bytes changed.")
     baseline = load_policy(baseline_path)
+    if sha256_with_canonical_lf(POLICY_PATH) != EXPECTED_EXPERIMENT_B_POLICY_SHA256:
+        raise TrainingPolicyError("Experiment B policy bytes changed.")
     policy = load_policy(POLICY_PATH)
     return policy, validate_experiment_b_policy(policy, baseline)
 
@@ -276,17 +284,26 @@ def build_execution_config_b(
     *,
     batch_size: int = 32,
     start_training: bool = False,
-    restart_interrupted_phase: bool = False,
+    interrupted_phase_action: str = "fail",
 ) -> dict[str, object]:
     if batch_size != 32:
         raise ValueError("Experiment B batch size is locked to 32.")
+    if (
+        not isinstance(interrupted_phase_action, str)
+        or interrupted_phase_action not in INTERRUPTED_PHASE_ACTIONS
+    ):
+        raise ValueError(
+            "Experiment B interrupted_phase_action must be fail, resume, or restart."
+        )
     payload = build_execution_config(
         source_roots,
         batch_size=batch_size,
         start_training=start_training,
-        restart_interrupted_phase=restart_interrupted_phase,
+        restart_interrupted_phase=False,
     )
+    payload.pop("restart_interrupted_phase", None)
     payload["experiment"] = EXPERIMENT_NAME
+    payload["interrupted_phase_action"] = interrupted_phase_action
     return payload
 
 
@@ -299,13 +316,35 @@ def load_execution_config_b(
         raise RuntimeError("Experiment B execution config is invalid.") from exc
     if payload.get("experiment") != EXPERIMENT_NAME:
         raise RuntimeError("Experiment B execution config identity mismatch.")
+    if payload.get("internal_test_loaded") is not False:
+        raise RuntimeError("Experiment B config violated INTERNAL TEST safety.")
+    if payload.get("plantdoc_test_loaded") is not False:
+        raise RuntimeError("Experiment B config violated PlantDoc TEST safety.")
+
+    has_action = "interrupted_phase_action" in payload
+    has_legacy = "restart_interrupted_phase" in payload
+    if has_action and has_legacy:
+        raise RuntimeError("Experiment B interruption config is ambiguous.")
+    if has_action:
+        action = payload["interrupted_phase_action"]
+        if not isinstance(action, str) or action not in INTERRUPTED_PHASE_ACTIONS:
+            raise RuntimeError("Experiment B interrupted phase action is invalid.")
+    elif has_legacy:
+        legacy = payload["restart_interrupted_phase"]
+        if type(legacy) is not bool:
+            raise RuntimeError("Legacy Experiment B restart flag must be boolean.")
+        action = "restart" if legacy else "fail"
+    else:
+        action = "fail"
+
+    raw_start_training = payload.get("start_training", False)
+    if type(raw_start_training) is not bool:
+        raise RuntimeError("Experiment B start_training must be boolean.")
     validated = build_execution_config_b(
         payload.get("source_roots", {}),
         batch_size=int(payload.get("batch_size", 0)),
-        start_training=bool(payload.get("start_training", False)),
-        restart_interrupted_phase=bool(
-            payload.get("restart_interrupted_phase", False)
-        ),
+        start_training=raw_start_training,
+        interrupted_phase_action=action,
     )
     if validated["start_training"] and not allow_training:
         raise RuntimeError("TRAINING_DISABLED_BY_USER")
@@ -459,7 +498,9 @@ __all__ = [
     "EXPECTED_TRAIN_COUNT",
     "EXPECTED_VALIDATION_COUNT",
     "EXPECTED_TAXONOMY_SHA256",
+    "EXPECTED_EXPERIMENT_B_POLICY_SHA256",
     "SOURCE_ROOT_KEYS",
+    "INTERRUPTED_PHASE_ACTIONS",
     "best_history_row",
     "build_execution_config_b",
     "build_kaggle_datasets_b",

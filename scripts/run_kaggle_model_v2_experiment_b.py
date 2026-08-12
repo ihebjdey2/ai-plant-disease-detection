@@ -36,13 +36,23 @@ from training.experiment_b import (  # noqa: E402
     configure_phase2,
     parameter_audit,
 )
+from training.experiment_b_resume import (  # noqa: E402
+    ResumeSafetyError,
+    archive_restart_artifacts,
+    build_resume_callbacks,
+    fit_epoch_arguments,
+    load_resume_checkpoint,
+    plan_phase,
+    read_phase_history,
+    validate_resume_provenance,
+    write_completion_marker,
+)
 from training.kaggle_experiment_b import (  # noqa: E402
     EXPECTED_TRAIN_MANIFEST_SHA256,
     EXPECTED_TRAIN_COUNT,
     EXPECTED_TAXONOMY_SHA256,
     EXPECTED_VALIDATION_MANIFEST_SHA256,
     EXPECTED_VALIDATION_COUNT,
-    best_history_row,
     build_kaggle_datasets_b,
     build_phase_callbacks,
     ensure_experiment_b_output_paths,
@@ -52,7 +62,6 @@ from training.kaggle_experiment_b import (  # noqa: E402
     major_confusion_pairs,
     package_results_b,
     plot_learning_curves,
-    require_fresh_or_explicit_restart,
     run_full_preflight_b,
     save_confusion_artifacts_b,
     select_candidate,
@@ -64,6 +73,25 @@ from training.validation_comparison import (  # noqa: E402
     BOOTSTRAP_REPETITIONS,
     write_validation_comparison,
 )
+
+
+def _checkpoint_best_row(history) -> dict[str, object]:
+    row = history.numeric_rows[history.best_macro_f1_epoch - 1]
+    return {
+        key: int(value) if key == "epoch" else float(value)
+        for key, value in row.items()
+    }
+
+
+def _phase_artifacts_exist(candidate_dir: Path, results_dir: Path, phase: str) -> bool:
+    return any(
+        path.is_file()
+        for path in (
+            Path(candidate_dir) / f"{phase}-best.keras",
+            Path(results_dir) / f"{phase}-history.csv",
+            Path(results_dir) / f"{phase}-complete.json",
+        )
+    )
 
 
 def require_training_authorization(
@@ -240,102 +268,274 @@ def run_training(config_path: Path, *, authorize_training: bool) -> Path:
     ensure_experiment_b_output_paths(
         KAGGLE_CANDIDATE_DIR, KAGGLE_RESULTS_DIR, KAGGLE_ARCHIVE_BASE
     )
-    runtime = verify_runtime(KAGGLE_RESULTS_DIR / "environment-runtime.json")
+    candidate_dir = KAGGLE_CANDIDATE_DIR
+    results_dir = KAGGLE_RESULTS_DIR
+    phase1_checkpoint = candidate_dir / "phase1-best.keras"
+    phase1_history = results_dir / "phase1-history.csv"
+    phase2_checkpoint = candidate_dir / "phase2-best.keras"
+    phase2_history = results_dir / "phase2-history.csv"
+    action = str(config["interrupted_phase_action"])
+    batch_size = int(config["batch_size"])
+    policy, _ = load_experiment_b_policy(PROJECT_ROOT)
+    phase1_plan = plan_phase(
+        action=action,
+        phase="phase1",
+        checkpoint_path=phase1_checkpoint,
+        history_path=phase1_history,
+        max_epochs=int(policy["phase1"]["max_epochs"]),
+        allow_completed=True,
+        allow_fresh_during_resume=False,
+    )
+    phase2_artifacts_exist = _phase_artifacts_exist(
+        candidate_dir, results_dir, "phase2"
+    )
+    if phase2_artifacts_exist and phase1_plan.mode not in {"completed", "restarted"}:
+        raise ResumeSafetyError(
+            "Phase 2 artifacts exist before Phase 1 is proven complete."
+        )
 
     import keras
     import tensorflow as tf
 
-    from training.metrics import MacroF1
-
     if CLASS_WEIGHTS is not None:
         raise RuntimeError("Experiment B class weights must remain disabled.")
     roots = kaggle_source_roots(config["source_roots"])
-    preflight_data = run_full_preflight_b(PROJECT_ROOT, roots)
-    policy, _ = load_experiment_b_policy(PROJECT_ROOT)
-    batch_size = int(config["batch_size"])
-    phase1_audit, phase2_audit = build_model_preflight_audits(policy)
-    preflight = assemble_preflight_payload(
-        runtime=runtime,
-        data=preflight_data,
-        phase1=phase1_audit,
-        phase2=phase2_audit,
-        batch_size=batch_size,
-    )
-    write_safe_json(KAGGLE_RESULTS_DIR / "preflight.json", preflight)
+
+    # Resume validates every historical identity before writing either existing
+    # runtime/preflight artifact. Fresh/restart retain the original workflow.
+    if action == "resume":
+        runtime = verify_runtime(None)
+        preflight_data = run_full_preflight_b(PROJECT_ROOT, roots)
+        provenance = validate_resume_provenance(
+            project_root=PROJECT_ROOT,
+            preflight_path=results_dir / "preflight.json",
+            runtime_path=results_dir / "environment-runtime.json",
+            current_data=preflight_data,
+            current_runtime=runtime,
+        )
+        preflight = json.loads(
+            (results_dir / "preflight.json").read_text(encoding="utf-8")
+        )
+    else:
+        runtime = verify_runtime(results_dir / "environment-runtime.json")
+        preflight_data = run_full_preflight_b(PROJECT_ROOT, roots)
+        phase1_audit, phase2_audit = build_model_preflight_audits(policy)
+        preflight = assemble_preflight_payload(
+            runtime=runtime,
+            data=preflight_data,
+            phase1=phase1_audit,
+            phase2=phase2_audit,
+            batch_size=batch_size,
+        )
+        write_safe_json(results_dir / "preflight.json", preflight)
+        provenance = None
+
     train_dataset, validation_dataset, _, validation_records = (
         build_kaggle_datasets_b(PROJECT_ROOT, roots, batch_size=batch_size)
     )
-    candidate_dir = KAGGLE_CANDIDATE_DIR
-    results_dir = KAGGLE_RESULTS_DIR
     candidate_dir.mkdir(parents=True, exist_ok=True)
     results_dir.mkdir(parents=True, exist_ok=True)
-    restart = bool(config["restart_interrupted_phase"])
 
-    model, _ = build_model(policy, weights="imagenet")
-    compile_phase1(model, policy)
-    phase1_checkpoint = candidate_dir / "phase1-best.keras"
-    phase1_history = results_dir / "phase1-history.csv"
-    phase1_mode = require_fresh_or_explicit_restart(
-        candidate_dir,
-        "phase1",
-        restart_interrupted_phase=restart,
-        history_path=phase1_history,
-    )
-    phase1_fit = model.fit(
-        train_dataset,
-        validation_data=validation_dataset,
-        epochs=int(policy["phase1"]["max_epochs"]),
-        callbacks=build_phase_callbacks(
-            policy,
-            checkpoint_path=phase1_checkpoint,
-            history_path=phase1_history,
-        ),
-        class_weight=None,
-        verbose=1,
-    )
-    phase1_best = best_history_row(phase1_history)
+    resumed_checkpoint_audits: dict[str, object] = {}
+    phase1_trained_now = False
+    if phase1_plan.mode in {"fresh", "restarted"}:
+        if phase1_plan.mode == "restarted":
+            archive_restart_artifacts(
+                (
+                    phase1_checkpoint,
+                    phase1_history,
+                    phase1_plan.completion_marker_path,
+                )
+            )
+        model, _ = build_model(policy, weights="imagenet")
+        compile_phase1(model, policy)
+        phase1_fit = model.fit(
+            train_dataset,
+            validation_data=validation_dataset,
+            **fit_epoch_arguments(phase1_plan),
+            callbacks=build_phase_callbacks(
+                policy,
+                checkpoint_path=phase1_checkpoint,
+                history_path=phase1_history,
+            ),
+            class_weight=None,
+            verbose=1,
+        )
+        del phase1_fit
+        phase1_trained_now = True
+    elif phase1_plan.mode == "resumed":
+        model, checkpoint_audit, checkpoint_signature = load_resume_checkpoint(
+            phase1_checkpoint,
+            phase="phase1",
+            history=phase1_plan.history,
+            policy=policy,
+        )
+        resumed_checkpoint_audits["phase1"] = {
+            "model": checkpoint_audit,
+            "checkpoint": checkpoint_signature,
+            "initial_epoch": phase1_plan.initial_epoch,
+        }
+        write_safe_json(
+            results_dir / "resume-audit.json",
+            {
+                **dict(provenance or {}),
+                "phase": "phase1",
+                "initial_epoch": phase1_plan.initial_epoch,
+                "epochs": phase1_plan.max_epochs,
+                "checkpoint_audit": resumed_checkpoint_audits["phase1"],
+                "training_performed": False,
+            },
+        )
+        phase1_fit = model.fit(
+            train_dataset,
+            validation_data=validation_dataset,
+            **fit_epoch_arguments(phase1_plan),
+            callbacks=build_resume_callbacks(
+                policy,
+                checkpoint_path=phase1_checkpoint,
+                history=phase1_plan.history,
+            ),
+            class_weight=None,
+            verbose=1,
+        )
+        del phase1_fit
+        phase1_trained_now = True
 
-    phase2_history = results_dir / "phase2-history.csv"
-    phase2_mode = require_fresh_or_explicit_restart(
-        candidate_dir,
-        "phase2",
-        restart_interrupted_phase=restart,
+    phase1_complete = read_phase_history(
+        phase1_history, max_epochs=int(policy["phase1"]["max_epochs"])
+    )
+    if phase1_trained_now:
+        write_completion_marker(
+            phase1_plan.completion_marker_path,
+            phase="phase1",
+            history=phase1_complete,
+            checkpoint=phase1_checkpoint,
+        )
+    phase1_best = _checkpoint_best_row(phase1_complete)
+
+    phase2_plan = plan_phase(
+        action=action,
+        phase="phase2",
+        checkpoint_path=phase2_checkpoint,
         history_path=phase2_history,
+        max_epochs=int(policy["phase2"]["max_epochs"]),
+        allow_completed=False,
+        allow_fresh_during_resume=True,
     )
-    phase2_model = tf.keras.models.load_model(
-        phase1_checkpoint, custom_objects={"MacroF1": MacroF1}
+    if phase2_plan.mode == "resumed":
+        phase1_validation_model, phase1_checkpoint_audit, phase1_checkpoint_signature = (
+            load_resume_checkpoint(
+                phase1_checkpoint,
+                phase="phase1",
+                history=phase1_complete,
+                policy=policy,
+            )
+        )
+        del phase1_validation_model
+        resumed_checkpoint_audits["phase1_completed"] = {
+            "model": phase1_checkpoint_audit,
+            "checkpoint": phase1_checkpoint_signature,
+            "selected_epoch": phase1_complete.best_macro_f1_epoch,
+        }
+    if phase2_plan.mode in {"fresh", "restarted"}:
+        if phase2_plan.mode == "restarted":
+            archive_restart_artifacts(
+                (
+                    phase2_checkpoint,
+                    phase2_history,
+                    phase2_plan.completion_marker_path,
+                )
+            )
+        phase2_model, phase1_checkpoint_audit, phase1_checkpoint_signature = (
+            load_resume_checkpoint(
+                phase1_checkpoint,
+                phase="phase1",
+                history=phase1_complete,
+                policy=policy,
+            )
+        )
+        if action == "resume":
+            resumed_checkpoint_audits["phase1_selected"] = {
+                "model": phase1_checkpoint_audit,
+                "checkpoint": phase1_checkpoint_signature,
+                "selected_epoch": phase1_complete.best_macro_f1_epoch,
+            }
+        phase2_backbone = next(
+            layer
+            for layer in phase2_model.layers
+            if isinstance(layer, tf.keras.Model) and "mobilenetv2" in layer.name
+        )
+        phase2_audit = configure_phase2(phase2_backbone, policy)
+        if phase2_audit["first_trainable_backbone_layer"] != "block_13_expand":
+            raise RuntimeError("Experiment B Phase 2 boundary changed.")
+        if phase2_audit["frozen_batch_normalization_count"] != 52:
+            raise RuntimeError("Experiment B BatchNormalization policy changed.")
+        compile_phase2(phase2_model, policy)
+        phase2_fit = phase2_model.fit(
+            train_dataset,
+            validation_data=validation_dataset,
+            **fit_epoch_arguments(phase2_plan),
+            callbacks=build_phase_callbacks(
+                policy,
+                checkpoint_path=phase2_checkpoint,
+                history_path=phase2_history,
+            ),
+            class_weight=None,
+            verbose=1,
+        )
+        del phase2_fit
+    elif phase2_plan.mode == "resumed":
+        phase2_model, checkpoint_audit, checkpoint_signature = load_resume_checkpoint(
+            phase2_checkpoint,
+            phase="phase2",
+            history=phase2_plan.history,
+            policy=policy,
+        )
+        resumed_checkpoint_audits["phase2"] = {
+            "model": checkpoint_audit,
+            "checkpoint": checkpoint_signature,
+            "initial_epoch": phase2_plan.initial_epoch,
+        }
+        write_safe_json(
+            results_dir / "resume-audit.json",
+            {
+                **dict(provenance or {}),
+                "phase": "phase2",
+                "initial_epoch": phase2_plan.initial_epoch,
+                "epochs": phase2_plan.max_epochs,
+                "checkpoint_audits": resumed_checkpoint_audits,
+                "training_performed": False,
+            },
+        )
+        phase2_fit = phase2_model.fit(
+            train_dataset,
+            validation_data=validation_dataset,
+            **fit_epoch_arguments(phase2_plan),
+            callbacks=build_resume_callbacks(
+                policy,
+                checkpoint_path=phase2_checkpoint,
+                history=phase2_plan.history,
+            ),
+            class_weight=None,
+            verbose=1,
+        )
+        del phase2_fit
+
+    phase2_complete = read_phase_history(
+        phase2_history, max_epochs=int(policy["phase2"]["max_epochs"])
     )
-    phase2_backbone = next(
-        layer
-        for layer in phase2_model.layers
-        if isinstance(layer, tf.keras.Model) and "mobilenetv2" in layer.name
+    write_completion_marker(
+        phase2_plan.completion_marker_path,
+        phase="phase2",
+        history=phase2_complete,
+        checkpoint=phase2_checkpoint,
     )
-    phase2_audit = configure_phase2(phase2_backbone, policy)
-    if phase2_audit["first_trainable_backbone_layer"] != "block_13_expand":
-        raise RuntimeError("Experiment B Phase 2 boundary changed.")
-    if phase2_audit["frozen_batch_normalization_count"] != 52:
-        raise RuntimeError("Experiment B BatchNormalization policy changed.")
-    compile_phase2(phase2_model, policy)
-    phase2_checkpoint = candidate_dir / "phase2-best.keras"
-    phase2_fit = phase2_model.fit(
-        train_dataset,
-        validation_data=validation_dataset,
-        epochs=int(policy["phase2"]["max_epochs"]),
-        callbacks=build_phase_callbacks(
-            policy,
-            checkpoint_path=phase2_checkpoint,
-            history_path=phase2_history,
-        ),
-        class_weight=None,
-        verbose=1,
-    )
-    del phase2_fit
-    phase2_best = best_history_row(phase2_history)
+    phase2_best = _checkpoint_best_row(phase2_complete)
     phase1_result = evaluate_checkpoint(
         "phase1",
         phase1_checkpoint,
         phase1_best,
-        phase1_best["epoch"],
+        int(phase1_best["epoch"]),
         validation_dataset,
         validation_records,
     )
@@ -343,7 +543,7 @@ def run_training(config_path: Path, *, authorize_training: bool) -> Path:
         "phase2",
         phase2_checkpoint,
         phase2_best,
-        len(phase1_fit.epoch) + phase2_best["epoch"],
+        phase1_complete.completed_epochs + int(phase2_best["epoch"]),
         validation_dataset,
         validation_records,
     )
@@ -364,6 +564,8 @@ def run_training(config_path: Path, *, authorize_training: bool) -> Path:
         "keras_version": keras.__version__,
         "batch_size": batch_size,
         "training_performed": True,
+        "interrupted_phase_action": action,
+        "exact_enough_resume": bool(resumed_checkpoint_audits),
         "internal_test_loaded": False,
         "plantdoc_test_loaded": False,
     }
@@ -389,8 +591,9 @@ def run_training(config_path: Path, *, authorize_training: bool) -> Path:
         "plantdoc_test_loaded": False,
         "test_sets_evaluated": False,
         "training_performed": True,
-        "phase1_run_mode": phase1_mode,
-        "phase2_run_mode": phase2_mode,
+        "phase1_run_mode": phase1_plan.mode,
+        "phase2_run_mode": phase2_plan.mode,
+        "resume_checkpoint_audits": resumed_checkpoint_audits,
     }
     summary = {
         "experiment": EXPERIMENT_NAME,
@@ -405,7 +608,8 @@ def run_training(config_path: Path, *, authorize_training: bool) -> Path:
     }
     write_json(results_dir / "environment.json", environment)
     write_json(results_dir / "experiment.json", experiment)
-    write_json(results_dir / "preflight.json", preflight)
+    if action != "resume":
+        write_json(results_dir / "preflight.json", preflight)
     write_json(results_dir / "model-v2-exp-b-summary.json", summary)
     (results_dir / "model-v2-exp-b-report.md").write_text(
         "# Model V2 Experiment B\n\n"

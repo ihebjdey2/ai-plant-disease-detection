@@ -129,6 +129,8 @@ def test_b_execution_config_is_separate_locked_and_disabled_by_default(tmp_path)
     assert payload["experiment"] == EXPERIMENT_NAME
     assert payload["batch_size"] == 32
     assert payload["start_training"] is False
+    assert payload["interrupted_phase_action"] == "fail"
+    assert "restart_interrupted_phase" not in payload
     assert payload["internal_test_loaded"] is False
     assert payload["plantdoc_test_loaded"] is False
     with pytest.raises(ValueError, match="batch size is locked to 32"):
@@ -287,7 +289,8 @@ def test_b_runner_forces_agg_and_keeps_fit_behind_training_function():
     assert source.index('os.environ["MPLBACKEND"] = "Agg"') < source.index(
         "from scripts.run_kaggle_model_v2_experiment_a import"
     )
-    assert source.count(".fit(") == 2
+    assert source.count(".fit(") == 4
+    assert source.count("**fit_epoch_arguments(") == 4
     assert source.index("require_training_authorization(") < source.index(
         "phase1_fit = model.fit("
     )
