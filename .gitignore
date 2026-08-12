@@ -56,6 +56,9 @@ evaluation/results/*
 models/candidates/
 agridiagnose-exp-a-results/
 agridiagnose-exp-a-results.zip
+agridiagnose-exp-b-results/
+agridiagnose-exp-b-results.zip
+agridiagnose-exp-a-vs-b-validation/
 agridiagnose-tf215-runtime/
 
 # Temporary Files
