@@ -1,0 +1,183 @@
+{
+  "architecture": {
+    "backbone": "MobileNetV2",
+    "backbone_include_top": false,
+    "backbone_weights": "imagenet",
+    "classifier_head": [
+      "GlobalAveragePooling2D",
+      "Dropout(0.25)",
+      "Dense(39, softmax)"
+    ],
+    "dropout": 0.25,
+    "initialize_from_model_v1": false,
+    "output_activation": "softmax",
+    "output_classes": 39
+  },
+  "augmentation": {
+    "brightness_factor": 0.15,
+    "contrast_factor": 0.15,
+    "enabled_for": [
+      "TRAIN"
+    ],
+    "fill_mode": "reflect",
+    "forbidden_methods": [
+      "hue or saturation augmentation",
+      "blur",
+      "sensor noise",
+      "shear",
+      "perspective transforms",
+      "random crops",
+      "MixUp",
+      "CutMix",
+      "synthetic images",
+      "background replacement"
+    ],
+    "horizontal_flip": true,
+    "output_clip": [
+      0.0,
+      1.0
+    ],
+    "rotation_degrees": 20.0,
+    "translation_fraction": 0.12,
+    "vertical_flip": true,
+    "zoom_range": [
+      0.85,
+      1.15
+    ]
+  },
+  "baseline": {
+    "experiment_name": "agri-diagnose-v2-exp-a",
+    "policy_path": "training/config/model-v2-training-policy.json",
+    "policy_sha256_lf": "16c16e56819aa96df972f33fb29317fd82fd84e2c9945bf8d4d974c85f682f11",
+    "train_manifest": {
+      "image_count": 58857,
+      "path": "training/datasets/manifests/dataset-v2-train.csv",
+      "sha256_lf": "957d4acb4c097116099c57446733b3d70088bf083e7869aadd11e26caf70a915"
+    },
+    "validation_manifest": {
+      "image_count": 7362,
+      "path": "training/datasets/manifests/dataset-v2-validation.csv",
+      "sha256_lf": "9c10de69e935324ee325667fab2902b372a144a722c4fc793d3b4f1afe01767e"
+    }
+  },
+  "batch_size": {
+    "default": 32,
+    "override_supported": true
+  },
+  "callbacks": {
+    "early_stopping": {
+      "monitor": "val_loss",
+      "patience": 5,
+      "restore_best_weights": true
+    },
+    "model_checkpoint": {
+      "mode": "max",
+      "monitor": "val_macro_f1",
+      "save_best_only": true
+    },
+    "reduce_lr_on_plateau": {
+      "factor": 0.2,
+      "min_lr": 1e-07,
+      "monitor": "val_loss",
+      "patience": 2
+    }
+  },
+  "class_weight_policy": {
+    "candidate_methods": [
+      "none",
+      "inverse_sqrt_frequency",
+      "median_frequency_sqrt"
+    ],
+    "clipping": {
+      "maximum": 3.0,
+      "minimum": 0.5
+    },
+    "normalization": "sample_weighted_mean_equals_one",
+    "recommended_method": "median_frequency_sqrt_normalized_clipped",
+    "source_partition": "TRAIN_ONLY"
+  },
+  "class_weights": null,
+  "controlled_variables": {
+    "batch_normalization_layers_frozen_in_phase2": 52,
+    "class_weights": null,
+    "fine_tune_from_layer_name": "block_13_expand",
+    "manifest_partitions": [
+      "TRAIN",
+      "VALIDATION"
+    ],
+    "output_classes": 39,
+    "preprocessing": "RGB 224x224 float32 pixel / 255.0",
+    "selection_partition": "VALIDATION_ONLY"
+  },
+  "experiment": {
+    "baseline_experiment": "agri-diagnose-v2-exp-a",
+    "hypothesis": "A moderate increase in TRAIN-only geometric and photometric augmentation will improve robustness to real-world image conditions while preserving overall VALIDATION performance.",
+    "name": "agri-diagnose-v2-exp-b",
+    "primary_variable": "TRAIN_ONLY_AUGMENTATION_POLICY"
+  },
+  "experiment_seed": 20260810,
+  "input": {
+    "channels": 3,
+    "color_mode": "RGB",
+    "height": 224,
+    "numeric_range": [
+      0.0,
+      1.0
+    ],
+    "scaling": "pixel / 255.0",
+    "width": 224
+  },
+  "locked_test_policy": {
+    "development_loading_forbidden": true,
+    "internal_test_manifest": "training/datasets/manifests/dataset-v2-test.csv",
+    "internal_test_role": "FINAL_INTERNAL_TEST",
+    "plantdoc_test_locked": true,
+    "threshold_tuning_forbidden": true
+  },
+  "loss": {
+    "label_encoding": "sparse_integer_index",
+    "name": "SparseCategoricalCrossentropy"
+  },
+  "model_versioning": {
+    "baseline_experiment": "agri-diagnose-v2-exp-a",
+    "candidate_directory": "models/candidates/agri-diagnose-v2-exp-b",
+    "experiment": "agri-diagnose-v2-exp-b",
+    "overwrite_experiment_a": false,
+    "overwrite_model_v1": false
+  },
+  "optimizer": {
+    "beta_1": 0.9,
+    "beta_2": 0.999,
+    "epsilon": 1e-07,
+    "name": "Adam"
+  },
+  "phase1": {
+    "backbone_trainable": false,
+    "learning_rate": 0.001,
+    "max_epochs": 10,
+    "name": "feature_extraction"
+  },
+  "phase2": {
+    "batch_normalization_trainable": false,
+    "fine_tune_from_layer_index_tensorflow_2_15": 116,
+    "fine_tune_from_layer_name": "block_13_expand",
+    "frozen_backbone_layers": 129,
+    "learning_rate": 2e-05,
+    "max_epochs": 20,
+    "name": "upper_backbone_fine_tuning",
+    "total_backbone_layers_tensorflow_2_15": 154,
+    "trainable_non_batchnorm_backbone_layers": 25
+  },
+  "policy_version": "agri-diagnose-model-v2-experiment-b-policy-v1",
+  "selection_metrics": {
+    "primary": "validation_macro_f1",
+    "real_world_slice": "validation_macro_f1_for_supported_REAL_WORLD_classes",
+    "secondary": [
+      "validation_loss",
+      "validation_accuracy",
+      "validation_weighted_f1",
+      "validation_macro_recall",
+      "validation_per_class_precision_recall_f1"
+    ]
+  }
+}
