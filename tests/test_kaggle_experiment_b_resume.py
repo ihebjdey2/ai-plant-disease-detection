@@ -8,7 +8,13 @@ import pytest
 import tensorflow as tf
 
 import training.experiment_b_resume as resume_module
-from training.experiment_b import load_experiment_b_policy
+from training.experiment_b import (
+    build_model,
+    compile_phase1,
+    compile_phase2,
+    configure_phase2,
+    load_experiment_b_policy,
+)
 from training.experiment_b_resume import (
     EXPECTED_POLICY_SHA256_LF,
     EXPECTED_TAXONOMY_SHA256,
@@ -19,6 +25,7 @@ from training.experiment_b_resume import (
     ResumablePersistentHistory,
     archive_restart_artifacts,
     build_resume_callbacks,
+    checkpoint_model_audit,
     fit_epoch_arguments,
     load_resume_checkpoint,
     plan_phase,
@@ -473,11 +480,18 @@ def valid_checkpoint_audit(history, phase: str) -> dict[str, object]:
         "total_parameters": 2_307_943,
         "trainable_parameters": 49_959 if phase1 else 1_713_319,
         "non_trainable_parameters": 2_257_984 if phase1 else 594_624,
-        "backbone_trainable": not phase1,
+        "backbone_trainable": True,
         "total_backbone_layers": 154,
+        "raw_trainable_backbone_layer_count": 1 if phase1 else 26,
+        "serialization_only_trainable_input_layers": ["input_2"],
+        "serialization_only_trainable_input_layer_count": 1,
         "first_trainable_backbone_layer": None if phase1 else "block_13_expand",
         "trainable_backbone_layer_count": 0 if phase1 else 25,
         "frozen_backbone_layer_count": 154 if phase1 else 129,
+        "first_trainable_weight_backbone_layer": (
+            None if phase1 else "block_13_expand"
+        ),
+        "trainable_weight_backbone_layer_count": 0 if phase1 else 13,
         "batch_normalization_layer_count": 52,
         "frozen_batch_normalization_count": 52,
         "optimizer_class": "Adam",
@@ -492,6 +506,93 @@ def valid_checkpoint_audit(history, phase: str) -> dict[str, object]:
         "optimizer_epsilon": 1e-7,
         "loss_class": "SparseCategoricalCrossentropy",
     }
+
+
+def serialized_checkpoint(tmp_path: Path, phase: str):
+    checkpoint, history_path = make_phase_paths(tmp_path, phase)
+    rows = (
+        history_rows(10, best_macro_epoch=8)
+        if phase == "phase1"
+        else history_rows(1)
+    )
+    if phase == "phase2":
+        for row in rows:
+            row["learning_rate"] = 2e-5
+    write_history(history_path, rows)
+    history = read_phase_history(
+        history_path, max_epochs=10 if phase == "phase1" else 20
+    )
+    policy = load_experiment_b_policy()
+    model, backbone = build_model(policy, weights=None)
+    if phase == "phase1":
+        compile_phase1(model, policy)
+    else:
+        configure_phase2(backbone, policy)
+        compile_phase2(model, policy)
+    model.optimizer.build(model.trainable_variables)
+    model.optimizer.iterations.assign(history.best_macro_f1_epoch * 1840)
+    model.save(checkpoint)
+    return (
+        *load_resume_checkpoint(
+            checkpoint,
+            phase=phase,
+            history=history,
+            policy=policy,
+        ),
+        history,
+        policy,
+    )
+
+
+def test_serialized_phase1_input_layer_is_not_effective_backbone_trainability(
+    tmp_path,
+):
+    _, audit, _, _, _ = serialized_checkpoint(tmp_path, "phase1")
+
+    assert audit["backbone_trainable"] is True
+    assert audit["raw_trainable_backbone_layer_count"] == 1
+    assert audit["serialization_only_trainable_input_layer_count"] == 1
+    assert audit["serialization_only_trainable_input_layers"][0].startswith("input_")
+    assert audit["trainable_backbone_layer_count"] == 0
+    assert audit["trainable_weight_backbone_layer_count"] == 0
+    assert audit["first_trainable_backbone_layer"] is None
+    assert audit["trainable_variable_count"] == 2
+    assert audit["optimizer_iterations"] == 14_720
+    assert audit["frozen_batch_normalization_count"] == 52
+
+
+def test_phase1_real_weighted_backbone_layer_still_fails_closed(tmp_path):
+    model, _, _, history, policy = serialized_checkpoint(tmp_path, "phase1")
+    backbone = next(
+        layer
+        for layer in model.layers
+        if isinstance(layer, tf.keras.Model) and "mobilenetv2" in layer.name
+    )
+    weighted_layer = next(layer for layer in backbone.layers if layer.weights)
+    weighted_layer.trainable = True
+
+    audit = checkpoint_model_audit(model, phase="phase1")
+    assert audit["trainable_weight_backbone_layer_count"] == 1
+    with pytest.raises(ResumeSafetyError, match="Checkpoint"):
+        validate_checkpoint_audit(
+            audit,
+            phase="phase1",
+            history=history,
+            policy=policy,
+        )
+
+
+def test_serialized_phase2_effective_boundary_remains_unchanged(tmp_path):
+    _, audit, _, _, _ = serialized_checkpoint(tmp_path, "phase2")
+
+    assert audit["backbone_trainable"] is True
+    assert audit["serialization_only_trainable_input_layer_count"] == 1
+    assert audit["first_trainable_backbone_layer"] == "block_13_expand"
+    assert audit["trainable_backbone_layer_count"] == 25
+    assert audit["first_trainable_weight_backbone_layer"] == "block_13_expand"
+    assert audit["trainable_weight_backbone_layer_count"] == 13
+    assert audit["trainable_variable_count"] == 15
+    assert audit["frozen_batch_normalization_count"] == 52
 
 
 @pytest.mark.parametrize(

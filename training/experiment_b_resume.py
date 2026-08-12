@@ -512,7 +512,20 @@ def checkpoint_model_audit(model, *, phase: str) -> dict[str, object]:
     if len(nested) != 1:
         raise ResumeSafetyError("Checkpoint MobileNetV2 identity is incompatible.")
     backbone = nested[0]
-    trainable = [layer for layer in backbone.layers if layer.trainable]
+    raw_trainable = [layer for layer in backbone.layers if layer.trainable]
+    serialization_only_inputs = [
+        layer
+        for layer in raw_trainable
+        if isinstance(layer, tf.keras.layers.InputLayer)
+        and not layer.trainable_weights
+        and not layer.weights
+    ]
+    effective_trainable = [
+        layer for layer in raw_trainable if layer not in serialization_only_inputs
+    ]
+    trainable_weight_layers = [
+        layer for layer in raw_trainable if layer.trainable_weights
+    ]
     batch_norm = [
         layer
         for layer in backbone.layers
@@ -533,9 +546,24 @@ def checkpoint_model_audit(model, *, phase: str) -> dict[str, object]:
         **parameter_audit(model),
         "backbone_trainable": bool(backbone.trainable),
         "total_backbone_layers": len(backbone.layers),
-        "first_trainable_backbone_layer": trainable[0].name if trainable else None,
-        "trainable_backbone_layer_count": len(trainable),
-        "frozen_backbone_layer_count": len(backbone.layers) - len(trainable),
+        "raw_trainable_backbone_layer_count": len(raw_trainable),
+        "serialization_only_trainable_input_layers": [
+            layer.name for layer in serialization_only_inputs
+        ],
+        "serialization_only_trainable_input_layer_count": len(
+            serialization_only_inputs
+        ),
+        "first_trainable_backbone_layer": (
+            effective_trainable[0].name if effective_trainable else None
+        ),
+        "trainable_backbone_layer_count": len(effective_trainable),
+        "frozen_backbone_layer_count": (
+            len(backbone.layers) - len(effective_trainable)
+        ),
+        "first_trainable_weight_backbone_layer": (
+            trainable_weight_layers[0].name if trainable_weight_layers else None
+        ),
+        "trainable_weight_backbone_layer_count": len(trainable_weight_layers),
         "batch_normalization_layer_count": len(batch_norm),
         "frozen_batch_normalization_count": sum(
             not layer.trainable for layer in batch_norm
@@ -604,20 +632,42 @@ def validate_checkpoint_audit(
         or observed_slot_shapes != expected_slot_shapes
     ):
         raise ResumeSafetyError("Checkpoint Adam optimizer slots are incomplete.")
+    serialization_inputs = audit.get("serialization_only_trainable_input_layers")
+    serialization_input_count = audit.get(
+        "serialization_only_trainable_input_layer_count"
+    )
+    if (
+        not isinstance(serialization_inputs, list)
+        or not isinstance(serialization_input_count, int)
+        or len(serialization_inputs) != serialization_input_count
+    ):
+        raise ResumeSafetyError(
+            "Checkpoint serialization-only InputLayer audit is incompatible."
+        )
     if phase == "phase1":
         phase_compatible = (
-            audit.get("backbone_trainable") is False
+            serialization_input_count in (0, 1)
+            and audit.get("raw_trainable_backbone_layer_count")
+            == serialization_input_count
             and audit.get("first_trainable_backbone_layer") is None
             and audit.get("trainable_backbone_layer_count") == 0
             and audit.get("frozen_backbone_layer_count") == 154
+            and audit.get("first_trainable_weight_backbone_layer") is None
+            and audit.get("trainable_weight_backbone_layer_count") == 0
             and audit.get("frozen_batch_normalization_count") == 52
         )
     else:
         phase_compatible = (
             audit.get("backbone_trainable") is True
+            and serialization_input_count in (0, 1)
+            and audit.get("raw_trainable_backbone_layer_count")
+            == 25 + serialization_input_count
             and audit.get("first_trainable_backbone_layer") == "block_13_expand"
             and audit.get("trainable_backbone_layer_count") == 25
             and audit.get("frozen_backbone_layer_count") == 129
+            and audit.get("first_trainable_weight_backbone_layer")
+            == "block_13_expand"
+            and audit.get("trainable_weight_backbone_layer_count") == 13
             and audit.get("frozen_batch_normalization_count") == 52
         )
     if not phase_compatible:
