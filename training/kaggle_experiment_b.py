@@ -54,6 +54,7 @@ from training.kaggle_experiment_a import (
     write_json,
 )
 from training.kaggle_runtime import build_execution_config
+from training.kaggle_persistence import validate_dataset_handle
 from training.taxonomy import CLASS_NAMES
 
 
@@ -285,6 +286,8 @@ def build_execution_config_b(
     batch_size: int = 32,
     start_training: bool = False,
     interrupted_phase_action: str = "fail",
+    persistent_backup_enabled: bool = False,
+    persistent_backup_dataset_handle: str = "",
 ) -> dict[str, object]:
     if batch_size != 32:
         raise ValueError("Experiment B batch size is locked to 32.")
@@ -295,6 +298,19 @@ def build_execution_config_b(
         raise ValueError(
             "Experiment B interrupted_phase_action must be fail, resume, or restart."
         )
+    if type(persistent_backup_enabled) is not bool:
+        raise ValueError("Experiment B persistent_backup_enabled must be boolean.")
+    backup_handle = str(persistent_backup_dataset_handle).strip()
+    if persistent_backup_enabled and not backup_handle:
+        raise ValueError(
+            "Experiment B persistent backup requires a Kaggle Dataset handle."
+        )
+    if persistent_backup_enabled:
+        validate_dataset_handle(backup_handle)
+    if not persistent_backup_enabled and backup_handle:
+        raise ValueError(
+            "Experiment B persistent backup handle must be empty when disabled."
+        )
     payload = build_execution_config(
         source_roots,
         batch_size=batch_size,
@@ -304,6 +320,8 @@ def build_execution_config_b(
     payload.pop("restart_interrupted_phase", None)
     payload["experiment"] = EXPERIMENT_NAME
     payload["interrupted_phase_action"] = interrupted_phase_action
+    payload["persistent_backup_enabled"] = persistent_backup_enabled
+    payload["persistent_backup_dataset_handle"] = backup_handle
     return payload
 
 
@@ -340,11 +358,23 @@ def load_execution_config_b(
     raw_start_training = payload.get("start_training", False)
     if type(raw_start_training) is not bool:
         raise RuntimeError("Experiment B start_training must be boolean.")
+    raw_backup_enabled = payload.get("persistent_backup_enabled", False)
+    if type(raw_backup_enabled) is not bool:
+        raise RuntimeError(
+            "Experiment B persistent_backup_enabled must be boolean."
+        )
+    raw_backup_handle = payload.get("persistent_backup_dataset_handle", "")
+    if not isinstance(raw_backup_handle, str):
+        raise RuntimeError(
+            "Experiment B persistent backup dataset handle must be a string."
+        )
     validated = build_execution_config_b(
         payload.get("source_roots", {}),
         batch_size=int(payload.get("batch_size", 0)),
         start_training=raw_start_training,
         interrupted_phase_action=action,
+        persistent_backup_enabled=raw_backup_enabled,
+        persistent_backup_dataset_handle=raw_backup_handle,
     )
     if validated["start_training"] and not allow_training:
         raise RuntimeError("TRAINING_DISABLED_BY_USER")

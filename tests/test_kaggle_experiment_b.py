@@ -130,11 +130,28 @@ def test_b_execution_config_is_separate_locked_and_disabled_by_default(tmp_path)
     assert payload["batch_size"] == 32
     assert payload["start_training"] is False
     assert payload["interrupted_phase_action"] == "fail"
+    assert payload["persistent_backup_enabled"] is False
+    assert payload["persistent_backup_dataset_handle"] == ""
     assert "restart_interrupted_phase" not in payload
     assert payload["internal_test_loaded"] is False
     assert payload["plantdoc_test_loaded"] is False
     with pytest.raises(ValueError, match="batch size is locked to 32"):
         build_execution_config_b(source_roots(), batch_size=16)
+    with pytest.raises(ValueError, match="requires a Kaggle Dataset handle"):
+        build_execution_config_b(source_roots(), persistent_backup_enabled=True)
+    with pytest.raises(RuntimeError, match="owner/dataset"):
+        build_execution_config_b(
+            source_roots(),
+            persistent_backup_enabled=True,
+            persistent_backup_dataset_handle="not-a-handle",
+        )
+    enabled = build_execution_config_b(
+        source_roots(),
+        persistent_backup_enabled=True,
+        persistent_backup_dataset_handle="owner/private-checkpoints",
+    )
+    assert enabled["persistent_backup_enabled"] is True
+    assert enabled["persistent_backup_dataset_handle"] == "owner/private-checkpoints"
 
     path = tmp_path / "config.json"
     path.write_text(json.dumps({**payload, "experiment": "agri-diagnose-v2-exp-a"}))
@@ -291,6 +308,7 @@ def test_b_runner_forces_agg_and_keeps_fit_behind_training_function():
     )
     assert source.count(".fit(") == 4
     assert source.count("**fit_epoch_arguments(") == 4
+    assert source.count("callbacks=append_backup_callback(") == 4
     assert source.index("require_training_authorization(") < source.index(
         "phase1_fit = model.fit("
     )

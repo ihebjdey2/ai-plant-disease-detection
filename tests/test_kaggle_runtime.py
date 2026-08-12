@@ -386,6 +386,7 @@ def test_isolated_requirements_keep_approved_scientific_stack():
         encoding="utf-8"
     )
     assert "tensorflow[and-cuda]==2.15.0" in requirements
+    assert "kagglehub==0.3.13" in requirements
     assert "keras==2.15.0" in requirements
     assert "numpy==1.26.4" in requirements
     assert "tensorflow==2.20" not in requirements
