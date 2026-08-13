@@ -1,194 +1,274 @@
 # AgriDiagnose AI
 
-[![CI](https://github.com/ihebjdey2/ai-plant-disease-detection/actions/workflows/ci.yml/badge.svg)](https://github.com/ihebjdey2/ai-plant-disease-detection/actions/workflows/ci.yml)
+<div align="center">
 
-AgriDiagnose AI is a Flask and TensorFlow application for AI-assisted plant
-leaf analysis. It combines a scientifically frozen 39-class MobileNetV2 model
-with secure accounts, a crop-health dashboard, user-scoped prediction history,
-and a versioned REST API.
+**AI-assisted plant disease analysis with a scientifically frozen 39-class MobileNetV2 model, Flask, TensorFlow, and a production-oriented application architecture.**
+
+[![CI](https://github.com/ihebjdey2/ai-plant-disease-detection/actions/workflows/ci.yml/badge.svg)](https://github.com/ihebjdey2/ai-plant-disease-detection/actions/workflows/ci.yml)
+![Python](https://img.shields.io/badge/Python-3.11-3776AB?logo=python&logoColor=white)
+![Flask](https://img.shields.io/badge/Flask-2.2.5-000000?logo=flask&logoColor=white)
+![TensorFlow](https://img.shields.io/badge/TensorFlow-2.15-FF6F00?logo=tensorflow&logoColor=white)
+![Model](https://img.shields.io/badge/Model-MobileNetV2-6C5CE7)
+![Dataset](https://img.shields.io/badge/Dataset-73%2C563%20images-2E8B57)
+![Classes](https://img.shields.io/badge/Classes-39-1F6FEB)
+![Crops](https://img.shields.io/badge/Crops-14-228B22)
+![Languages](https://img.shields.io/badge/UI-EN%20%7C%20FR%20%7C%20AR-8A2BE2)
+
+</div>
 
 > [!IMPORTANT]
-> Predictions are decision support, not confirmed agricultural diagnoses.
-> Confirm crop-care and treatment decisions with qualified local expertise.
+> AgriDiagnose AI is a **decision-support system**, not a confirmed agricultural diagnosis tool. Treatment and crop-care decisions should be validated with qualified local agricultural expertise.
 
-## Project status
+---
 
-- **Application model:** frozen Model V2 / Experiment A
-- **Deployment state:** integrated as the application default
-- **Model integrity:** SHA-256 verified before the first cached load
-- **Legacy rollback:** `plant_disease_model.h5` remains available
-- **Scientific state:** Model V2 is frozen; post-TEST tuning is prohibited
-- **Quality gate:** Python 3.11 CI, automated tests, and Alembic migration checks
+## Overview
 
-The default artifact is `models/agri-diagnose-v2-exp-a.keras`. A compatible
-custom model can still be selected with `MODEL_PATH`.
+AgriDiagnose AI is a full-stack machine-learning application for plant leaf analysis. It combines a frozen TensorFlow/Keras image classifier with a secure Flask web application, multilingual user experience, prediction history, crop-health dashboards, and a versioned REST API.
 
-## What the application provides
+The project goes beyond a simple notebook demo: it includes reproducible dataset construction, group-aware data splitting, controlled model experiments, integrity-locked model artifacts, automated tests, database migrations, CI, external evaluation, and documented scientific limitations.
 
-### Web application
+### At a glance
 
-- Registration, login, and logout with Werkzeug password hashing
-- Flask-Login session authentication and Flask-WTF CSRF protection
-- Responsive upload interface with image preview
-- Modern responsive dashboard with explicit model-coverage cards
-- Complete English, French, and Arabic web interface
-- Persistent language selector, browser-language detection, and Arabic RTL layout
-- JPG, JPEG, PNG, and WEBP uploads up to 5 MB
-- Pillow validation of actual image content and UUID-based filenames
-- Primary prediction with confidence and explicit status handling
-- Explicit `healthy`, `diseased`, `uncertain`, and `no_leaf` statuses
-- Dashboard totals, average confidence, recent scans, and frequent diseases
-- User-scoped history with details, pagination, deletion, and clear-all actions
-- Status-specific uncertainty/no-leaf warnings and a responsible-use disclaimer
+| Area | Current state |
+| --- | --- |
+| **Dataset V2** | **73,563 audited image files** |
+| **Training split** | **58,857 images** |
+| **Validation split** | **7,362 images** |
+| **Internal TEST split** | **7,344 images** |
+| **Output taxonomy** | **39 classes** |
+| **Supported crops** | **14 crops** |
+| **Frozen model** | MobileNetV2 / Experiment A |
+| **Internal TEST accuracy** | **95.44%** |
+| **Internal TEST Macro-F1** | **95.92%** |
+| **External PlantDoc subset accuracy** | **41.41%** |
+| **Application languages** | English, French, Arabic |
+| **Deployment state** | Integrated as application default; not claimed as externally production-hosted |
 
-### Languages and complete frontend coverage
+---
 
-Every user-facing web page is available in **English (`en`)**, **French
-(`fr`)**, and **Arabic (`ar`)**. This includes registration, login, dashboard,
-image upload, loading state, validation and error messages, statistics, scan
-history, prediction details, status labels, dates, disease labels, and the
-responsible-use notices. The selected language is stored in the user session;
-when no preference has been saved, the application uses the browser's preferred
-supported language. Arabic pages use right-to-left layout through the document
-`dir="rtl"` attribute and responsive RTL-aware CSS.
+## Dataset V2 — 73,563 audited images
 
-The dashboard exposes the model's complete plant coverage rather than implying
-that it can analyze every crop. The frozen output taxonomy contains **39 total
-classes**: **38 plant-health classes across 14 crops**, plus one explicit
-`Background without leaves` safety class. The interface derives the class count
-for each crop directly from the authoritative taxonomy and translates every
-displayed crop and class name without changing the stable English values stored
-in the database or returned by the API.
+The final Dataset V2 contains **73,563 audited image files**, well above the 50K-image scale, while preserving all **39 deployed classes**.
 
-| Supported crop | Model output classes | Count |
-| --- | --- | ---: |
-| Apple | Apple scab; Black rot; Cedar apple rust; healthy | 4 |
-| Blueberry | healthy | 1 |
-| Cherry | Powdery mildew; healthy | 2 |
-| Corn | Cercospora leaf spot; Common rust; Northern Leaf Blight; healthy | 4 |
-| Grape | Black rot; Esca; Leaf blight; healthy | 4 |
-| Orange | Huanglongbing | 1 |
-| Peach | Bacterial spot; healthy | 2 |
-| Bell pepper | Bacterial spot; healthy | 2 |
-| Potato | Early blight; Late blight; healthy | 3 |
-| Raspberry | healthy | 1 |
-| Soybean | healthy | 1 |
-| Squash | Powdery mildew | 1 |
-| Strawberry | Leaf scorch; healthy | 2 |
-| Tomato | Bacterial spot; Early blight; Late blight; Leaf Mold; Septoria leaf spot; Spider mites; Target Spot; Yellow Leaf Curl Virus; mosaic virus; healthy | 10 |
-| Non-leaf safety class | Background without leaves | 1 |
-| **Total** | **Complete frozen output taxonomy** | **39** |
+The split is group-aware and deterministic to reduce leakage between TRAIN, VALIDATION, and TEST.
 
-The localized dashboard therefore shows exactly these 14 supported crops:
-Apple, Blueberry, Cherry, Corn, Grape, Orange, Peach, Bell pepper, Potato,
-Raspberry, Soybean, Squash, Strawberry, and Tomato. This coverage statement is
-about model outputs, not a guarantee of field accuracy or support for other
-species, varieties, symptoms, or growing conditions.
+| Partition | Images | Share | Groups | Class coverage |
+| --- | ---: | ---: | ---: | ---: |
+| **TRAIN** | **58,857** | 80.01% | 56,478 | 39/39 |
+| **VALIDATION** | **7,362** | 10.01% | 7,098 | 39/39 |
+| **INTERNAL TEST** | **7,344** | 9.98% | 7,087 | 39/39 |
+| **Total** | **73,563** | **100%** | **70,663** | **39/39** |
 
-### Engineering and data
+### Dataset domains
 
-- Flask application factory and modular Blueprints
-- Shared prediction service for the web interface and REST API
-- Confidence-ranked Top-3 results from the prediction engine and REST API
-- SQLAlchemy persistence with SQLite for development and PostgreSQL support
-- Flask-Migrate/Alembic database migrations
-- Rotating application logs and friendly error pages
-- Frozen taxonomy, model checksum, experiment policies, and evaluation provenance
-- Reproducible Kaggle Experiment A/B workflows and offline evaluation tooling
-- GitHub Actions validation on Python 3.11
+| Domain | Images |
+| --- | ---: |
+| Historical / controlled | 55,423 |
+| Real-world | 18,140 |
+| **Total** | **73,563** |
 
-Weather data is not fabricated: the weather boundary reports unavailable until
-a real provider is implemented and configured.
+Real-world data includes PLDD-UP, Seasonal Corn, PlantDoc TRAIN-source images, and Banu/Deb Potato images. The official **PlantDoc TEST split remains outside Dataset V2** and was reserved for external-domain evaluation.
+
+### Leakage controls
+
+The frozen split enforces:
+
+- zero group leakage;
+- zero known SHA-256 content leakage;
+- zero PlantDoc TEST contamination;
+- complete 39-class coverage across TRAIN, VALIDATION, and INTERNAL TEST;
+- deterministic split generation using a fixed seed and group-aware allocation.
+
+See [Dataset V2 group-aware split](docs/dataset-v2-group-aware-split.md) and [Dataset V2 39-class composition](docs/dataset-v2-39class-composition.md).
+
+---
+
+## Frozen Model V2
+
+The selected application model is:
+
+```text
+models/agri-diagnose-v2-exp-a.keras
+```
+
+Model V2 / Experiment A was selected **strictly on VALIDATION performance before either final TEST was opened**.
+
+| Property | Frozen contract |
+| --- | --- |
+| Architecture | ImageNet MobileNetV2 → GlobalAveragePooling2D → Dropout(0.25) → Dense(39, softmax) |
+| Input | RGB `224 × 224 × 3` |
+| Preprocessing | Resize → `float32` → divide by `255.0` |
+| Inference augmentation | None |
+| Outputs | 39 ordered classes |
+| Background safety class | `Background without leaves`, index `4` |
+| Confidence threshold | `60%`; exactly `60%` is accepted |
+| Load mode | `compile=False` |
+| Frozen SHA-256 | `bba4d044bcafbbee6dcd9f604e9c3f10c42f2531f17f21769b991540e36b8ca0` |
+
+The frozen artifact is SHA-256 verified before its first cached load. A compatible custom model can still be configured through `MODEL_PATH`.
+
+The legacy `plant_disease_model.h5` remains available for explicit rollback.
+
+---
 
 ## Scientific evaluation
 
-Experiment A was selected strictly on **VALIDATION Macro-F1**, before the
-Dataset V2 INTERNAL TEST or external PlantDoc TEST was opened. Experiment B
-was rejected and was never evaluated on either TEST.
+Experiment A was selected using **VALIDATION Macro-F1 only**. Experiment B was rejected and was never evaluated on either final TEST.
 
-| Partition | Scope | Accuracy | Macro-F1 | Weighted-F1 | Role |
+| Evaluation | Scope | Accuracy | Macro-F1 | Weighted-F1 | Role |
 | --- | --- | ---: | ---: | ---: | --- |
-| VALIDATION | 7,362 images, 39 classes | 95.48% | 96.01% | — | Candidate selection |
-| Dataset V2 INTERNAL TEST | 7,344 images, 39 classes | 95.44% | 95.92% | 95.43% | Final in-distribution estimate |
-| External PlantDoc TEST — conservative semantic-overlap subset | 99 images, 12 matched classes | 41.41% | 45.79% | 43.35% | Final domain-shift benchmark |
+| **VALIDATION** | 7,362 images · 39 classes | 95.48% | 96.01% | — | Candidate selection |
+| **Dataset V2 INTERNAL TEST** | 7,344 images · 39 classes | **95.44%** | **95.92%** | **95.43%** | Final in-distribution estimate |
+| **External PlantDoc TEST subset** | 99 images · 12 matched classes | **41.41%** | **45.79%** | **43.35%** | External domain-shift benchmark |
 
-The INTERNAL TEST result measures performance within the Dataset V2
-distribution; **it is not field accuracy**. The PlantDoc figure covers only a
-conservative 99-image / 12-class semantic-overlap subset, not all PlantDoc
-labels and not all 39 deployed classes. The external result demonstrates a
-substantial external-domain shift between Dataset V2 and the more realistic
-PlantDoc imagery.
+> [!NOTE]
+> The **95.44% INTERNAL TEST accuracy is not a field-accuracy claim**.  
+> The PlantDoc result is a conservative **99-image / 12-class semantic-overlap subset**, not a full 39-class PlantDoc benchmark. The gap between internal and external results demonstrates substantial domain shift.
 
-See the [frozen Model V2 evaluation and provenance](docs/model-v2-final-evaluation.md)
-for exact values, selection chronology, checksums, limitations, and the
-no-post-TEST-tuning policy.
+Model V2 is scientifically **frozen**. Its final TEST observations must not be used for post-TEST tuning.
 
-## Model contract
+See [Model V2 final evaluation and provenance](docs/model-v2-final-evaluation.md).
 
-| Property | Frozen application contract |
-| --- | --- |
-| Architecture | ImageNet MobileNetV2 → GlobalAveragePooling2D → Dropout(0.25) → Dense(39, softmax) |
-| Input | RGB image, `224 × 224 × 3` |
-| Preprocessing | Resize, convert to `float32`, divide by `255.0` |
-| Inference augmentation | None |
-| Output taxonomy | 39 ordered classes |
-| Background class | `Background without leaves`, index `4` |
-| Default confidence threshold | `60%`; exactly `60%` is accepted |
-| Frozen SHA-256 | `bba4d044bcafbbee6dcd9f604e9c3f10c42f2531f17f21769b991540e36b8ca0` |
+---
 
-The application deliberately does not use
-`MobileNetV2.preprocess_input`. The authoritative class order lives in
-`training/taxonomy.py`, is re-exported through `app/taxonomy.py`, and is
-regression-tested across application, training, and evaluation code.
+## Supported crops and classes
 
-Prediction status precedence is fixed:
+The frozen taxonomy contains **38 plant-health classes across 14 crops**, plus one explicit `Background without leaves` safety class.
 
-1. class index `4` → `no_leaf`;
-2. confidence below the configured threshold (`60%` by default) → `uncertain`;
-3. an accepted healthy class → `healthy`;
-4. every other accepted prediction → `diseased`.
+| Crop | Output classes | Count |
+| --- | --- | ---: |
+| Apple | Apple scab, Black rot, Cedar apple rust, healthy | 4 |
+| Blueberry | healthy | 1 |
+| Cherry | Powdery mildew, healthy | 2 |
+| Corn | Cercospora leaf spot, Common rust, Northern Leaf Blight, healthy | 4 |
+| Grape | Black rot, Esca, Leaf blight, healthy | 4 |
+| Orange | Huanglongbing | 1 |
+| Peach | Bacterial spot, healthy | 2 |
+| Bell pepper | Bacterial spot, healthy | 2 |
+| Potato | Early blight, Late blight, healthy | 3 |
+| Raspberry | healthy | 1 |
+| Soybean | healthy | 1 |
+| Squash | Powdery mildew | 1 |
+| Strawberry | Leaf scorch, healthy | 2 |
+| Tomato | Bacterial spot, Early blight, Late blight, Leaf Mold, Septoria leaf spot, Spider mites, Target Spot, Yellow Leaf Curl Virus, mosaic virus, healthy | 10 |
+| Non-leaf safety class | Background without leaves | 1 |
+| **Total** | **Complete frozen taxonomy** | **39** |
 
-The default artifact is loaded with `compile=False`, cached once per process,
-and checked for its input shape, output count, and frozen SHA-256. Distinct
-custom `MODEL_PATH` artifacts are not forced to match the frozen checksum, but
-must still satisfy the input/output contract.
+Coverage describes the model's output taxonomy; it does not guarantee field accuracy for every crop variety, symptom stage, environment, or capture condition.
+
+---
+
+## Application features
+
+### Plant analysis
+
+- Image upload for JPG, JPEG, PNG, and WEBP files up to 5 MB
+- Pillow validation of actual image contents
+- MobileNetV2 inference with Top-3 confidence-ranked predictions
+- Explicit `healthy`, `diseased`, `uncertain`, and `no_leaf` statuses
+- Disease description, symptoms, causes, treatment, and prevention metadata
+- Responsible-use warnings for uncertain and no-leaf predictions
+
+### User experience
+
+- Registration, login, and logout
+- Flask-Login sessions
+- Werkzeug password hashing
+- Flask-WTF CSRF protection
+- User-scoped prediction history
+- Pagination, prediction details, delete, and clear-history actions
+- Dashboard statistics and recent scans
+- Responsive interface
+
+### Multilingual UI
+
+The full user-facing web interface supports:
+
+- **English (`en`)**
+- **French (`fr`)**
+- **Arabic (`ar`)**
+
+Arabic uses right-to-left layout, while language selection is persisted in the session and can fall back to the browser's supported language preference.
+
+### Engineering
+
+- Flask application factory
+- Modular Blueprints
+- Shared prediction service for web and REST API
+- SQLAlchemy persistence
+- SQLite for development
+- PostgreSQL support
+- Flask-Migrate / Alembic migrations
+- Rotating application logs
+- Friendly error handling
+- Frozen model checksum verification
+- Reproducible Kaggle experiment workflows
+- Automated pytest suite
+- GitHub Actions CI on Python 3.11
+
+---
 
 ## Architecture
 
 ```text
+                         ┌───────────────────────────┐
+                         │       Browser / API       │
+                         └─────────────┬─────────────┘
+                                       │
+                                       ▼
+                         ┌───────────────────────────┐
+                         │       Flask Routes        │
+                         │ auth · dashboard · API    │
+                         └─────────────┬─────────────┘
+                                       │
+                     ┌─────────────────┴─────────────────┐
+                     │                                   │
+                     ▼                                   ▼
+          ┌─────────────────────┐             ┌──────────────────────┐
+          │ Prediction Service  │             │ SQLAlchemy / History │
+          └──────────┬──────────┘             └──────────────────────┘
+                     │
+                     ▼
+          ┌─────────────────────┐
+          │ Frozen Model V2     │
+          │ MobileNetV2 · 39    │
+          └─────────────────────┘
+```
+
+Prediction status precedence is fixed:
+
+1. class index `4` → `no_leaf`;
+2. confidence below `60%` → `uncertain`;
+3. accepted healthy class → `healthy`;
+4. every other accepted prediction → `diseased`.
+
+---
+
+## Repository structure
+
+```text
 app/
 ├── data/                 structured disease metadata
-├── models/               User and Prediction SQLAlchemy entities
+├── models/               SQLAlchemy entities
 ├── routes/               auth, dashboard, prediction, history, REST API
 ├── services/             prediction, disease guidance, weather boundary
 └── extensions.py         SQLAlchemy, Login, Migrate, CSRF
+
 models/
 └── agri-diagnose-v2-exp-a.keras
-migrations/               Alembic migration history
-templates/                Jinja pages
-static/                   CSS, JavaScript, and runtime uploads
-training/                 frozen policies, provenance, experiment tooling
+
+training/                 dataset manifests, policies, provenance, experiment tooling
 evaluation/               offline evaluator and PlantDoc mapping
 scripts/                  dataset, evaluation, and Kaggle utilities
 notebooks/                controlled Kaggle Experiment A/B workflows
-docs/                     dataset, training, and final-evaluation records
-tests/                    application, ML-policy, and provenance tests
+docs/                     scientific and engineering documentation
+tests/                    application, policy, integration, and provenance tests
+migrations/               Alembic migration history
 config.py                 environment-based configuration
 run.py                    development entry point
 ```
 
-The active request flow is intentionally simple:
-
-```text
-Browser or REST client
-        ↓
-Flask Blueprint → image validation → shared prediction service
-        ↓                              ↓
-SQLAlchemy history (web only)     cached frozen Model V2
-```
-
-The REST API is stateless and does not write prediction history. Authenticated
-web scans are persisted only for the current user.
+---
 
 ## Technology stack
 
@@ -196,12 +276,15 @@ web scans are persisted only for the current user.
 | --- | --- |
 | Backend | Python 3.11, Flask 2.2.5, Jinja2 |
 | Machine learning | TensorFlow 2.15.0, Keras 2.15.0, MobileNetV2 |
-| Data | NumPy, pandas, scikit-learn, Pillow, OpenCV |
-| Persistence | Flask-SQLAlchemy, SQLite, PostgreSQL/psycopg |
-| Authentication | Flask-Login, Werkzeug password hashing, Flask-WTF |
+| Data / vision | NumPy, pandas, scikit-learn, Pillow, OpenCV |
+| Persistence | Flask-SQLAlchemy, SQLite, PostgreSQL / psycopg |
+| Authentication | Flask-Login, Werkzeug, Flask-WTF |
 | Migrations | Flask-Migrate, Alembic |
-| Testing | pytest, pytest-mock, GitHub Actions |
+| Testing | pytest, pytest-mock |
+| CI | GitHub Actions |
 | Frontend | HTML, CSS, JavaScript |
+
+---
 
 ## Quick start
 
@@ -209,10 +292,7 @@ web scans are persisted only for the current user.
 
 - Python `3.11`
 - Git
-- Enough disk space for TensorFlow and the included model
-
-On Windows, a short virtual-environment path avoids TensorFlow installation
-failures caused by the legacy path-length limit.
+- Enough disk space for TensorFlow and the included frozen model
 
 ### Windows PowerShell
 
@@ -222,6 +302,7 @@ cd ai-plant-disease-detection
 
 py -3.11 -m venv C:\pdvenv
 C:\pdvenv\Scripts\Activate.ps1
+
 python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
 
@@ -229,7 +310,7 @@ flask --app run.py db upgrade
 python run.py
 ```
 
-### Linux or macOS
+### Linux / macOS
 
 ```bash
 git clone https://github.com/ihebjdey2/ai-plant-disease-detection.git
@@ -237,6 +318,7 @@ cd ai-plant-disease-detection
 
 python3.11 -m venv .venv
 source .venv/bin/activate
+
 python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
 
@@ -244,27 +326,31 @@ flask --app run.py db upgrade
 python run.py
 ```
 
-Open [http://127.0.0.1:5000](http://127.0.0.1:5000). The built-in Flask server
-is for local development, not production hosting.
+Open:
+
+```text
+http://127.0.0.1:5000
+```
+
+The built-in Flask development server is not intended for production hosting.
+
+---
 
 ## Configuration
 
-The default development configuration needs no `.env` and uses SQLite. Copy
-`.env.example` only when you are ready to replace its example values; never
-commit real secrets. In particular, set or remove its example `DATABASE_URL`
-before running migrations.
+Development works without a `.env` file and falls back to SQLite.
 
-| Variable | Purpose and default |
+| Variable | Purpose |
 | --- | --- |
-| `FLASK_ENV` | `development` by default; use `production` to enable production validation |
-| `SECRET_KEY` | Required in production; development generates a temporary key with a warning |
-| `DATABASE_URL` | SQLAlchemy URL; defaults to SQLite at `instance/plant_disease.db` |
-| `MODEL_PATH` | Optional compatible model; defaults to frozen Model V2 |
+| `FLASK_ENV` | `development` by default; use `production` for production validation |
+| `SECRET_KEY` | Required in production |
+| `DATABASE_URL` | SQLAlchemy database URL; defaults to SQLite in development |
+| `MODEL_PATH` | Optional custom compatible model; frozen Model V2 is the default |
 | `UPLOAD_FOLDER` | Defaults to `static/uploads` |
 | `PREDICTION_CONFIDENCE_THRESHOLD` | Defaults to `60` |
-| `WEATHER_API_KEY` | Reserved; no live weather provider is implemented yet |
+| `WEATHER_API_KEY` | Reserved for a future configured weather provider |
 
-Example PostgreSQL configuration:
+Example:
 
 ```env
 FLASK_ENV=production
@@ -272,37 +358,15 @@ SECRET_KEY=replace-with-a-long-random-secret
 DATABASE_URL=postgresql+psycopg://username:password@localhost:5432/agridiagnose
 ```
 
-Production mode fails clearly when `SECRET_KEY` or `DATABASE_URL` is missing.
+Production mode fails explicitly if required production environment variables are missing.
 
-## Database migrations
-
-For a fresh database or after pulling new migrations:
-
-```bash
-flask --app run.py db upgrade
-flask --app run.py db current
-```
-
-For a future schema change:
-
-```bash
-flask --app run.py db migrate -m "Describe the schema change"
-# Review the generated migration before applying it.
-flask --app run.py db upgrade
-```
-
-Do not delete an existing database automatically. If a SQLite database predates
-Alembic, back it up and verify that its schema matches the intended migration
-revision before using `db stamp`.
+---
 
 ## REST API
 
 ### `POST /api/v1/predict`
 
-The endpoint accepts one multipart image, performs the same validated inference
-as the web application, removes its temporary file, and returns JSON. It is
-currently public, stateless, and CSRF-exempt; add authentication and rate
-limiting before exposing it as a public production service.
+Send one image as multipart form data:
 
 ```bash
 curl -X POST http://127.0.0.1:5000/api/v1/predict \
@@ -326,42 +390,22 @@ Representative response:
     {
       "class_index": 31,
       "disease": "Tomato Late blight",
-      "confidence": 94.72,
-      "status": "diseased",
-      "is_background": false,
-      "uncertain": false
-    },
-    {
-      "class_index": 30,
-      "disease": "Tomato Early blight",
-      "confidence": 3.81
-    },
-    {
-      "class_index": 32,
-      "disease": "Tomato Leaf Mold",
-      "confidence": 1.12
+      "confidence": 94.72
     }
-  ],
-  "disease_info": {
-    "plant_name": "Tomato",
-    "disease_name": "Tomato : Late Blight",
-    "description": "...",
-    "symptoms": [],
-    "causes": [],
-    "treatment": ["..."],
-    "prevention": [],
-    "reference_image_url": "...",
-    "disclaimer": "General guidance from the referenced dataset; consult local agricultural expertise."
-  }
+  ]
 }
 ```
 
-Invalid or corrupted images return a friendly `400` response. Uploads larger
-than 5 MB are rejected by the application.
+Invalid or corrupted images return a friendly `400` response. Uploads larger than 5 MB are rejected.
+
+> [!WARNING]
+> The REST API is currently public and stateless. Add authentication, quotas, and rate limiting before exposing it as a public production API.
+
+---
 
 ## Validation and CI
 
-Install development dependencies and run the local quality gate:
+Install development dependencies and run:
 
 ```bash
 python -m pip install -r requirements-dev.txt
@@ -372,47 +416,104 @@ flask --app run.py db check
 git diff --check
 ```
 
-GitHub Actions runs dependency validation, the full pytest suite, and Alembic
-upgrade/current/check commands on Python 3.11. The Model V2 integration suite
-also verifies the committed artifact checksum, `compile=False` loading,
-224×224×3 input, 39-value finite synthetic output, preprocessing, threshold
-semantics, and custom model overrides without using any TEST images.
+GitHub Actions validates the project on Python 3.11.
+
+The Model V2 integration checks include:
+
+- committed model SHA-256;
+- `compile=False` loading;
+- `224 × 224 × 3` input contract;
+- 39-value finite synthetic output;
+- RGB / `float32` / `/255.0` preprocessing;
+- confidence-threshold semantics;
+- custom `MODEL_PATH` compatibility;
+- no dependency on INTERNAL TEST or PlantDoc TEST images.
+
+---
 
 ## Documentation
 
 - [Model V2 final evaluation and provenance](docs/model-v2-final-evaluation.md)
+- [Dataset V2 39-class composition](docs/dataset-v2-39class-composition.md)
+- [Dataset V2 group-aware split](docs/dataset-v2-group-aware-split.md)
 - [Frozen Model V2 baseline policy](training/config/model-v2-training-policy.json)
 - [Frozen Experiment B augmentation policy](training/config/model-v2-experiment-b-policy.json)
 - [Experiment A Kaggle workflow](docs/kaggle-model-v2-experiment-a.md)
 - [Experiment B Kaggle workflow](docs/kaggle-model-v2-experiment-b.md)
-- [Dataset V2 39-class composition](docs/dataset-v2-39class-composition.md)
-- [Dataset V2 group-aware split](docs/dataset-v2-group-aware-split.md)
 - [Conservative PlantDoc semantic mapping](evaluation/mappings/plantdoc.json)
 - [Frozen machine-readable selection metadata](training/config/model-v2-final-selection.json)
 
-## Limitations
+---
 
-- External PlantDoc performance shows significant domain shift.
-- The external benchmark covers only 12 of 39 deployed classes.
-- The background/no-leaf class was not evaluated by the PlantDoc subset.
+## Known limitations
+
+- External PlantDoc performance reveals significant domain shift.
+- The external benchmark covers only 12 of the 39 deployed classes.
+- The PlantDoc subset does not evaluate the background/no-leaf safety class.
 - Confidence is not a guarantee of correctness or calibration in every domain.
-- Disease guidance is general and has not replaced local agronomic review.
+- Disease guidance is general and does not replace local agronomic expertise.
+- Twenty-three deployed classes still lack real-world source data in Dataset V2.
 - The REST API does not yet include authentication, quotas, or rate limiting.
-- A live weather provider and production hosting configuration are not included.
-- Model V2 is frozen and must not be tuned using its final TEST observations.
+- A production WSGI deployment profile and live weather provider are not yet included.
+- Frozen Model V2 must not be tuned using its final TEST observations.
+
+---
 
 ## Roadmap
 
-- Design a separately pre-declared Model V3 with more field-oriented training
-  data, diverse cameras, backgrounds, lighting, and uncertainty handling.
-- Preserve a new untouched external benchmark for final Model V3 evaluation.
-- Implement and configure a resilient real weather provider.
-- Add reviewed crop-specific agronomic metadata and stronger source citations.
-- Add API authentication, rate limiting, observability, and a production WSGI
-  deployment profile.
+### Model V2 application lifecycle
+
+- [x] Build and audit Dataset V2
+- [x] Train Experiment A
+- [x] Train Experiment B
+- [x] Select Experiment A on VALIDATION
+- [x] Freeze Model V2
+- [x] Run INTERNAL TEST
+- [x] Run external PlantDoc TEST
+- [x] Freeze evaluation provenance
+- [x] Integrate the frozen Model V2 artifact as the application default
+- [ ] Complete local functional QA
+- [ ] Complete production-readiness review
+- [ ] Deploy the application
+- [ ] Establish monitoring and rollback procedures
+- [ ] Publish a stable Model V2 release
+
+### Future Model V3
+
+Model V3 should focus primarily on **real-world generalization**, not merely increasing the already-strong internal score.
+
+Planned research directions include:
+
+- more field-oriented training data;
+- broader camera, lighting, background, cultivar, and symptom-stage diversity;
+- pre-declared real-world augmentation;
+- stronger uncertainty and out-of-distribution handling;
+- independent development validation for field imagery;
+- a **new untouched external benchmark** reserved for final Model V3 evaluation.
+
+The current PlantDoc TEST result remains frozen Model V2 evidence and must not become a Model V3 tuning target.
+
+---
 
 ## Responsible use
 
-AgriDiagnose AI is a software-engineering and machine-learning portfolio
-project. It should support observation and triage, not replace laboratory
-testing, agricultural extension services, or professional diagnosis.
+AgriDiagnose AI is a software-engineering and machine-learning portfolio project designed to support observation and triage.
+
+It should **not** replace:
+
+- laboratory testing;
+- agricultural extension services;
+- professional agronomic diagnosis;
+- crop-treatment decisions made by qualified specialists.
+
+---
+
+<div align="center">
+
+### AgriDiagnose AI
+
+**73,563 audited images · 58,857 training images · 39 classes · 14 crops · 3 languages**
+
+Built with **Flask · TensorFlow · MobileNetV2 · PostgreSQL · GitHub Actions**
+
+</div>
