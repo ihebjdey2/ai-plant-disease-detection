@@ -166,3 +166,20 @@ conditions. Strong held-out PlantVillage metrics do not prove equivalent field
 performance under different lighting, cameras, cultivars, disease stages, or
 backgrounds. This model provides decision support and is not an
 agricultural-grade diagnosis system.
+
+## Model V2 final evaluation
+
+The evaluator and preparation documentation above remains valid for the legacy
+deployed `plant_disease_model.h5` workflow. Model V2 now also has a frozen final
+record covering candidate selection, a 7,344-image/39-class Dataset V2 INTERNAL
+TEST, and an external PlantDoc TEST evaluation. The selected Model V2 artifact
+has not yet replaced the deployed model.
+
+The PlantDoc result is a conservative partial-class benchmark: 99 images across
+12 semantically matched classes, not a full 39-class accuracy claim. Its much
+lower external performance reveals substantial domain shift relative to the
+internal Dataset V2 result.
+
+See [Model V2 final evaluation and provenance](../docs/model-v2-final-evaluation.md)
+for the frozen metrics, checksums, selection chronology, limitations, and
+no-post-TEST-tuning policy.

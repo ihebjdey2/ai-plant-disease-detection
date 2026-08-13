@@ -66,9 +66,23 @@ The response contains `prediction`, `top_predictions`, and cautious `disease_inf
 
 The model has 39 outputs. The complete class order includes `Background_without_leaves` at index 4; this mapping was recovered from the companion PlantVillage project’s documented `idx_to_classes` dictionary and matches the 39-output shape. A background prediction is presented as “No leaf detected” and does not receive disease guidance.
 
+## Model V2 final evaluation
+
+The frozen Model V2 candidate was selected strictly on VALIDATION and has not
+yet replaced the deployed `plant_disease_model.h5`. On the held-out 7,344-image,
+39-class Dataset V2 INTERNAL TEST it reached 95.44% accuracy, 95.92% Macro-F1,
+and 95.43% weighted F1. On the conservative 99-image / 12-class external
+PlantDoc TEST overlap subset it reached 41.41% accuracy, 45.79% Macro-F1, and
+43.35% weighted F1.
+
+The external result demonstrates substantial domain shift; the 95.44% internal
+result is not a field-accuracy claim. See the
+[frozen Model V2 evaluation and provenance](docs/model-v2-final-evaluation.md).
+
 ## Future improvements
 
-- Add the verified 39-class label mapping and model evaluation metrics.
+- Develop a separately pre-declared, field-oriented Model V3 and preserve a new
+  untouched external benchmark for its final evaluation.
 - Configure a real weather provider.
 - Add database migrations and automated integration tests.
 - Add crop-specific guidance reviewed by an agricultural specialist.

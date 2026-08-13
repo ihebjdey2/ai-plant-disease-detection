@@ -1,0 +1,120 @@
+{
+  "schema": "agridiagnose.model-v2-final-selection",
+  "version": 1,
+  "status": "FROZEN",
+  "deployment_status": "NOT_DEPLOYED",
+  "selected_experiment": "agri-diagnose-v2-exp-a",
+  "rejected_experiment": "agri-diagnose-v2-exp-b",
+  "selection_partition": "VALIDATION",
+  "primary_selection_metric": "overall_macro_f1",
+  "selected_model_sha256": "bba4d044bcafbbee6dcd9f604e9c3f10c42f2531f17f21769b991540e36b8ca0",
+  "validation_results": {
+    "experiment_a": {
+      "decision": "RETAIN_SELECTED",
+      "overall_macro_f1": 0.9601076689427503,
+      "overall_accuracy": 0.9547677261613692,
+      "validation_loss": 0.15380623936653137,
+      "real_world_macro_f1": 0.6456627990303587,
+      "real_world_accuracy": 0.8860132158590308
+    },
+    "experiment_b": {
+      "decision": "REJECTED",
+      "overall_macro_f1": 0.9588616764404703,
+      "overall_accuracy": 0.9534093996196685,
+      "validation_loss": 0.15408803522586823,
+      "real_world_macro_f1": 0.6146738747269258,
+      "real_world_accuracy": 0.8860132158590308
+    },
+    "paired_real_world_bootstrap": {
+      "metric": "macro_f1_delta_b_minus_a",
+      "point_estimate": -0.030988924303432697,
+      "confidence_level": 0.95,
+      "confidence_interval_lower": -0.07292016725729139,
+      "confidence_interval_upper": 0.016322318122805997,
+      "resamples": 10000,
+      "seed": 20260810,
+      "method": "paired true-class-stratified bootstrap with replacement"
+    }
+  },
+  "internal_test": {
+    "dataset": "Dataset V2 INTERNAL TEST",
+    "split": "TEST",
+    "evaluation_role": "FINAL_IN_DISTRIBUTION_ESTIMATE",
+    "image_count": 7344,
+    "class_count": 39,
+    "plantdoc_test_contamination": false,
+    "manifest_sha256": "f0df59c42268163d485feea0e54dd7780aa56fe08a7984ae7869a09c604a9151",
+    "model_sha256": "bba4d044bcafbbee6dcd9f604e9c3f10c42f2531f17f21769b991540e36b8ca0",
+    "metrics": {
+      "accuracy": 0.9543845315904139,
+      "macro_f1": 0.9592043738824634,
+      "weighted_f1": 0.954331728063991,
+      "keras_loss": 0.15016824007034302
+    },
+    "confidence": {
+      "threshold_percent": 60.0,
+      "below_threshold_count": 157,
+      "below_threshold_percent": 2.1377995642701526
+    }
+  },
+  "external_plantdoc_test": {
+    "benchmark_name": "External PlantDoc TEST — conservative 12-class semantic overlap subset",
+    "evaluation_role": "FINAL_EXTERNAL_DOMAIN_SHIFT_BENCHMARK",
+    "partial_benchmark": true,
+    "source_repository": "pratikkayal/PlantDoc-Dataset",
+    "source_revision": "5467f6012d78d1c446145d5f582da6096f852ae8",
+    "source_split": "TEST",
+    "official_test": {
+      "total_image_count": 236,
+      "original_label_count": 27,
+      "corrupted_image_count": 0
+    },
+    "mapping": {
+      "matched_label_count": 12,
+      "excluded_label_count": 15,
+      "exclusion_status": "AMBIGUOUS"
+    },
+    "prepared_subset": {
+      "image_count": 99,
+      "evaluated_class_count": 12,
+      "deployed_class_count": 39,
+      "exact_duplicate_group_count": 0,
+      "exact_duplicates_removed": 0
+    },
+    "model_sha256": "bba4d044bcafbbee6dcd9f604e9c3f10c42f2531f17f21769b991540e36b8ca0",
+    "metrics": {
+      "accuracy": 0.41414141414141414,
+      "macro_f1": 0.45789013014076957,
+      "weighted_f1": 0.4335358321873086
+    },
+    "confidence": {
+      "threshold_percent": 60.0,
+      "below_threshold_count": 34,
+      "below_threshold_percent": 34.34343434343434
+    },
+    "background_class_evaluated": false,
+    "experiment_b_test_evaluated": false
+  },
+  "test_policy": {
+    "selection_completed_before_test": true,
+    "internal_test_used_for_selection": false,
+    "external_test_used_for_selection": false,
+    "post_test_tuning_allowed": false,
+    "experiment_b_test_evaluated": false
+  },
+  "evidence": {
+    "selection_decision_sha256": "ad5462fd4647a0289b63ec37e8d84c7ccaade5c2dc14841290fe7baeb5674340",
+    "selection_comparison_sha256": "f1dcfe8c0c41d0e21c27e9e8a2963d1aa6fc4224bb5a4ac8d9fa8c60df14dad4",
+    "internal_test_metrics_sha256": "e9f95b05b7f0dfb155a0a906211e36b2ac0f09725ff0547e65e9932ef1664b3d",
+    "plantdoc_metrics_sha256": "62a3caeadeb137803e52fe4b2dd6a089315a00a57168f5cf83909f937d434e21",
+    "plantdoc_preparation_sha256": "a5f8079fd46203c39eb5f0dc9710ff1ca8adffade95da340457baba1e52ce50d",
+    "selected_model_sha256_verified_against_archived_binary": true
+  },
+  "limitations": [
+    "The INTERNAL TEST estimates performance within the Dataset V2 distribution and is not a field-accuracy claim.",
+    "The external PlantDoc result covers only 99 images and 12 of the 39 deployed classes.",
+    "The PlantDoc subset does not evaluate the Background without leaves class.",
+    "The external result reveals substantial domain shift and must not be used to tune frozen Model V2.",
+    "The frozen Model V2 candidate has not replaced the deployed plant_disease_model.h5 artifact."
+  ]
+}
