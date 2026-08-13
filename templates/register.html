@@ -1,1 +1,25 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Create account · AgriDiagnose AI</title><link rel="stylesheet" href="{{url_for('static',filename='css/auth.css')}}"></head><body><main class="auth-card"><h1>AgriDiagnose AI</h1><p>Create your account</p>{% for c,m in get_flashed_messages(with_categories=true) %}<p>{{m}}</p>{% endfor %}<form method="post"><input type="hidden" name="csrf_token" value="{{csrf_token()}}"><input name="name" placeholder="Full name" required><input type="email" name="email" placeholder="Email" required><input type="password" name="password" minlength="8" placeholder="Password (8+ characters)" required><button>Create account</button></form><p><a href="{{url_for('auth.login')}}">Login</a></p></main></body></html>
+<!doctype html>
+<html lang="{{ current_language }}" dir="{{ language_direction }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{{ t('Create account') }} · AgriDiagnose AI</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+</head>
+<body>
+  <div class="auth-language">{% include '_language_switcher.html' %}</div>
+  <main class="auth-card">
+    <h1>AgriDiagnose AI</h1>
+    <p>{{ t('Create your account') }}</p>
+    {% for category, message in get_flashed_messages(with_categories=true) %}<p class="{{ category }}">{{ message }}</p>{% endfor %}
+    <form method="post">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input name="name" autocomplete="name" placeholder="{{ t('Full name') }}" aria-label="{{ t('Full name') }}" required>
+      <input type="email" name="email" autocomplete="email" placeholder="{{ t('Email') }}" aria-label="{{ t('Email') }}" required>
+      <input type="password" name="password" autocomplete="new-password" minlength="8" placeholder="{{ t('Password (8+ characters)') }}" aria-label="{{ t('Password (8+ characters)') }}" required>
+      <button>{{ t('Create account') }}</button>
+    </form>
+    <p><a href="{{ url_for('auth.login') }}">{{ t('Login') }}</a></p>
+  </main>
+</body>
+</html>

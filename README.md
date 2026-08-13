@@ -30,6 +30,9 @@ custom model can still be selected with `MODEL_PATH`.
 - Registration, login, and logout with Werkzeug password hashing
 - Flask-Login session authentication and Flask-WTF CSRF protection
 - Responsive upload interface with image preview
+- Modern responsive dashboard with explicit model-coverage cards
+- Complete English, French, and Arabic web interface
+- Persistent language selector, browser-language detection, and Arabic RTL layout
 - JPG, JPEG, PNG, and WEBP uploads up to 5 MB
 - Pillow validation of actual image content and UUID-based filenames
 - Primary prediction with confidence and explicit status handling
@@ -37,6 +40,50 @@ custom model can still be selected with `MODEL_PATH`.
 - Dashboard totals, average confidence, recent scans, and frequent diseases
 - User-scoped history with details, pagination, deletion, and clear-all actions
 - Status-specific uncertainty/no-leaf warnings and a responsible-use disclaimer
+
+### Languages and complete frontend coverage
+
+Every user-facing web page is available in **English (`en`)**, **French
+(`fr`)**, and **Arabic (`ar`)**. This includes registration, login, dashboard,
+image upload, loading state, validation and error messages, statistics, scan
+history, prediction details, status labels, dates, disease labels, and the
+responsible-use notices. The selected language is stored in the user session;
+when no preference has been saved, the application uses the browser's preferred
+supported language. Arabic pages use right-to-left layout through the document
+`dir="rtl"` attribute and responsive RTL-aware CSS.
+
+The dashboard exposes the model's complete plant coverage rather than implying
+that it can analyze every crop. The frozen output taxonomy contains **39 total
+classes**: **38 plant-health classes across 14 crops**, plus one explicit
+`Background without leaves` safety class. The interface derives the class count
+for each crop directly from the authoritative taxonomy and translates every
+displayed crop and class name without changing the stable English values stored
+in the database or returned by the API.
+
+| Supported crop | Model output classes | Count |
+| --- | --- | ---: |
+| Apple | Apple scab; Black rot; Cedar apple rust; healthy | 4 |
+| Blueberry | healthy | 1 |
+| Cherry | Powdery mildew; healthy | 2 |
+| Corn | Cercospora leaf spot; Common rust; Northern Leaf Blight; healthy | 4 |
+| Grape | Black rot; Esca; Leaf blight; healthy | 4 |
+| Orange | Huanglongbing | 1 |
+| Peach | Bacterial spot; healthy | 2 |
+| Bell pepper | Bacterial spot; healthy | 2 |
+| Potato | Early blight; Late blight; healthy | 3 |
+| Raspberry | healthy | 1 |
+| Soybean | healthy | 1 |
+| Squash | Powdery mildew | 1 |
+| Strawberry | Leaf scorch; healthy | 2 |
+| Tomato | Bacterial spot; Early blight; Late blight; Leaf Mold; Septoria leaf spot; Spider mites; Target Spot; Yellow Leaf Curl Virus; mosaic virus; healthy | 10 |
+| Non-leaf safety class | Background without leaves | 1 |
+| **Total** | **Complete frozen output taxonomy** | **39** |
+
+The localized dashboard therefore shows exactly these 14 supported crops:
+Apple, Blueberry, Cherry, Corn, Grape, Orange, Peach, Bell pepper, Potato,
+Raspberry, Soybean, Squash, Strawberry, and Tomato. This coverage statement is
+about model outputs, not a guarantee of field accuracy or support for other
+species, varieties, symptoms, or growing conditions.
 
 ### Engineering and data
 

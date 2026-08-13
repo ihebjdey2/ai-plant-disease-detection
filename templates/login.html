@@ -1,1 +1,24 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Login · AgriDiagnose AI</title><link rel="stylesheet" href="{{url_for('static',filename='css/auth.css')}}"></head><body><main class="auth-card"><h1>AgriDiagnose AI</h1><p>Welcome back</p>{% for c,m in get_flashed_messages(with_categories=true) %}<p>{{m}}</p>{% endfor %}<form method="post"><input type="hidden" name="csrf_token" value="{{csrf_token()}}"><input type="email" name="email" placeholder="Email" required><input type="password" name="password" placeholder="Password" required><button>Login</button></form><p><a href="{{url_for('auth.register')}}">Create an account</a></p></main></body></html>
+<!doctype html>
+<html lang="{{ current_language }}" dir="{{ language_direction }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{{ t('Login') }} · AgriDiagnose AI</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+</head>
+<body>
+  <div class="auth-language">{% include '_language_switcher.html' %}</div>
+  <main class="auth-card">
+    <h1>AgriDiagnose AI</h1>
+    <p>{{ t('Welcome back') }}</p>
+    {% for category, message in get_flashed_messages(with_categories=true) %}<p class="{{ category }}">{{ message }}</p>{% endfor %}
+    <form method="post">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="email" name="email" autocomplete="email" placeholder="{{ t('Email') }}" aria-label="{{ t('Email') }}" required>
+      <input type="password" name="password" autocomplete="current-password" placeholder="{{ t('Password') }}" aria-label="{{ t('Password') }}" required>
+      <button>{{ t('Login') }}</button>
+    </form>
+    <p><a href="{{ url_for('auth.register') }}">{{ t('Create an account') }}</a></p>
+  </main>
+</body>
+</html>

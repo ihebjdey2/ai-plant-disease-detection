@@ -27,6 +27,15 @@ body{
     background-position:center;
 }
 
+.auth-language{
+    position:absolute;
+    top:20px;
+    inset-inline-end:24px;
+}
+
+.language-switcher{display:flex;align-items:center;gap:8px;color:white}
+.language-switcher select{border:1px solid rgba(255,255,255,.45);border-radius:8px;padding:8px;background:#163d2d;color:white;font:inherit}
+
 .auth-container{
 
     width:100%;
@@ -118,3 +127,7 @@ body{
 
     text-decoration:none;
 }
+
+[dir="rtl"] .auth-card input{text-align:right}
+
+@media(max-width:480px){.auth-card{width:calc(100% - 32px);padding:30px 24px}.auth-language{top:12px;inset-inline-end:16px}.language-switcher label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}}
