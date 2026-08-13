@@ -50,7 +50,7 @@ Set values in `.env`; never commit it.
 | --- | --- |
 | `SECRET_KEY` | Required long random value in production |
 | `DATABASE_URL` | PostgreSQL SQLAlchemy URL, e.g. `postgresql+psycopg://user:password@host:5432/agridiagnose` |
-| `MODEL_PATH` | Path to `plant_disease_model.h5` |
+| `MODEL_PATH` | Optional custom model path; defaults to frozen Model V2 |
 | `WEATHER_API_KEY` | Reserved for a configured weather provider |
 | `PREDICTION_CONFIDENCE_THRESHOLD` | Default: `60` |
 
@@ -68,12 +68,15 @@ The model has 39 outputs. The complete class order includes `Background_without_
 
 ## Model V2 final evaluation
 
-The frozen Model V2 candidate was selected strictly on VALIDATION and has not
-yet replaced the deployed `plant_disease_model.h5`. On the held-out 7,344-image,
-39-class Dataset V2 INTERNAL TEST it reached 95.44% accuracy, 95.92% Macro-F1,
-and 95.43% weighted F1. On the conservative 99-image / 12-class external
-PlantDoc TEST overlap subset it reached 41.41% accuracy, 45.79% Macro-F1, and
-43.35% weighted F1.
+The application now uses the exact frozen `models/agri-diagnose-v2-exp-a.keras`
+artifact by default. The legacy `plant_disease_model.h5` remains in the
+repository for explicit rollback. A custom `MODEL_PATH` override is still
+supported.
+
+Model V2 was selected strictly on VALIDATION. On the held-out 7,344-image,
+39-class Dataset V2 INTERNAL TEST it reached 95.44% accuracy and 95.92%
+Macro-F1. On the conservative 99-image / 12-class external PlantDoc TEST
+overlap subset it reached 41.41% accuracy and 45.79% Macro-F1.
 
 The external result demonstrates substantial domain shift; the 95.44% internal
 result is not a field-accuracy claim. See the

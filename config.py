@@ -10,14 +10,23 @@ from dotenv import load_dotenv
 
 
 BASE_DIR = Path(__file__).resolve().parent
+DEFAULT_MODEL_PATH = BASE_DIR / "models" / "agri-diagnose-v2-exp-a.keras"
+DEFAULT_MODEL_SELECTION_PATH = (
+    BASE_DIR / "training" / "config" / "model-v2-final-selection.json"
+)
 load_dotenv(BASE_DIR / ".env")
+MODEL_PATH_OVERRIDE = os.getenv("MODEL_PATH")
 
 
 class Config:
     ENV = os.getenv("FLASK_ENV", "development")
     DEBUG = ENV == "development"
     SECRET_KEY = os.getenv("SECRET_KEY") or secrets.token_urlsafe(32)
-    MODEL_PATH = Path(os.getenv("MODEL_PATH", BASE_DIR / "plant_disease_model.h5"))
+    MODEL_PATH = (
+        Path(MODEL_PATH_OVERRIDE) if MODEL_PATH_OVERRIDE else DEFAULT_MODEL_PATH
+    )
+    MODEL_PATH_IS_DEFAULT = not bool(MODEL_PATH_OVERRIDE)
+    MODEL_SELECTION_PATH = DEFAULT_MODEL_SELECTION_PATH
     UPLOAD_FOLDER = Path(os.getenv("UPLOAD_FOLDER", BASE_DIR / "static" / "uploads"))
     HISTORY_FILE = Path(os.getenv("HISTORY_FILE", BASE_DIR / "history.json"))
     MAX_CONTENT_LENGTH = 5 * 1024 * 1024
