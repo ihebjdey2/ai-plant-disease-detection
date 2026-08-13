@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="{{ current_language }}" dir="{{ language_direction }}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -8,58 +8,90 @@
 </head>
 <body>
   <nav class="navbar">
-    <b>AgriDiagnose AI</b>
-    <span>{{ current_user.name }} · <a href="{{ url_for('history.index') }}">History</a></span>
-    <form method="post" action="{{ url_for('auth.logout') }}">
-      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-      <button>Logout</button>
-    </form>
+    <a class="brand" href="{{ url_for('dashboard.index') }}"><span class="brand-mark" aria-hidden="true">◇</span><b>AgriDiagnose AI</b></a>
+    <div class="nav-actions">
+      <span class="user-greeting">{{ current_user.name }} · <a href="{{ url_for('history.index') }}">{{ t('History') }}</a></span>
+      {% include '_language_switcher.html' %}
+      <form method="post" action="{{ url_for('auth.logout') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button class="button-secondary">{{ t('Logout') }}</button>
+      </form>
+    </div>
   </nav>
-  <main class="container">
-    <p class="eyebrow">AGRI DIAGNOSE AI · AI-ASSISTED CROP CARE</p>
-    <h1>Crop health dashboard</h1>
+
+  <main class="container dashboard">
+    <header class="dashboard-hero">
+      <div>
+        <p class="eyebrow">AGRI DIAGNOSE AI · {{ t('AI-assisted crop care')|upper }}</p>
+        <h1>{{ t('Crop health dashboard') }}</h1>
+        <p class="hero-copy">{{ t('Monitor your plants and identify visible disease patterns in seconds.') }}</p>
+      </div>
+      <div class="coverage-summary">
+        <span>{{ t('Model coverage') }}</span>
+        <strong>14</strong>
+        <small>{{ t('Supported plants') }}</small>
+      </div>
+    </header>
+
     {% for category, message in get_flashed_messages(with_categories=true) %}
-      <p class="{{ category }}">{{ message }}</p>
+      <p class="flash-message {{ category }}">{{ message }}</p>
     {% endfor %}
-    <section class="result-grid">
-      <div class="result-box">Total scans<h3>{{ total_scans }}</h3></div>
-      <div class="result-box">Healthy<h3>{{ healthy_scans }}</h3></div>
-      <div class="result-box">Diseased<h3>{{ diseased_scans }}</h3></div>
-      <div class="result-box">Uncertain<h3>{{ uncertain_scans }}</h3></div>
-      <div class="result-box">No leaf<h3>{{ no_leaf_scans }}</h3></div>
-      <div class="result-box">Avg. confidence<h3>{{ '%.1f'|format(average_confidence) }}%</h3></div>
-    </section>
-    <section class="upload-card">
-      <h2>Analyze a leaf</h2>
+
+    <section class="upload-card primary-card">
+      <div class="section-heading">
+        <span class="section-icon" aria-hidden="true">✦</span>
+        <div><p class="section-kicker">AI</p><h2>{{ t('Analyze a leaf') }}</h2></div>
+      </div>
       <form method="post" action="{{ url_for('prediction.create') }}" enctype="multipart/form-data">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <label class="drop-zone" for="imageInput">
-          Drop an image or choose a leaf photo
+          <span class="upload-icon" aria-hidden="true">↑</span>
+          <strong>{{ t('Drop an image or choose a leaf photo') }}</strong>
           <input type="file" name="image" id="imageInput" accept=".jpg,.jpeg,.png,.webp" required>
         </label>
-        <img id="preview" class="preview-image" alt="Selected leaf preview">
-        <button id="scanButton">Analyze image</button>
+        <img id="preview" class="preview-image" alt="{{ t('Selected leaf preview') }}">
+        <button class="scan-button" id="scanButton" data-analyzing-text="{{ t('Analyzing leaf…') }}">{{ t('Analyze image') }}</button>
       </form>
     </section>
-    {% if recent_predictions %}
-      <section class="panel">
-        <h2>Recent scans</h2>
-        <div class="recent-list">
-          {% for item in recent_predictions %}
-            <a href="{{ url_for('history.detail', prediction_id=item.id) }}">
-              <span>{{ item.disease }}</span>
-              <span class="status-badge status-{{ item.status }}">{{ item.status|replace('_', ' ')|title }}</span>
-            </a>
-          {% endfor %}
-        </div>
-      </section>
-    {% endif %}
-    {% if frequent_diseases %}
-      <section class="panel">
-        <h2>Frequent confirmed diseases</h2>
-        {% for disease, count in frequent_diseases %}<p>{{ disease }} · {{ count }}</p>{% endfor %}
-      </section>
-    {% endif %}
+
+    <section class="supported-section" aria-labelledby="supported-plants-title">
+      <div class="section-title-row">
+        <div><p class="section-kicker">{{ t('Model coverage') }}</p><h2 id="supported-plants-title">{{ t('Supported plants') }}</h2></div>
+        <p>{{ t('The model recognizes 38 plant-health classes across 14 crops, plus a no-leaf safety class.') }}</p>
+      </div>
+      <div class="crop-grid">
+        {% for crop in supported_crops %}
+          <article class="crop-card">
+            <span class="crop-icon" aria-hidden="true">{{ crop.icon }}</span>
+            <div><h3>{{ t(crop.name) }}</h3><p>{{ crop.class_count }} {{ t('recognized class' if crop.class_count == 1 else 'recognized classes') }}</p></div>
+          </article>
+        {% endfor %}
+      </div>
+    </section>
+
+    <section class="result-grid" aria-label="{{ t('Crop health dashboard') }}">
+      <div class="result-box"><span>{{ t('Total scans') }}</span><h3>{{ total_scans }}</h3></div>
+      <div class="result-box status-stat healthy-stat"><span>{{ t('Healthy') }}</span><h3>{{ healthy_scans }}</h3></div>
+      <div class="result-box status-stat diseased-stat"><span>{{ t('Diseased') }}</span><h3>{{ diseased_scans }}</h3></div>
+      <div class="result-box status-stat uncertain-stat"><span>{{ t('Uncertain') }}</span><h3>{{ uncertain_scans }}</h3></div>
+      <div class="result-box status-stat no-leaf-stat"><span>{{ t('No leaf') }}</span><h3>{{ no_leaf_scans }}</h3></div>
+      <div class="result-box"><span>{{ t('Avg. confidence') }}</span><h3>{{ '%.1f'|format(average_confidence) }}%</h3></div>
+    </section>
+
+    <div class="dashboard-columns">
+      {% if recent_predictions %}
+        <section class="panel">
+          <h2>{{ t('Recent scans') }}</h2>
+          <div class="recent-list">{% for item in recent_predictions %}<a href="{{ url_for('history.detail', prediction_id=item.id) }}"><span>{{ item.disease|disease_name }}</span><span class="status-badge status-{{ item.status }}">{{ item.status|status_name }}</span></a>{% endfor %}</div>
+        </section>
+      {% endif %}
+      {% if frequent_diseases %}
+        <section class="panel">
+          <h2>{{ t('Frequent confirmed diseases') }}</h2>
+          {% for disease, count in frequent_diseases %}<p class="frequency-row"><span>{{ disease|disease_name }}</span><b>{{ count }}</b></p>{% endfor %}
+        </section>
+      {% endif %}
+    </div>
   </main>
   <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>

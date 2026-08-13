@@ -6,7 +6,7 @@ import logging
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
 
-from flask import Flask
+from flask import Flask, redirect, render_template, request, session, url_for
 from config import Config
 from app.extensions import csrf, db, login_manager, migrate
 
@@ -57,14 +57,47 @@ def create_app(config_object: type[Config] = Config) -> Flask:
     app.register_blueprint(history_bp)
     app.register_blueprint(api_bp)
 
+    from app.i18n import (
+        RTL_LANGUAGES,
+        SUPPORTED_LANGUAGES,
+        format_datetime,
+        get_locale,
+        translate,
+        translate_disease,
+        translate_status,
+    )
+
+    @app.context_processor
+    def inject_i18n():
+        locale = get_locale()
+        return {
+            "t": translate,
+            "current_language": locale,
+            "language_direction": "rtl" if locale in RTL_LANGUAGES else "ltr",
+            "supported_languages": SUPPORTED_LANGUAGES,
+        }
+
+    app.jinja_env.filters["status_name"] = translate_status
+    app.jinja_env.filters["disease_name"] = translate_disease
+    app.jinja_env.filters["local_datetime"] = format_datetime
+
+    @app.get("/language/<language>")
+    def set_language(language: str):
+        if language in SUPPORTED_LANGUAGES:
+            session["language"] = language
+        destination = request.args.get("next", "")
+        if not destination.startswith("/") or destination.startswith("//"):
+            destination = url_for("dashboard.index")
+        return redirect(destination)
+
     @app.errorhandler(403)
-    def forbidden(_error): return __import__("flask").render_template("error.html", code=403, message="You do not have access to this resource."), 403
+    def forbidden(_error): return render_template("error.html", code=403, message=translate("You do not have access to this resource.")), 403
     @app.errorhandler(404)
-    def not_found(_error): return __import__("flask").render_template("error.html", code=404, message="The page was not found."), 404
+    def not_found(_error): return render_template("error.html", code=404, message=translate("The page was not found.")), 404
     @app.errorhandler(413)
-    def too_large(_error): return __import__("flask").render_template("error.html", code=413, message="Images must be 5 MB or smaller."), 413
+    def too_large(_error): return render_template("error.html", code=413, message=translate("Images must be 5 MB or smaller.")), 413
     @app.errorhandler(500)
-    def server_error(error): app.logger.exception("Unhandled server error: %s", error); return __import__("flask").render_template("error.html", code=500, message="Something went wrong. Please try again."), 500
+    def server_error(error): app.logger.exception("Unhandled server error: %s", error); return render_template("error.html", code=500, message=translate("Something went wrong. Please try again.")), 500
     return app
 
 
