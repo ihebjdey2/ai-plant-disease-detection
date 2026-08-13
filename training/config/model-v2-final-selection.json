@@ -2,7 +2,7 @@
   "schema": "agridiagnose.model-v2-final-selection",
   "version": 1,
   "status": "FROZEN",
-  "deployment_status": "NOT_DEPLOYED",
+  "deployment_status": "INTEGRATED_APPLICATION_DEFAULT",
   "selected_experiment": "agri-diagnose-v2-exp-a",
   "rejected_experiment": "agri-diagnose-v2-exp-b",
   "selection_partition": "VALIDATION",
@@ -115,6 +115,6 @@
     "The external PlantDoc result covers only 99 images and 12 of the 39 deployed classes.",
     "The PlantDoc subset does not evaluate the Background without leaves class.",
     "The external result reveals substantial domain shift and must not be used to tune frozen Model V2.",
-    "The frozen Model V2 candidate has not replaced the deployed plant_disease_model.h5 artifact."
+    "The frozen Model V2 artifact is the application default; the legacy plant_disease_model.h5 remains available for explicit rollback."
   ]
 }

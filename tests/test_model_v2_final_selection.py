@@ -28,7 +28,7 @@ def test_frozen_selection_identity_and_partition_are_exact():
     assert selection["schema"] == "agridiagnose.model-v2-final-selection"
     assert selection["version"] == 1
     assert selection["status"] == "FROZEN"
-    assert selection["deployment_status"] == "NOT_DEPLOYED"
+    assert selection["deployment_status"] == "INTEGRATED_APPLICATION_DEFAULT"
     assert selection["selected_experiment"] == "agri-diagnose-v2-exp-a"
     assert selection["rejected_experiment"] == "agri-diagnose-v2-exp-b"
     assert selection["selection_partition"] == "VALIDATION"

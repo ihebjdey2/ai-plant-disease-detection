@@ -8,8 +8,10 @@ the one-time INTERNAL TEST estimate, and the external PlantDoc TEST benchmark
 from frozen Kaggle artifacts. No training, inference, evaluation, threshold
 change, or model update was performed while producing this record.
 
-Model V2 is **frozen**. The selected candidate has not yet replaced the
-application's deployed `plant_disease_model.h5` artifact.
+Model V2 is **frozen**. Its byte-identical Experiment A artifact is now the
+application default. This integration status does not change any scientific
+result or imply external production hosting. The legacy `plant_disease_model.h5`
+remains available for explicit rollback.
 
 ## Candidate selection protocol
 
