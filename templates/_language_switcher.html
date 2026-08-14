@@ -1,8 +1,5 @@
-<form class="language-switcher" aria-label="{{ t('Language') }}">
-  <label for="language-select">{{ t('Language') }}</label>
-  <select id="language-select" onchange="if(this.value) window.location.href=this.value">
-    {% for code, name in supported_languages.items() %}
-      <option value="{{ url_for('set_language', language=code, next=request.full_path) }}"{% if code == current_language %} selected{% endif %}>{{ name }}</option>
-    {% endfor %}
-  </select>
-</form>
+<nav class="language-switcher" aria-label="{{ t('Language') }}">
+  {% for code, name in supported_languages.items() %}
+    <a href="{{ url_for('set_language', language=code, next=request.full_path) }}" lang="{{ code }}" dir="{{ 'rtl' if code == 'ar' else 'ltr' }}"{% if code == current_language %} aria-current="true"{% endif %}>{{ code|upper }}</a>
+  {% endfor %}
+</nav>

@@ -1,0 +1,19 @@
+<header class="site-header">
+  <div class="nav-shell">
+    {% include '_brand.html' %}
+    <nav class="primary-nav" aria-label="{{ t('Dashboard') }}">
+      <a href="{{ url_for('dashboard.index') }}"{% if active_page == 'dashboard' %} aria-current="page"{% endif %}>{{ t('Dashboard') }}</a>
+      <a href="{{ url_for('history.index') }}"{% if active_page == 'history' %} aria-current="page"{% endif %}>{{ t('History') }}</a>
+    </nav>
+    <div class="nav-actions">
+      {% include '_language_switcher.html' %}
+      {% if current_user.is_authenticated %}
+        <span class="user-chip" title="{{ current_user.name }}"><span aria-hidden="true">{{ current_user.name[:1]|upper }}</span><b><bdi>{{ current_user.name }}</bdi></b></span>
+        <form method="post" action="{{ url_for('auth.logout') }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button class="button button-quiet" type="submit" aria-label="{{ t('Logout') }}"><span class="logout-label">{{ t('Logout') }}</span><span class="logout-icon" aria-hidden="true">↪</span></button>
+        </form>
+      {% endif %}
+    </div>
+  </div>
+</header>

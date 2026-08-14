@@ -1,3 +1,49 @@
 <!doctype html>
-<html lang="{{ current_language }}" dir="{{ language_direction }}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{{ t('Scan detail') }} · AgriDiagnose AI</title><link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"></head>
-<body><nav class="navbar"><a href="{{ url_for('dashboard.index') }}">AgriDiagnose AI</a><div class="nav-actions"><a href="{{ url_for('history.index') }}">{{ t('Back to history') }}</a>{% include '_language_switcher.html' %}</div></nav><main class="container"><article class="detail-card"><img src="{{ url_for('static', filename='uploads/' + item.image_path) }}" alt="{{ t('Analyzed plant leaf') }}"><div><p class="eyebrow">AGRI DIAGNOSE AI · {{ t('Scan result')|upper }}</p><span class="status-badge status-{{ item.status }}">{{ item.status|status_name }}</span><h1>{{ item.disease|disease_name }}</h1><p class="confidence">{{ item.confidence }}% {{ t('confidence') }}</p><p>{{ t('Analyzed') }} {{ item.created_at|local_datetime }}</p>{% if item.status == 'no_leaf' %}<p class="notice notice-warning">{{ t('No leaf detected. Please upload a clear, well-lit image of a single leaf. No disease assessment or treatment recommendation was made.') }}</p>{% elif item.status == 'uncertain' %}<p class="notice notice-warning">{{ t('Prediction uncertain. Please upload a clearer leaf image before making crop-care decisions.') }}</p>{% else %}<p class="notice">{{ t('This AI result is decision support only. Confirm crop-care actions with local expertise.') }}</p>{% endif %}</div></article></main></body></html>
+<html lang="{{ current_language }}" dir="{{ language_direction }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#173f32">
+  <title>{{ t('Scan detail') }} · AgriDiagnose AI</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <script defer src="{{ url_for('static', filename='js/main.js') }}"></script>
+</head>
+<body class="app-page">
+  <a class="skip-link" href="#main-content">{{ t('Skip to content') }}</a>
+  <div class="ambient ambient-one" aria-hidden="true"></div>
+  {% set active_page = 'history' %}{% include '_app_nav.html' %}
+  <main class="page-shell detail-page" id="main-content">
+    <a class="back-link entrance" href="{{ url_for('history.index') }}"><span aria-hidden="true">←</span>{{ t('Back to history') }}</a>
+    <article class="result-report entrance">
+      <div class="result-visual">
+        <img src="{{ url_for('static', filename='uploads/' + item.image_path) }}" alt="{{ t('Analyzed plant leaf') }}" decoding="async">
+        <span class="status-badge status-{{ item.status }} image-status">{{ item.status|status_name }}</span>
+      </div>
+      <div class="result-content">
+        <p class="eyebrow">{{ t('AI result') }}</p>
+        <h1><bdi>{{ item.disease|disease_name }}</bdi></h1>
+        <p class="result-date">{{ t('Analyzed') }} <time datetime="{{ item.created_at.isoformat() }}">{{ item.created_at|local_datetime }}</time></p>
+        <div class="confidence-block">
+          <div class="confidence-ring" style="--confidence:{{ item.confidence|int }}" role="img" aria-label="{{ t('Model confidence') }}: {{ item.confidence }}%"><span><strong><bdi>{{ item.confidence }}%</bdi></strong><small>{{ t('Model confidence') }}</small></span></div>
+          <p>{{ t("Confidence is the model's estimated match, not a guarantee of correctness.") }}</p>
+        </div>
+        {% if item.status == 'no_leaf' %}<div class="notice notice-warning" role="status"><span aria-hidden="true">!</span><p>{{ t('No leaf detected. Please upload a clear, well-lit image of a single leaf. No disease assessment or treatment recommendation was made.') }}</p></div>
+        {% elif item.status == 'uncertain' %}<div class="notice notice-warning" role="status"><span aria-hidden="true">?</span><p>{{ t('Prediction uncertain. Please upload a clearer leaf image before making crop-care decisions.') }}</p></div>
+        {% else %}<div class="notice notice-calm" role="note"><span aria-hidden="true">i</span><p>{{ t('This AI result is decision support only. Confirm crop-care actions with local expertise.') }}</p></div>{% endif %}
+        <a class="button button-primary result-cta" href="{{ url_for('dashboard.index') }}#new-scan">{{ t('Analyze another leaf') }} <span aria-hidden="true">→</span></a>
+      </div>
+    </article>
+
+    {% if item.top_predictions %}
+      <section class="matches-panel reveal" aria-labelledby="matches-title">
+        <div class="section-title-row"><div><p class="section-kicker">{{ t('AI result') }}</p><h2 id="matches-title">{{ t('Other model matches') }}</h2><p>{{ t('These alternatives are shown for transparency and are not confirmed diagnoses.') }}</p></div></div>
+        <div class="match-list">
+          {% for prediction in item.top_predictions[:3] %}
+            <div class="match-row"><div><span>{{ loop.index|string|replace('1','01')|replace('2','02')|replace('3','03') }}</span><strong><bdi>{{ prediction.disease|disease_name }}</bdi></strong></div><div class="match-meter"><span><i style="width:{{ prediction.confidence|int }}%"></i></span><b><bdi>{{ prediction.confidence }}%</bdi></b></div></div>
+          {% endfor %}
+        </div>
+      </section>
+    {% endif %}
+  </main>
+</body>
+</html>

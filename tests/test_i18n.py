@@ -66,3 +66,35 @@ def test_validation_message_is_translated_in_french(client):
     )
 
     assert "mot de passe d’au moins 8 caractères" in response.get_data(as_text=True)
+
+
+def test_modern_dashboard_keeps_accessible_interactions(authenticated_client):
+    page = authenticated_client.get("/").get_data(as_text=True)
+    css = authenticated_client.get("/static/css/style.css").get_data(as_text=True)
+
+    assert 'class="skip-link" href="#main-content"' in page
+    assert 'id="imageInput"' in page
+    assert 'capture="environment"' in page
+    assert 'aria-describedby="upload-help upload-status"' in page
+    assert 'id="scanForm"' in page
+    assert '<nav class="language-switcher"' in page
+    assert 'onchange=' not in page
+    assert "<bdi>39</bdi> model outputs including one no-leaf safety class" in page
+    assert "prefers-reduced-motion: reduce" in css
+    assert ":focus-visible" in css
+
+
+def test_history_and_result_add_safe_human_centered_controls(
+    authenticated_client, user, prediction_factory
+):
+    item = prediction_factory(user, disease="Tomato Late blight", status="diseased")
+
+    history = authenticated_client.get("/history").get_data(as_text=True)
+    detail = authenticated_client.get(f"/history/{item.id}").get_data(as_text=True)
+
+    assert 'data-history-filter="all"' in history
+    assert "This action cannot be undone." in history
+    assert 'loading="lazy" decoding="async"' in history
+    assert "Other model matches" in detail
+    assert "not a guarantee of correctness" in detail
+    assert 'class="confidence-ring"' in detail

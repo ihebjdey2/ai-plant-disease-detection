@@ -1,2 +1,8 @@
 <!doctype html>
-<html lang="{{ current_language }}" dir="{{ language_direction }}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{{ code }} · AgriDiagnose AI</title><link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"></head><body><nav class="navbar"><b>AgriDiagnose AI</b>{% include '_language_switcher.html' %}</nav><main class="container"><article class="panel"><p class="eyebrow">AGRI DIAGNOSE AI · {{ t('Error')|upper }} {{ code }}</p><h1>{{ message }}</h1><a class="action" href="{{ url_for('dashboard.index') }}">{{ t('Return to dashboard') }}</a></article></main></body></html>
+<html lang="{{ current_language }}" dir="{{ language_direction }}">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#173f32"><title>{{ code }} · AgriDiagnose AI</title><link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"><script defer src="{{ url_for('static', filename='js/main.js') }}"></script></head>
+<body class="app-page">
+  <a class="skip-link" href="#main-content">{{ t('Skip to content') }}</a>{% set active_page = '' %}{% include '_app_nav.html' %}
+  <main class="page-shell error-page" id="main-content"><section class="error-card entrance"><span class="error-code"><bdi>{{ code }}</bdi></span><p class="eyebrow">AGRI DIAGNOSE AI · {{ t('Error')|upper }}</p><h1>{{ message }}</h1><a class="button button-primary" href="{{ url_for('dashboard.index') }}">{{ t('Return to dashboard') }}</a></section></main>
+</body>
+</html>
