@@ -18,6 +18,7 @@ def test_dashboard_statistics_use_persisted_statuses(
     assert response.status_code == 200
     context = render_mock.call_args.kwargs
     assert len(context["supported_crops"]) == 14
+    assert context["plant_class_count"] == 38
     assert sum(crop["class_count"] for crop in context["supported_crops"]) == 38
     assert context["supported_crops"][0] == {
         "name": "Apple",

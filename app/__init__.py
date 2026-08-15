@@ -66,15 +66,22 @@ def create_app(config_object: type[Config] = Config) -> Flask:
         translate_disease,
         translate_status,
     )
+    from app.taxonomy import CLASS_NAMES, supported_crops as get_supported_crops
 
     @app.context_processor
     def inject_i18n():
         locale = get_locale()
+        crops = get_supported_crops()
         return {
             "t": translate,
             "current_language": locale,
             "language_direction": "rtl" if locale in RTL_LANGUAGES else "ltr",
             "supported_languages": SUPPORTED_LANGUAGES,
+            "model_coverage": {
+                "crop_count": len(crops),
+                "plant_class_count": sum(crop["class_count"] for crop in crops),
+                "total_output_count": len(CLASS_NAMES),
+            },
         }
 
     app.jinja_env.filters["status_name"] = translate_status

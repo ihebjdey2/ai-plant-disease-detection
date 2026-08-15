@@ -3,23 +3,57 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#173f32">
   <title>{{ t('Create account') }} · AgriDiagnose AI</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+  <script defer src="{{ url_for('static', filename='js/main.js') }}"></script>
 </head>
-<body>
-  <div class="auth-language">{% include '_language_switcher.html' %}</div>
-  <main class="auth-card">
-    <h1>AgriDiagnose AI</h1>
-    <p>{{ t('Create your account') }}</p>
-    {% for category, message in get_flashed_messages(with_categories=true) %}<p class="{{ category }}">{{ message }}</p>{% endfor %}
-    <form method="post">
-      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-      <input name="name" autocomplete="name" placeholder="{{ t('Full name') }}" aria-label="{{ t('Full name') }}" required>
-      <input type="email" name="email" autocomplete="email" placeholder="{{ t('Email') }}" aria-label="{{ t('Email') }}" required>
-      <input type="password" name="password" autocomplete="new-password" minlength="8" placeholder="{{ t('Password (8+ characters)') }}" aria-label="{{ t('Password (8+ characters)') }}" required>
-      <button>{{ t('Create account') }}</button>
-    </form>
-    <p><a href="{{ url_for('auth.login') }}">{{ t('Login') }}</a></p>
+<body class="auth-page">
+  <a class="skip-link" href="#auth-content">{{ t('Skip to content') }}</a>
+  <main class="auth-shell" id="auth-content">
+    <section class="auth-story" aria-labelledby="story-title">
+      <div class="story-glow" aria-hidden="true"></div>
+      <a class="auth-brand" href="{{ url_for('auth.login') }}" lang="en" dir="ltr">
+        <span class="auth-brand-mark" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M25.7 5.8C16.6 5.3 8.8 9.7 7.4 17.1c-.7 3.7 1 7.2 4.6 8.4 4.1 1.4 8.6-.9 10.6-5.3 2-4.3 1.4-9.7 3.1-14.4Z"/><path d="M8.3 26.4c2.5-5.6 6.8-9.7 12.6-12.2"/></svg></span>
+        <span><strong>AgriDiagnose</strong><small>AI</small></span>
+      </a>
+      <div class="story-copy entrance">
+        <p class="story-kicker">{{ t('One photo. A clearer next step.') }}</p>
+        <h1 id="story-title">{{ t('Understand your leaves with more confidence.') }}</h1>
+        <p>{{ t('Built for careful observation, not rushed decisions.') }}</p>
+        <ul class="story-points">
+          <li><span aria-hidden="true">✓</span>{{ t('Protected account') }}</li>
+          <li><span aria-hidden="true">✓</span>{{ t('Private scan history') }}</li>
+          <li><span aria-hidden="true">✓</span><bdi>{{ model_coverage.crop_count }}</bdi> {{ t('crops') }} · <bdi>{{ model_coverage.plant_class_count }}</bdi> {{ t('plant-health patterns') }}</li>
+        </ul>
+      </div>
+      <p class="story-note">{{ t('Decision support, not a diagnosis') }}</p>
+    </section>
+
+    <section class="auth-form-panel">
+      <div class="auth-toolbar">{% include '_language_switcher.html' %}</div>
+      <div class="auth-card entrance">
+        <p class="auth-eyebrow">{{ t('Create your account') }}</p>
+        <h2>{{ t('Create your free account') }}</h2>
+        <p class="auth-intro">{{ t('Start your crop journal and keep every scan in one private place.') }}</p>
+        {% for category, message in get_flashed_messages(with_categories=true) %}<div class="auth-alert {{ category }}" role="alert"><span aria-hidden="true">!</span><p>{{ message }}</p></div>{% endfor %}
+        <form method="post" class="auth-form">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <div class="field-group"><label for="name">{{ t('Full name') }}</label><input id="name" name="name" autocomplete="name" required></div>
+          <div class="field-group"><label for="email">{{ t('Email') }}</label><input id="email" class="ltr-field" type="email" name="email" autocomplete="email" inputmode="email" placeholder="name@example.com" required></div>
+          <div class="field-group">
+            <div class="field-label-row"><label for="password">{{ t('Password') }}</label><span id="password-help">{{ t('At least 8 characters') }}</span></div>
+            <div class="password-field">
+              <input id="password" type="password" name="password" autocomplete="new-password" minlength="8" aria-describedby="password-help" required>
+              <button type="button" class="password-toggle" data-password-toggle data-show-label="{{ t('Show password') }}" data-hide-label="{{ t('Hide password') }}" aria-controls="password" aria-label="{{ t('Show password') }}">{{ t('Show password') }}</button>
+            </div>
+          </div>
+          <button class="auth-submit" type="submit">{{ t('Create account') }} <span aria-hidden="true">→</span></button>
+        </form>
+        <p class="privacy-note"><span aria-hidden="true">✓</span>{{ t('Your scans stay linked only to your account.') }}</p>
+        <p class="auth-switch">{{ t('Already have an account?') }} <a href="{{ url_for('auth.login') }}">{{ t('Login') }}</a></p>
+      </div>
+    </section>
   </main>
 </body>
 </html>
