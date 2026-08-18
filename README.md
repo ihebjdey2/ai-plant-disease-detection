@@ -1,7 +1,8 @@
-# AgriDiagnose AI
+
 
 <div align="center">
-
+# AgriDiagnose AI
+    
 **AI-assisted plant disease analysis with a scientifically frozen 39-class MobileNetV2 model, Flask, TensorFlow, and a production-oriented application architecture.**
 
 [![CI](https://github.com/ihebjdey2/ai-plant-disease-detection/actions/workflows/ci.yml/badge.svg)](https://github.com/ihebjdey2/ai-plant-disease-detection/actions/workflows/ci.yml)
